@@ -10,6 +10,7 @@ FIXME - workflow diagram
   - .NET 5
   - gRPC
 - Database
+  - Entity Framework
   - SQL container
   - Cloud SQL with sql-proxy
 - Docker
