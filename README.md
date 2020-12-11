@@ -4,6 +4,12 @@ FIXME - architecture diagram
 
 FIXME - workflow diagram
 
+## Setup
+
+- GKE
+
+## Scenario
+
 - Web
   - .NET 5
 - API
