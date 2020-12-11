@@ -33,6 +33,17 @@ FIXME - workflow diagram
   - Fault Injection: https://www.istiobyexample.dev/fault-injection
   - Databases: https://www.istiobyexample.dev/databases
   
+ Ideas for demo source code:
+ - https://github.com/nishanil/ondotnet
+ - https://github.com/MicrosoftDocs/mslearn-aspnet-core
+ - https://dotnet.microsoft.com/learn/aspnet/microservice-tutorial
+ - https://dotnet.microsoft.com/learn/aspnet/deploy-microservice-tutorial
+ - https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples
+ - https://github.com/karoldeland/DotnetMSAPatterns
+ - https://github.com/grpc/grpc-dotnet/blob/master/examples/
+ - https://github.com/dotnet/tye/tree/master/samples
+ - https://github.com/GoogleCloudPlatform/cloud-code-samples/tree/master/dotnet/dotnet-guestbook
+  
  Resources:
  - [container security context on kubernetes](https://alwaysupalwayson.com/pod-security-context/)
  - [kubernetes network policies](https://alwaysupalwayson.com/posts/2019/09/calico/)
