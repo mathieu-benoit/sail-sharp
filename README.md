@@ -1,5 +1,9 @@
 # dotnet-on-kubernetes
 
+FIXME - architecture diagram
+
+FIXME - workflow diagram
+
 - Web
   - .NET 5
 - API
