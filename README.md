@@ -26,7 +26,7 @@ FIXME - workflow diagram
   - Helm
   - Dependabot
 - CD
-  - GitOps
+  - GitOps or Azure DevOps
 - Istio:
   - gRPC: https://www.istiobyexample.dev/grpc
   - Retry: https://www.istiobyexample.dev/retry
