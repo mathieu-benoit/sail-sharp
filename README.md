@@ -10,7 +10,8 @@ FIXME - workflow diagram
   - .NET 5
   - gRPC
 - Database
-  - SQL (container and Cloud SQL)
+  - SQL container
+  - Cloud SQL with sql-proxy
 - Docker
   - Dockerfile
   - Size, unit tests, unpriviledged
@@ -21,6 +22,7 @@ FIXME - workflow diagram
   - KCC
 - CI
   - Azure DevOps
+  - Helm
   - Dependabot
 - CD
   - GitOps
