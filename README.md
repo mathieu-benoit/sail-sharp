@@ -16,7 +16,7 @@
   - network policies
   - KCC
 - CI
-  - GitHub actions
+  - Azure DevOps
   - Dependabot
 - CD
   - GitOps
