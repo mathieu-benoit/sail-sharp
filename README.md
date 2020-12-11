@@ -17,6 +17,7 @@
   - KCC
 - CI
   - GitHub actions
+  - Dependabot
 - CD
   - GitOps
 - Istio:
