@@ -46,6 +46,7 @@ FIXME - workflow diagram
   - Databases: https://www.istiobyexample.dev/databases
   
 Ideas for demo source code:
+- https://github.com/andrewlock/asp-dot-net-core-in-action-2e
 - https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples
 - https://github.com/karoldeland/DotnetMSAPatterns
 - https://github.com/grpc/grpc-dotnet/blob/master/examples/
