@@ -7,7 +7,7 @@ on:
       - v*
   pull_request:
 env:
-  IMAGE_ID: 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}'
+  IMAGE_NAME: web
 jobs:
   # Run tests.
   test:
@@ -27,11 +27,11 @@ jobs:
       - name: Build image
         run: |
           cd web/src
-          docker build . --file Dockerfile --tag $IMAGE_ID
+          docker build . --file Dockerfile --tag 'docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME:${{ github.sha:7 }}'
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: $IMAGE_ID
+          image-ref: 'docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME:${{ github.sha:7 }}'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
@@ -44,4 +44,4 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       - name: Push image in container registry
         run: |
-          docker push $IMAGE_ID
+          docker push 'docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME:${{ github.sha:7 }}'
