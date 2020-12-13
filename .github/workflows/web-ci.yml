@@ -1,17 +1,14 @@
 name: web-ci
 on:
   push:
-    # Publish `main` as Docker `latest` image.
     branches:
       - main
-    # Publish `v1.2.3` tags as releases.
     tags:
       - v*
   # Run tests for any PRs.
   pull_request:
 env:
-  IMAGE_NAME: web
-  IMAGE_ID: 'docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME:${{ github.sha }}'
+  IMAGE_ID: 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}'
 jobs:
   # Run tests.
   test:
