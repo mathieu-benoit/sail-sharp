@@ -22,7 +22,7 @@ FIXME - workflow diagram
   - gRPC
 - Database
   - Entity Framework
-  - Migration: https://andrewlock.net/deploying-asp-net-core-applications-to-kubernetes-part-7-running-database-migrations/
+  - Migration: https://andrewlock.net/deploying-asp-net-core-applications-to-kubernetes-part-8-running-database-migrations-using-jobs-and-init-containers/
   - SQL container
   - Cloud SQL with sql-proxy
 - Docker
