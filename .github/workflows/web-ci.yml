@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'web/**'
+      - '.github/workflows/web-ci.yml'
     tags:
       - v*
   pull_request:
