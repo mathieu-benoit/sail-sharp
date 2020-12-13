@@ -13,6 +13,18 @@ FIXME - workflow diagram
 - GKE
 - Linux versus Windows?
 
+## Build locally
+
+```
+docker-compose up -d
+```
+
+```
+cd web/src
+docker build -t web .
+docker run -p 8080:8080 web
+```
+
 ## Scenario
 
 - Web
@@ -41,6 +53,7 @@ FIXME - workflow diagram
   - Dependabot
 - CD
   - GitOps or Azure DevOps
+  - Integration tests: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-5.0
 - Istio:
   - gRPC: https://www.istiobyexample.dev/grpc
   - Retry: https://www.istiobyexample.dev/retry
