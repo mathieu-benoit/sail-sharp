@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'web/**'
     tags:
       - v*
   pull_request:
@@ -43,3 +45,9 @@ jobs:
       - name: Push image in container registry
         run: |
           docker push 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}'
+  # Run the container for a smoke test
+  run:
+    container:
+      image: docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}
+      ports:
+        - 8080
