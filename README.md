@@ -1,6 +1,6 @@
 ![web-ci](https://github.com/mathieu-benoit/dotnet-on-kubernetes/workflows/web-ci/badge.svg?branch=main)
 
-Repo for my presentation "Sail Sharp": ASP.NET Core, containers and Kubernetes. In this repository I cover a variety of topics and things I've learned in deploying ASP.NET Core applications to Kubernetes. You could find 2 kind of best practices:
+Repo for my presentation "Sail Sharp": An illustrated demonstration with ASP.NET Core, containers and Kubernetes. In this repository I cover a variety of topics and things I've learned in deploying ASP.NET Core applications to Kubernetes. You could find 2 kind of best practices:
 - Specific to ASP.NET Core: .NET 5, Entity Framework, gRPC, SQL database, unit testing, optimized and unprivileged container, etc.
 - Generic for any workload running on Kubernetes: Continuous Integration (CI) with GitHub Actions, Continuous Deliver (CD) with GitOps (Flux), etc.
 
