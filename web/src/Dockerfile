@@ -1,23 +1,20 @@
-# Use Microsoft's official build .NET image.
-# https://hub.docker.com/_/microsoft-dotnet-core-sdk/
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
+# https://hub.docker.com/_/microsoft-dotnet-sdk/
+FROM mcr.microsoft.com/dotnet/sdk:5.0.101 AS build
 WORKDIR /app
 
-# Install production dependencies.
 # Copy csproj and restore as distinct layers.
 COPY *.csproj ./
-RUN dotnet restore
+RUN dotnet restore -r linux-musl-x64
 
 # Copy local code to the container image.
 COPY . ./
 WORKDIR /app
 
 # Build a release artifact.
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -p:PublishSingleFile=true -r linux-musl-x64 --self-contained true -p:PublishTrimmed=True -p:TrimMode=Link -c release -o out --no-restore
 
-# Use Microsoft's official runtime .NET image.
 # https://hub.docker.com/_/microsoft-dotnet-core-aspnet/
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/runtime-deps:5.0.1-alpine3.12-amd64
 WORKDIR /app
 COPY --from=build /app/out ./
 
