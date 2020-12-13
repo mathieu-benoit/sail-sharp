@@ -52,6 +52,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
       ports:
         - 8080
     steps:
