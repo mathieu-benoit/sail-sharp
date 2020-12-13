@@ -31,6 +31,7 @@ FIXME - workflow diagram
   - Dockercompose - https://www.stevejgordon.co.uk/docker-for-dotnet-developers-part-4
 - Kubernetes
   - pod security context, healthchecks
+  - startup, liveness, ready probes
   - network policies
   - Linux versus Windows?
   - KCC
