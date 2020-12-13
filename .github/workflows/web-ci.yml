@@ -48,6 +48,8 @@ jobs:
           docker push 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}'
   # Run the container for a smoke test
   run:
+    needs: push
+    runs-on: ubuntu-latest
     container:
       image: docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}
       ports:
