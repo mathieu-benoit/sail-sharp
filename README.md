@@ -35,7 +35,7 @@ FIXME - workflow diagram
   - KCC
 - CI
   - Azure DevOps
-  - Helm
+  - Helm - https://andrewlock.net/deploying-asp-net-core-applications-to-kubernetes-part-4-creating-a-helm-chart-for-an-aspnetcore-app/
   - Dependabot
 - CD
   - GitOps or Azure DevOps
