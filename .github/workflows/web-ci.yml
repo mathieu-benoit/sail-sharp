@@ -19,7 +19,10 @@ jobs:
         run: |
           cd web/src
           docker build -t web .
-          docker run web
+          docker run -d -p 8080:8080 --read-only web
+      - name: Run tests
+        run: |
+          docker images
   # Push image to GitHub Packages.
   push:
     needs: test
