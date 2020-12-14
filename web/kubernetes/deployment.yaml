@@ -36,10 +36,10 @@ spec:
           readinessProbe:
             httpGet:
               port: 8080
-              path: /
+              path: /health
           livenessProbe:
             httpGet:
               port: 8080
-              path: /
+              path: /health
       nodeSelector:
         kubernetes.io/os: linux
