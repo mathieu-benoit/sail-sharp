@@ -40,7 +40,7 @@ docker run -p 8080:8080 --read-only web
 - Docker
   - Dockerfile
   - Size, unit tests, unpriviledged
-  - Dockercompose - https://www.stevejgordon.co.uk/docker-for-dotnet-developers-part-4
+  - Dockercompose
 - Kubernetes
   - pod security context, healthchecks
   - startup, liveness, ready probes
@@ -49,7 +49,7 @@ docker run -p 8080:8080 --read-only web
   - KCC
 - CI
   - Azure DevOps
-  - Helm - https://andrewlock.net/deploying-asp-net-core-applications-to-kubernetes-part-4-creating-a-helm-chart-for-an-aspnetcore-app/
+  - Helm
   - Dependabot
 - CD
   - GitOps or Azure DevOps
