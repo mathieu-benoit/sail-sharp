@@ -18,7 +18,8 @@ jobs:
       - name: Run tests
         run: |
           cd web/src
-          docker build . --file Dockerfile
+          docker build -t web .
+          docker run web
   # Push image to GitHub Packages.
   push:
     needs: test
