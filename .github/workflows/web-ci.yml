@@ -19,10 +19,9 @@ jobs:
         run: |
           cd web/src
           docker build -t web .
-          docker run -d -p 8080:8080 --read-only web
-      - name: Run tests
+      - name: Run container
         run: |
-          docker images
+          docker run -d -p 8080:8080 --read-only web
   # Push image to GitHub Packages.
   push:
     needs: test

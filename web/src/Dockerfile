@@ -23,4 +23,5 @@ ENV COMPlus_EnableDiagnostics=0
 
 USER 1000
 
-ENTRYPOINT ["/app/HelloWorldAspNetCore"]
+#ENTRYPOINT ["/app/HelloWorldAspNetCore"]
+ENTRYPOINT ["dotnet", "HelloWorldAspNetCore.dll"]
