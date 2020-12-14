@@ -21,7 +21,7 @@ jobs:
           docker build -t web .
       - name: Run container
         run: |
-          docker run -d -p 8080:8080 --read-only web
+          docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 web
   # Push image to GitHub Packages.
   push:
     needs: test
