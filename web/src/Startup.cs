@@ -49,7 +49,8 @@ namespace HelloWorldAspNetCore
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks("/health/readiness");
+                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions(){ Predicate = (_) => false });
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
