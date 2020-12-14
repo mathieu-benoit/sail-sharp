@@ -22,7 +22,7 @@ docker-compose up -d
 ```
 cd web/src
 docker build -t web .
-docker run -p 8080:8080 web
+docker run -p 8080:8080 --read-only web
 ```
 
 ## Scenario

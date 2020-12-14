@@ -18,4 +18,9 @@ COPY --from=build /app/out ./
 ENV ASPNETCORE_URLS http://*:8080
 EXPOSE 8080
 
+# OPT OUT OF Diagnostic pipeline so we can run readonly.
+ENV COMPlus_EnableDiagnostics=0
+
+USER 1000
+
 ENTRYPOINT ["/app/HelloWorldAspNetCore"]
