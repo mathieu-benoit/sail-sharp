@@ -1,6 +1,6 @@
 using System;
 
-namespace HelloWorldAspNetCore.Models
+namespace web.Models
 {
     public class ErrorViewModel
     {
