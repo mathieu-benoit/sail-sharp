@@ -10,8 +10,7 @@ on:
       - v*
   pull_request:
 jobs:
-  # Run tests.
-  tests:
+  job:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -47,19 +46,14 @@ jobs:
           kubectl get nodes
       - name: Load image on the nodes of the cluster
         run: |
-          kind load docker-image --name=kind 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}'
+          kind load docker-image 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}' --name=kind 
       - name: Deploy Kubernetes manifest
         run: |
-          # kubectl apply -f /path/to/application
+          cd web/kubernetes
+          sed -i "s,CONTAINER_IMAGE_NAME,docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }},g" deployment.yaml
+          kubectl apply -f .
           sleep 30
-  # Push image to GitHub Packages.
-  push:
-    needs: tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build image
-        run: |
-          docker images
+          kubectl get all
       - name: Log into container registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       - name: Push image in container registry
