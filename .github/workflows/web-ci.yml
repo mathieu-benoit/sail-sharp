@@ -21,6 +21,7 @@ jobs:
           # FIXME
       - name: Build container
         run: |
+          cd web/src
           docker build --tag 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}' .
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
