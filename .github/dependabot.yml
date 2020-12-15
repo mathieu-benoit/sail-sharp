@@ -10,10 +10,10 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/web/src/"
     schedule:
       interval: "daily"
   - package-ecosystem: "nuget"
-    directory: "/"
+    directory: "/web/src/"
     schedule:
       interval: "daily"
