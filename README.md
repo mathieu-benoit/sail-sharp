@@ -35,7 +35,6 @@ docker run -p 8080:8080 --read-only --cap-drop=ALL --user=1000 web
   - gRPC
 - Database
   - Entity Framework
-  - Migration: https://andrewlock.net/deploying-asp-net-core-applications-to-kubernetes-part-8-running-database-migrations-using-jobs-and-init-containers/
   - SQL container
   - Cloud SQL with sql-proxy
 - Docker
@@ -55,11 +54,7 @@ docker run -p 8080:8080 --read-only --cap-drop=ALL --user=1000 web
 - CD
   - GitOps or Azure DevOps
   - Integration tests: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-5.0
-- Istio:
-  - gRPC: https://www.istiobyexample.dev/grpc
-  - Retry: https://www.istiobyexample.dev/retry
-  - Fault Injection: https://www.istiobyexample.dev/fault-injection
-  - Databases: https://www.istiobyexample.dev/databases
+- Istio
   
 Ideas for demo source code:
 - https://github.com/andrewlock/asp-dot-net-core-in-action-2e
@@ -68,7 +63,7 @@ Ideas for demo source code:
 - https://github.com/grpc/grpc-dotnet/blob/master/examples/
 - https://github.com/dotnet/tye/tree/master/samples
 - https://github.com/GoogleCloudPlatform/cloud-code-samples/tree/master/dotnet/dotnet-guestbook
-  
+
 Resources:
 - .NET
   - [Series: Deploying ASP.NET Core applications to Kubernetes](https://andrewlock.net/series/deploying-asp-net-core-applications-to-kubernetes/)

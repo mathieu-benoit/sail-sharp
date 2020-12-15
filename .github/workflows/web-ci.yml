@@ -11,27 +11,17 @@ on:
   pull_request:
 jobs:
   # Run tests.
-  test:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Run tests
         run: |
           cd web/src
-          docker build -t web .
-      - name: Run container
+          # FIXME
+      - name: Build container
         run: |
-          docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 web
-  # Push image to GitHub Packages.
-  push:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build image
-        run: |
-          cd web/src
-          docker build . --file Dockerfile --tag 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}'
+          docker build --tag 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}' .
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -44,6 +34,33 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: 'trivy-results.sarif'
+      - name: Run container
+        run: |
+          docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}'
+      - name: Installing Prerequisites (KinD Cluster)
+        uses: engineerd/setup-kind@v0.4.0
+        with:
+            version: "v0.7.0"
+      - name: Configuring and testing the Installation
+        run: |
+          kubectl cluster-info --context kind-kind
+          kind get kubeconfig --internal >$HOME/.kube/config
+          kubectl get nodes
+      - name: Load image on the nodes of the cluster
+        run: |
+          kind load docker-image --name=kind 'docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }}'
+      - name: Deploy Kubernetes manifest
+        run: |
+          # kubectl apply -f /path/to/application
+          sleep 30
+  # Push image to GitHub Packages.
+  push:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build image
+        run: |
+          docker images
       - name: Log into container registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       - name: Push image in container registry
