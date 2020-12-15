@@ -52,10 +52,10 @@ jobs:
           cd web/kubernetes
           sed -i "s,CONTAINER_IMAGE_NAME,docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }},g" deployment.yaml
           kubectl apply -f deployment.yaml
-          sleep 60
+          sleep 15
           kubectl get all
-          kubectl describe deploy web
-          kubectl describe pods
+          status=$(kubectl get pods -l app.kubernetes.io/name=web -o 'jsonpath={.items[0].status.phase}')
+          if [ $status != 'Running' ]; then echo "Pod not running!" 1>&2; fi
       - name: Log into container registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       - name: Push image in container registry
