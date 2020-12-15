@@ -52,8 +52,9 @@ jobs:
           cd web/kubernetes
           sed -i "s,CONTAINER_IMAGE_NAME,docker.pkg.github.com/${{ github.repository }}/web:${{ github.sha }},g" deployment.yaml
           kubectl apply -f .
-          sleep 30
+          sleep 60
           kubectl get all
+          kubectl describe deploy web
       - name: Log into container registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       - name: Push image in container registry
