@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: web
   labels:
-    app.kubernetes.io/name: api
+    app.kubernetes.io/name: web
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: api
+      app.kubernetes.io/name: web
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: api
+        app.kubernetes.io/name: web
     spec:
       serviceAccountName: default
       automountServiceAccountToken: false
       securityContext:
         runAsUser: 1000
       containers:
-        - name: api
+        - name: web
           securityContext:
             capabilities:
               drop:
@@ -31,15 +31,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 8081
               protocol: TCP
-          readinessProbe:
-            httpGet:
-              port: 8080
-              path: /health/readiness
-          livenessProbe:
-            httpGet:
-              port: 8080
-              path: /health/liveness
       nodeSelector:
         kubernetes.io/os: linux

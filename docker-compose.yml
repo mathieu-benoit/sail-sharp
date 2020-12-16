@@ -6,6 +6,12 @@ services:
     build:
       context: ./web/src
     container_name: web
+    depends_on:
+      - api
+  api:
+    build:
+      context: ./api/src
+    container_name: api
       
 #  frontend-service:
 #    build:

@@ -17,3 +17,7 @@ updates:
     directory: "/web/src/"
     schedule:
       interval: "daily"
+    - package-ecosystem: "nuget"
+    directory: "/api/src/"
+    schedule:
+      interval: "daily"
