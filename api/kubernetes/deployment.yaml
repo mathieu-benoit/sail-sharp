@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web
+  name: api
   labels:
-    app.kubernetes.io/name: web
+    app.kubernetes.io/name: api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: web
+      app.kubernetes.io/name: api
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: web
+        app.kubernetes.io/name: api
     spec:
       serviceAccountName: default
       automountServiceAccountToken: false
       securityContext:
         runAsUser: 1000
       containers:
-        - name: web
+        - name: api
           securityContext:
             capabilities:
               drop:
