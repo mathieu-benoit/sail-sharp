@@ -5,12 +5,17 @@ services:
   web:
     build:
       context: ./web/src
+    ports:
+     - "8080:8080"
     container_name: web
+    network: host
     depends_on:
       - api
   api:
     build:
       context: ./api/src
+    ports:
+     - "5001:5001"
     container_name: api
       
 #  frontend-service:

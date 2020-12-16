@@ -14,8 +14,8 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:5.0.1-alpine3.12-amd64
 WORKDIR /app
 COPY --from=build /app/out ./
 
-ENV ASPNETCORE_URLS http://*:8081
-EXPOSE 8081
+ENV ASPNETCORE_URLS http://*:5001
+EXPOSE 5001
 
 # OPT OUT OF Diagnostic pipeline so we can run readonly.
 ENV COMPlus_EnableDiagnostics=0

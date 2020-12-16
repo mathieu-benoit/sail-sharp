@@ -4,18 +4,17 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using web.Models;
+using greet;
+using Grpc.Net.Client;
+using Grpc.Core;
 
 namespace web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController()
         {
-            _logger = logger;
         }
 
         public IActionResult Index()
@@ -23,8 +22,15 @@ namespace web.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
+            using var channel = GrpcChannel.ForAddress("http://localhost:5001");
+            var client =  new Greeter.GreeterClient(channel);
+            var reply = await client.SayHelloAsync(
+                              new HelloRequest { Name = "GreeterClient" });
+            Console.WriteLine("Greeting: " + reply.Message);
+            ViewBag.GreetingText = reply.Message;
+
             return View();
         }
 

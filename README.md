@@ -22,13 +22,22 @@ docker-compose up -d
 ```
 cd web/src
 docker build -t web .
-docker run -p 8080:8080 web
-docker run -p 8080:8080 --read-only --cap-drop=ALL --user=1000 web
+docker run -d -p 8080:8080 web
+docker run -d -p 8080:8080 \
+  --network host \
+  --read-only \
+  --cap-drop=ALL \
+  --user=1000 \
+  web
 
 cd api/src
 docker build -t api .
-docker run -p 8081:8081 api
-docker run -p 8081:8081 --read-only --cap-drop=ALL --user=1000 api
+docker run -d -p 5001:5001 api
+docker run -d -p 5001:5001 \
+  --read-only \
+  --cap-drop=ALL \
+  --user=1000 \
+  api
 ```
 
 ## Scenario

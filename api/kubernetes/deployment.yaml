@@ -31,7 +31,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 8081
+              containerPort: 5001
               protocol: TCP
       nodeSelector:
         kubernetes.io/os: linux
