@@ -24,6 +24,11 @@ cd web/src
 docker build -t web .
 docker run -p 8080:8080 web
 docker run -p 8080:8080 --read-only --cap-drop=ALL --user=1000 web
+
+cd api/src
+docker build -t api .
+docker run -p 8081:8081 api
+docker run -p 8081:8081 --read-only --cap-drop=ALL --user=1000 api
 ```
 
 ## Scenario
@@ -55,14 +60,6 @@ docker run -p 8080:8080 --read-only --cap-drop=ALL --user=1000 web
   - GitOps or Azure DevOps
   - Integration tests: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-5.0
 - Istio
-  
-Ideas for demo source code:
-- https://github.com/andrewlock/asp-dot-net-core-in-action-2e
-- https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples
-- https://github.com/karoldeland/DotnetMSAPatterns
-- https://github.com/grpc/grpc-dotnet/blob/master/examples/
-- https://github.com/dotnet/tye/tree/master/samples
-- https://github.com/GoogleCloudPlatform/cloud-code-samples/tree/master/dotnet/dotnet-guestbook
 
 Resources:
 - .NET

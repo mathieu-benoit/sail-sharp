@@ -9,6 +9,9 @@ on:
     tags:
       - v*
   pull_request:
+    paths:
+      - 'api/**'
+      - '.github/workflows/api-ci.yml'
 jobs:
   job:
     runs-on: ubuntu-latest
@@ -57,7 +60,9 @@ jobs:
           status=$(kubectl get pods -l app.kubernetes.io/name=api -o 'jsonpath={.items[0].status.phase}')
           if [ $status != 'Running' ]; then echo "Pod not running!" 1>&2; fi
       - name: Log into container registry
+        if: ${{ github.event_name == 'push' }}
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       - name: Push image in container registry
+        if: ${{ github.event_name == 'push' }}
         run: |
           docker push 'docker.pkg.github.com/${{ github.repository }}/api:${{ github.sha }}'
