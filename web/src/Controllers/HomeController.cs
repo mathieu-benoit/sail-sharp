@@ -5,18 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using web.Models;
-using greet;
-using Grpc.Net.Client;
-using Grpc.Core;
+using web.Services;
 
 namespace web.Controllers
 {
     public class HomeController : Controller
     {
-        public HomeController()
+        public GreeterService GreeterService { get; }
+        
+        public HomeController(GreeterService greeterService)
         {
+            GreeterService = greeterService;
         }
-
+        
         public IActionResult Index()
         {
             return View();
@@ -24,12 +25,7 @@ namespace web.Controllers
 
         public async Task<IActionResult> Privacy()
         {
-            using var channel = GrpcChannel.ForAddress("http://localhost:5001");
-            var client =  new Greeter.GreeterClient(channel);
-            var reply = await client.SayHelloAsync(
-                              new HelloRequest { Name = "GreeterClient" });
-            Console.WriteLine("Greeting: " + reply.Message);
-            ViewBag.GreetingText = reply.Message;
+            ViewBag.GreetingText = await GreeterService.GetGreeting("Simple test");
 
             return View();
         }

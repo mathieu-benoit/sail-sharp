@@ -23,11 +23,12 @@ docker-compose up -d
 cd web/src
 docker build -t web .
 docker run -d -p 8080:8080 web
-docker run -d -p 8080:8080 \
+docker run -p 8080:8080 \
   --network host \
   --read-only \
   --cap-drop=ALL \
   --user=1000 \
+  -e API_URL="http://localhost:5001" \
   web
 
 cd api/src
