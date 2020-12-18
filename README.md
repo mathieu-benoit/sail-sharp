@@ -11,7 +11,6 @@ FIXME - workflow diagram
 ## Setup
 
 - GKE
-- Linux versus Windows?
 
 ## Build locally
 
@@ -41,35 +40,13 @@ docker run -d -p 5001:5001 \
   api
 ```
 
-## Scenario
-
-- Web
-  - .NET 5
-- API
-  - .NET 5
-  - gRPC
-- Database
-  - Entity Framework
-  - SQL container
-  - Cloud SQL with sql-proxy
 - Docker
   - Dockerfile
   - Size, unit tests, unpriviledged
-  - Dockercompose
 - Kubernetes
-  - pod security context, healthchecks
-  - startup, liveness, ready probes
   - network policies
-  - Linux versus Windows?
   - KCC
-- CI
-  - Azure DevOps
-  - Helm
-  - Dependabot
-- CD
-  - GitOps or Azure DevOps
   - Integration tests: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-5.0
-- Istio
 
 Resources:
 - .NET
@@ -83,6 +60,9 @@ Resources:
   - [container security context on kubernetes](https://alwaysupalwayson.com/pod-security-context/)
   - [kubernetes network policies](https://alwaysupalwayson.com/posts/2019/09/calico/)
   - [Intro to Microservice Patterns for .NET Developers](https://www.youtube.com/watch?v=zW4INO353Xg)
+  - [Production checklist for web apps on Kuberntes](https://srcco.de/posts/web-service-on-kubernetes-production-checklist-2019.html)
 - Istio
   - [Deploy ASP.NET Core app to Google Kubernetes Engine with Istio (Part 1)](https://codelabs.developers.google.com/codelabs/cloud-istio-aspnetcore-part1#0)
   - [Deploy ASP.NET Core app to Google Kubernetes Engine with Istio (Part 2)](https://codelabs.developers.google.com/codelabs/cloud-istio-aspnetcore-part2#0)
+- Misc
+  -[Automating CI/CD pipelines with GitHub Actions and Google Cloud](https://resources.github.com/webcasts/Automating-CI-CD-Actions-Google-Cloud-thankyou)
