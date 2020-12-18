@@ -26,11 +26,11 @@ jobs:
       - name: Build container
         run: |
           cd web/src
-          docker build --tag 'docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}' .
+          docker build --tag docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA} .
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}'
+          image-ref: docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
@@ -41,7 +41,7 @@ jobs:
           sarif_file: 'trivy-results.sarif'
       - name: Run container
         run: |
-          docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 'docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}'
+          docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}
       - name: Installing KinD Cluster
         uses: engineerd/setup-kind@v0.5.0
       - name: Configuring and testing the Installation
@@ -51,7 +51,7 @@ jobs:
           kubectl get nodes
       - name: Load image on the nodes of the cluster
         run: |
-          kind load docker-image 'docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}' --name=kind 
+          kind load docker-image docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA} --name=kind 
       - name: Deploy Kubernetes manifest
         run: |
           cd web/kubernetes
@@ -68,4 +68,4 @@ jobs:
       - name: Push image in container registry
         if: ${{ github.event_name == 'push' }}
         run: |
-          docker push 'docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}'
+          docker push docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}
