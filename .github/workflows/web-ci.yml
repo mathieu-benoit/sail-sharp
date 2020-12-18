@@ -23,9 +23,8 @@ jobs:
           # FIXME
       - name: Prepare environment variables
         run: |
-          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
-          echo "IMAGE_NAME=docker.pkg.github.com/${{ github.repository }}/web:${SHORT_SHA}" >> $GITHUB_ENV
-          echo ${IMAGE_NAME}
+          shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
+          echo "IMAGE_NAME=docker.pkg.github.com/${{ github.repository }}/web:$shortSha" >> $GITHUB_ENV
       - name: Build container
         run: |
           cd web/src
