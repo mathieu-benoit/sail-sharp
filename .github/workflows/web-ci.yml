@@ -64,7 +64,7 @@ jobs:
           kubectl get all,networkpolicies
           status=$(kubectl get pods -l app.kubernetes.io/name=web -o 'jsonpath={.items[0].status.phase}')
           if [ $status != 'Running' ]; then echo "Pod not running!" 1>&2; fi
-          pod=$(kubectl get pods -l=app=web -o=jsonpath='{.items[0].metadata.name}')
+          pod=$(kubectl get pods -l app.kubernetes.io/name=web -o 'jsonpath={.items[0].metadata.name}')
           kubectl port-forward $pod 3000:8080
           curl -I localhost:3000 | grep 200
       - name: Log into container registry
