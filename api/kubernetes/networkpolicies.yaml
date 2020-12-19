@@ -19,7 +19,10 @@ spec:
   policyTypes:
   - Ingress
   ingress:
-  - from: []
+  - from:
+    - podSelector:
+        matchLabels:
+          app: web
     ports:
      - port: 5001
        protocol: TCP
