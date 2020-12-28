@@ -17,6 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Run conftest for OPA rego on Dockerfile
+        run: |
+          cd web/src
+          mkdir policy
+          curl https://raw.githubusercontent.com/mathieu-benoit/mygkecluster/master/policy/docker.rego -o ./policy/docker.rego
+          docker run --rm -v $(pwd):/project openpolicyagent/conftest test Dockerfile
       - name: Run tests
         run: |
           cd web/src
