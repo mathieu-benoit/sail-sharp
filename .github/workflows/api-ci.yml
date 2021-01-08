@@ -21,7 +21,7 @@ jobs:
         run: |
           cd api/src
           mkdir policy
-          curl https://raw.githubusercontent.com/mathieu-benoit/mygkecluster/master/policy/docker.rego -o ./policy/docker.rego
+          curl https://raw.githubusercontent.com/mathieu-benoit/mygkecluster/master/policy/container-policies.rego -o ./policy/container-policies.rego
           docker run --rm -v $(pwd):/project openpolicyagent/conftest test Dockerfile
       - name: Run tests
         run: |
