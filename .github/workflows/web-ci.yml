@@ -20,7 +20,7 @@ jobs:
       - name: Prepare environment variables
         run: |
           shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
-          echo "IMAGE_NAME=docker.pkg.github.com/${{ github.repository }}/web:$shortSha" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${{ secrets.CONTAINER_REGISTRY_HOST_NAME }}/${{ secrets.CONTAINER_REGISTRY_PROJECT_ID }}/${{ secrets.CONTAINER_REGISTRY_NAME }}/web:$shortSha" >> $GITHUB_ENV
       - name: Build container
         run: |
           cd web/src
@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "$CONTAINER_REGISTRY_PUSH_PRIVATE_KEY" > ${HOME}/gcloud.json
           gcloud auth activate-service-account --key-file=${HOME}/gcloud.json
-          gcloud auth configure-docker
+          gcloud auth configure-docker ${{ secrets.CONTAINER_REGISTRY_HOST_NAME }} --quiet
       - name: Push image in container registry
         if: ${{ github.event_name == 'push' }}
         run: docker push ${IMAGE_NAME}
