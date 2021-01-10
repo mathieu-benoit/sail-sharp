@@ -27,8 +27,11 @@ jobs:
           docker build --tag ${IMAGE_NAME} .
       - name: Log into container registry
         if: ${{ github.event_name == 'push' }}
+        env:
+          CONTAINER_REGISTRY_PUSH_PRIVATE_KEY: ${{ secrets.CONTAINER_REGISTRY_PUSH_PRIVATE_KEY }}
         run: |
-          gcloud auth activate-service-account --key-file=${{ secrets.CONTAINER_REGISTRY_PUSH_PRIVATE_KEY }}
+          echo "$CONTAINER_REGISTRY_PUSH_PRIVATE_KEY" | base64 --decode > ${HOME}/gcloud.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcloud.json
           gcloud auth configure-docker
       - name: Push image in container registry
         if: ${{ github.event_name == 'push' }}
