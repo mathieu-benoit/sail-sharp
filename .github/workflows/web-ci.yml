@@ -17,16 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run conftest for OPA rego on Dockerfile
-        run: |
-          cd web/src
-          mkdir policy
-          curl https://raw.githubusercontent.com/mathieu-benoit/mygkecluster/master/policy/docker.rego -o ./policy/docker.rego
-          docker run --rm -v $(pwd):/project openpolicyagent/conftest test Dockerfile
-      - name: Run tests
-        run: |
-          cd web/src
-          # FIXME
       - name: Prepare environment variables
         run: |
           shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
@@ -35,45 +25,12 @@ jobs:
         run: |
           cd web/src
           docker build --tag ${IMAGE_NAME} .
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.IMAGE_NAME }}
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: 'trivy-results.sarif'
-      - name: Run container locally as a test
-        run: |
-          docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 ${IMAGE_NAME}
-      - name: Installing KinD cluster
-        uses: engineerd/setup-kind@v0.5.0
-      - name: Configuring the KinD installation
-        run: |
-          kubectl cluster-info --context kind-kind
-          kind get kubeconfig --internal >$HOME/.kube/config
-          kubectl get nodes
-      - name: Load image on the nodes of the KinD cluster
-        run: |
-          kind load docker-image ${IMAGE_NAME} --name=kind
-      - name: Deploy and test Kubernetes manifests in KinD cluster
-        run: |
-          cd web/kubernetes
-          sed -i "s,CONTAINER_IMAGE_NAME,${IMAGE_NAME},g" deployment.yaml
-          sed -i "s/LoadBalancer/ClusterIP/g" service.yaml
-          kubectl apply -f .
-          kubectl wait --for=condition=available --timeout=500s deployment/web
-          kubectl get all,networkpolicies
-          status=$(kubectl get pods -l app.kubernetes.io/name=web -o 'jsonpath={.items[0].status.phase}')
-          if [ $status != 'Running' ]; then echo "Pod not running!" 1>&2; fi
       - name: Log into container registry
         if: ${{ github.event_name == 'push' }}
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        run: |
+          gcloud auth activate-service-account --key-file=${{ secrets.CONTAINER_REGISTRY_PUSH_PRIVATE_KEY }}
+          gcloud auth configure-docker
       - name: Push image in container registry
         if: ${{ github.event_name == 'push' }}
-        run: |
-          docker push ${IMAGE_NAME}
+        run: docker push ${IMAGE_NAME}
+          
