@@ -15,14 +15,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: api
+      app: api
   policyTypes:
   - Ingress
   ingress:
   - from:
     - podSelector:
         matchLabels:
-          app.kubernetes.io/name: web
+          app: web
     ports:
      - port: 5001
        protocol: TCP
