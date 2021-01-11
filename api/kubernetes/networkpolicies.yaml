@@ -22,7 +22,7 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          app: web
+          app.kubernetes.io/name: web
     ports:
      - port: 5001
        protocol: TCP

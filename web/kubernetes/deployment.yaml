@@ -33,6 +33,9 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          env:
+            - name: API_URL
+              value: "http://api:5001"
           readinessProbe:
             httpGet:
               port: 8080

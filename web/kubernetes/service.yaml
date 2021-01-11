@@ -3,11 +3,11 @@ kind: Service
 metadata:
   name: web
   labels:
-    app: web
+    app.kubernetes.io/name: web
 spec:
   type: LoadBalancer
   ports:
   - port: 8080
     name: http
   selector:
-    app: web
+    app.kubernetes.io/name: web

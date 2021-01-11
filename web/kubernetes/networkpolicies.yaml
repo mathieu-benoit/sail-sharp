@@ -18,6 +18,7 @@ spec:
       app.kubernetes.io/name: web
   policyTypes:
   - Ingress
+  - Egress
   ingress:
   - from: []
     ports:
@@ -27,7 +28,7 @@ spec:
   - to:
     - podSelector:
         matchLabels:
-          app: api
+          app.kubernetes.io/name: api
     ports:
      - port: 5001
        protocol: TCP
