@@ -69,7 +69,12 @@ jobs:
           if [ $status != 'Running' ]; then echo "Pod not running!" 1>&2; fi
       - name: Log into container registry
         if: ${{ github.event_name == 'push' }}
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        env:
+          CONTAINER_REGISTRY_PUSH_PRIVATE_KEY: ${{ secrets.CONTAINER_REGISTRY_PUSH_PRIVATE_KEY }}
+        run: |
+          echo "$CONTAINER_REGISTRY_PUSH_PRIVATE_KEY" > ${HOME}/gcloud.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcloud.json
+          gcloud auth configure-docker ${{ secrets.CONTAINER_REGISTRY_HOST_NAME }} --quiet
       - name: Push image in container registry
         if: ${{ github.event_name == 'push' }}
         run: |
