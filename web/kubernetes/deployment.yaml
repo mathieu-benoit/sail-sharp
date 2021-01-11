@@ -27,7 +27,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: CONTAINER_IMAGE_NAME
+          image: us-east4-docker.pkg.dev/mygke-756/containers/web:025ee69
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -36,6 +36,13 @@ spec:
           env:
             - name: API_URL
               value: "http://api:5001"
+          resources:
+            requests:
+              cpu: 2m
+              memory: 47Mi
+            limits:
+              cpu: 61m
+              memory: 160Mi
           readinessProbe:
             httpGet:
               port: 8080
