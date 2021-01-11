@@ -7,6 +7,9 @@ RUN dotnet restore -r linux-musl-x64
 
 COPY . ./
 
+# Fix the issue on Debian 10: https://github.com/dotnet/dotnet-docker/issues/2470
+ENV COMPlus_EnableDiagnostics=0
+
 RUN dotnet publish -p:PublishSingleFile=true -r linux-musl-x64 --self-contained true -p:PublishTrimmed=True -p:TrimMode=Link -c release -o out --no-restore
 
 # https://hub.docker.com/_/microsoft-dotnet-core-aspnet/
