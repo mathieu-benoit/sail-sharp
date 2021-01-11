@@ -24,7 +24,7 @@ jobs:
       - name: Prepare environment variables
         run: |
           shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
-          echo "IMAGE_NAME=docker.pkg.github.com/${{ github.repository }}/api:$shortSha" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${{ secrets.CONTAINER_REGISTRY_HOST_NAME }}/${{ secrets.CONTAINER_REGISTRY_PROJECT_ID }}/${{ secrets.CONTAINER_REGISTRY_NAME }}/api:$shortSha" >> $GITHUB_ENV
       - name: Build container
         run: |
           cd api/src
