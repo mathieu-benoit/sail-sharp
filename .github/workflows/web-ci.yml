@@ -59,10 +59,8 @@ jobs:
           kind load docker-image ${IMAGE_NAME} --name=kind
       - name: Deploy and test Kubernetes manifests in KinD cluster
         run: |
-          cd web/kubernetes
-          sed -i "s,CONTAINER_IMAGE_NAME,${IMAGE_NAME},g" deployment.yaml
-          kubectl apply -f deployment.yaml
-          kubectl wait --for=condition=available --timeout=500s deployment/web
+          kubectl create deployment web --image=${IMAGE_NAME} -l app=web
+          kubectl wait --for=condition=available --timeout=120s deployment/web
           kubectl get all
           status=$(kubectl get pods -l app.kubernetes.io/name=web -o 'jsonpath={.items[0].status.phase}')
           if [ $status != 'Running' ]; then echo "Pod not running!" 1>&2; fi
