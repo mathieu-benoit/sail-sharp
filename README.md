@@ -10,9 +10,42 @@ FIXME - workflow diagram
 
 ## Setup
 
-- GKE
+Requirements locally:
+- `gcloud` cli, [installation](https://cloud.google.com/sdk/docs/install)
+- `gh` cli, [installation](https://github.com/cli/cli#installation)
 
-## Build locally
+Requirements in GCP:
+- GKE
+- Artifact registry
+
+Setup the service Account for GitHub actions:
+```
+projectId=FIXME
+artifactRegistryName=FIXME
+artifactRegistryLocation=FIXME
+
+gcloud config set project $projectId
+
+saName=gha-containerregistry-push-sa
+saId=$saName@$projectId.iam.gserviceaccount.com
+gcloud iam service-accounts create $saName \
+    --display-name=$saName
+gcloud artifacts repositories add-iam-policy-binding $artifactRegistryName \
+    --location $artifactRegistryLocation \
+    --member "serviceAccount:$saId" \
+    --role roles/artifactregistry.writer
+gcloud iam service-accounts keys create ~/tmp/$saName.json \
+    --iam-account $saId
+
+gh auth login --web
+gh secret set CONTAINER_REGISTRY_PUSH_PRIVATE_KEY < ~/tmp/$saName.json
+rm ~/tmp/$saName.json
+gh secret set CONTAINER_REGISTRY_PROJECT_ID -b"${projectId}"
+gh secret set CONTAINER_REGISTRY_NAME -b"${artifactRegistryName}"
+gh secret set CONTAINER_REGISTRY_HOST_NAME -b"${artifactRegistryLocation}-docker.pkg.dev"
+```
+
+## Build & run locally
 
 ```
 docker-compose up -d
@@ -40,14 +73,6 @@ docker run -d -p 5001:5001 \
   api
 ```
 
-- Docker
-  - Dockerfile
-  - Size, unit tests, unpriviledged
-- Kubernetes
-  - network policies
-  - KCC
-  - Integration tests: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-5.0
-
 Resources:
 - .NET
   - [Series: Deploying ASP.NET Core applications to Kubernetes](https://andrewlock.net/series/deploying-asp-net-core-applications-to-kubernetes/)
@@ -64,5 +89,6 @@ Resources:
 - Istio
   - [Deploy ASP.NET Core app to Google Kubernetes Engine with Istio (Part 1)](https://codelabs.developers.google.com/codelabs/cloud-istio-aspnetcore-part1#0)
   - [Deploy ASP.NET Core app to Google Kubernetes Engine with Istio (Part 2)](https://codelabs.developers.google.com/codelabs/cloud-istio-aspnetcore-part2#0)
-- Misc
-  -[Automating CI/CD pipelines with GitHub Actions and Google Cloud](https://resources.github.com/webcasts/Automating-CI-CD-Actions-Google-Cloud-thankyou)
+- GitHub actions
+  - [Automating CI/CD pipelines with GitHub Actions and Google Cloud](https://resources.github.com/webcasts/Automating-CI-CD-Actions-Google-Cloud-thankyou)
+  - [How We Set Up a Production Ready CI Workflow Using GitHub Actions](https://hackernoon.com/how-we-set-up-a-production-ready-ci-workflow-using-github-actions-ca2n3w1j)
