@@ -40,5 +40,14 @@ spec:
             limits:
               cpu: 61m
               memory: 160Mi
+          readinessProbe:
+            initialDelaySeconds: 15
+            exec:
+              command: ["/bin/grpc_health_probe", "-addr=:5001", "-rpc-timeout=5s"]
+          livenessProbe:
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            tcpSocket:
+              port: 8080
       nodeSelector:
         kubernetes.io/os: linux
