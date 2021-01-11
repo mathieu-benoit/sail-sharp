@@ -59,7 +59,7 @@ jobs:
           kind load docker-image ${IMAGE_NAME} --name=kind
       - name: Deploy and test Kubernetes manifests in KinD cluster
         run: |
-          kubectl create deployment api --image=${IMAGE_NAME} -l app=api
+          kubectl create deployment api --image=${IMAGE_NAME}
           kubectl wait --for=condition=available --timeout=120s deployment/api
           kubectl get all
           status=$(kubectl get pods -l app=api -o 'jsonpath={.items[0].status.phase}')
