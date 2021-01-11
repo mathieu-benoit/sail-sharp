@@ -48,6 +48,6 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 10
             tcpSocket:
-              port: 8080
+              port: 5001
       nodeSelector:
         kubernetes.io/os: linux
