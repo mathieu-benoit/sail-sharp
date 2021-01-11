@@ -17,12 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run conftest for OPA rego on Dockerfile
-        run: |
-          cd api/src
-          mkdir policy
-          curl https://raw.githubusercontent.com/mathieu-benoit/mygkecluster/master/policy/container-policies.rego -o ./policy/container-policies.rego
-          docker run --rm -v $(pwd):/project openpolicyagent/conftest test Dockerfile
       - name: Run tests
         run: |
           cd api/src
@@ -35,6 +29,9 @@ jobs:
         run: |
           cd api/src
           docker build --tag ${IMAGE_NAME} .
+      - name: Dockle
+        run: |
+          docker run -v /var/run/docker.sock:/var/run/docker.sock --rm goodwithtech/dockle:latest --exit-code 1 --exit-level fatal ${IMAGE_NAME}
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
