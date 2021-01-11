@@ -53,8 +53,7 @@ namespace web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/health/readiness");
-                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions(){ Predicate = (_) => false });
+                endpoints.MapHealthChecks("/ready");
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
