@@ -17,17 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run tests
-        run: |
-          cd web/src
-          # FIXME
       - name: Prepare environment variables
         run: |
           shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
           echo "IMAGE_NAME=${{ secrets.CONTAINER_REGISTRY_HOST_NAME }}/${{ secrets.CONTAINER_REGISTRY_PROJECT_ID }}/${{ secrets.CONTAINER_REGISTRY_NAME }}/web:$shortSha" >> $GITHUB_ENV
       - name: Build container
         run: |
-          cd web/src
+          cd web
           docker build --tag ${IMAGE_NAME} .
       - name: Dockle
         run: |
