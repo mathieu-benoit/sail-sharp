@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace unittests
+namespace api.unittests
 {
     public class UnitTest1
     {
@@ -11,7 +11,7 @@ namespace unittests
             var expectedResult = 4;
 
             //Act
-            var result = Add(2, 3);
+            var result = Add(2, 2);
 
             //Assert
             Assert.Equal(expectedResult, result);
