@@ -38,18 +38,17 @@ spec:
               value: "http://api:5001"
           resources:
             requests:
-              cpu: 2m
+              cpu: 60m
               memory: 47Mi
             limits:
-              cpu: 61m
+              cpu: 120m
               memory: 160Mi
           readinessProbe:
             httpGet:
               port: 8080
-              path: /health/readiness
+              path: /ready
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 8080
-              path: /health/liveness
       nodeSelector:
         kubernetes.io/os: linux
