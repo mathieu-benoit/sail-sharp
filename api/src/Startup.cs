@@ -36,7 +36,7 @@ namespace api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<api.Services.GreeterService>();
-                endpoints.MapGrpcService<Grpc.HealthCheck.HealthServiceImpl>();
+                endpoints.MapGrpcService<api.Services.HealthCheckService>();
 
                 endpoints.MapGet("/", async context =>
                 {
