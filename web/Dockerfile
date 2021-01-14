@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/microsoft-dotnet-sdk/
-FROM mcr.microsoft.com/dotnet/sdk:5.0.101 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0.102 AS build
 WORKDIR /app
 COPY src/*.csproj ./src/
 WORKDIR /app/src
