@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/microsoft-dotnet-sdk/
-FROM mcr.microsoft.com/dotnet/sdk:5.0.101 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0.102 AS build
 WORKDIR /app
 COPY src/*.csproj ./src/
 WORKDIR /app/src
@@ -26,7 +26,7 @@ RUN dotnet publish web.csproj -p:PublishSingleFile=true -r linux-musl-x64 --self
 
 
 # https://hub.docker.com/_/microsoft-dotnet-core-aspnet/
-FROM mcr.microsoft.com/dotnet/runtime-deps:5.0.1-alpine3.12-amd64
+FROM mcr.microsoft.com/dotnet/runtime-deps:5.0.2-alpine3.12-amd64
 WORKDIR /app
 COPY --from=publish /app/src/out ./
 ENV ASPNETCORE_URLS http://*:8080
