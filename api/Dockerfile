@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/microsoft-dotnet-sdk/
-FROM mcr.microsoft.com/dotnet/sdk:5.0.101 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0.102 AS build
 WORKDIR /app
 COPY src/*.csproj ./src/
 WORKDIR /app/src
@@ -26,7 +26,7 @@ RUN dotnet publish api.csproj -p:PublishSingleFile=true -r linux-musl-x64 --self
 
 
 # https://hub.docker.com/_/microsoft-dotnet-core-aspnet/
-FROM mcr.microsoft.com/dotnet/runtime-deps:5.0.1-alpine3.12-amd64
+FROM mcr.microsoft.com/dotnet/runtime-deps:5.0.2-alpine3.12-amd64
 RUN GRPC_HEALTH_PROBE_VERSION=v0.3.6 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
