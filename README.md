@@ -1,4 +1,4 @@
-![web-ci](https://github.com/mathieu-benoit/dotnet-on-kubernetes/workflows/web-ci/badge.svg?branch=main) ![api-ci](https://github.com/mathieu-benoit/dotnet-on-kubernetes/workflows/api-ci/badge.svg?branch=main)
+![api-ci](https://github.com/mathieu-benoit/dotnet-on-kubernetes/workflows/api-ci/badge.svg?branch=main)
 
 Repo for my presentation "Sail Sharp": An illustrated demonstration with ASP.NET Core, containers and Kubernetes. In this repository I cover a variety of topics and things I've learned in deploying ASP.NET Core applications to Kubernetes. You could find 2 kind of best practices:
 - Specific to ASP.NET Core: .NET 5, Entity Framework, gRPC, SQL database, unit testing, optimized and unprivileged container, etc.
@@ -52,17 +52,6 @@ docker-compose up -d
 ```
 
 ```
-cd web/src
-docker build -t web .
-docker run -d -p 8080:8080 web
-docker run -p 8080:8080 \
-  --network host \
-  --read-only \
-  --cap-drop=ALL \
-  --user=1000 \
-  -e API_URL="http://localhost:5001" \
-  web
-
 cd api/src
 docker build -t api .
 docker run -d -p 5001:5001 api

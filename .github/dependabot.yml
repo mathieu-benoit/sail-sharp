@@ -9,19 +9,6 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-  - package-ecosystem: "docker"
-    directory: "/web/"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "nuget"
-    directory: "/web/src/"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "nuget"
-    directory: "/web/tests/unittests/"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "docker"
     directory: "/api/"
     schedule:
       interval: "daily"
