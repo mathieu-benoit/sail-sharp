@@ -27,7 +27,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: CONTAINER_IMAGE_NAME
+          image: us-east4-docker.pkg.dev/mygke-756/containers/web-app:a33bed1
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -44,10 +44,12 @@ spec:
               cpu: 120m
               memory: 160Mi
           readinessProbe:
+            initialDelaySeconds: 15
             httpGet:
               port: 8080
               path: /ready
           livenessProbe:
+            initialDelaySeconds: 15
             tcpSocket:
               port: 8080
       nodeSelector:
