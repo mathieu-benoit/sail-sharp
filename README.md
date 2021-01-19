@@ -1,68 +1,15 @@
-![api-ci](https://github.com/mathieu-benoit/dotnet-on-kubernetes/workflows/api-ci/badge.svg?branch=main)
-
 Repo for my presentation "Sail Sharp": An illustrated demonstration with ASP.NET Core, containers and Kubernetes. In this repository I cover a variety of topics and things I've learned in deploying ASP.NET Core applications to Kubernetes. You could find 2 kind of best practices:
 - Specific to ASP.NET Core: .NET 5, Entity Framework, gRPC, SQL database, unit testing, optimized and unprivileged container, etc.
 - Generic for any workload running on Kubernetes: Continuous Integration (CI) with GitHub Actions, Continuous Deliver (CD) with GitOps (Flux), etc.
+
+- [web-app](https://github.com/mathieu-benoit/dotnet-web-app)
+- [grpc-api](https://github.com/mathieu-benoit/dotnet-grpc-api)
 
 FIXME - architecture diagram
 
 FIXME - workflow diagram
 
-## Setup
-
-Requirements locally:
-- `gcloud` cli, [installation](https://cloud.google.com/sdk/docs/install)
-- `gh` cli, [installation](https://github.com/cli/cli#installation)
-
-Requirements in GCP:
-- GKE
-- Artifact registry
-
-Setup the service Account for GitHub actions:
-```
-projectId=FIXME
-artifactRegistryName=FIXME
-artifactRegistryLocation=FIXME
-
-gcloud config set project $projectId
-
-saName=gha-containerregistry-push-sa
-saId=$saName@$projectId.iam.gserviceaccount.com
-gcloud iam service-accounts create $saName \
-    --display-name=$saName
-gcloud artifacts repositories add-iam-policy-binding $artifactRegistryName \
-    --location $artifactRegistryLocation \
-    --member "serviceAccount:$saId" \
-    --role roles/artifactregistry.writer
-gcloud iam service-accounts keys create ~/tmp/$saName.json \
-    --iam-account $saId
-
-gh auth login --web
-gh secret set CONTAINER_REGISTRY_PUSH_PRIVATE_KEY < ~/tmp/$saName.json
-rm ~/tmp/$saName.json
-gh secret set CONTAINER_REGISTRY_PROJECT_ID -b"${projectId}"
-gh secret set CONTAINER_REGISTRY_NAME -b"${artifactRegistryName}"
-gh secret set CONTAINER_REGISTRY_HOST_NAME -b"${artifactRegistryLocation}-docker.pkg.dev"
-```
-
-## Build & run locally
-
-```
-docker-compose up -d
-```
-
-```
-cd api/src
-docker build -t api .
-docker run -d -p 5001:5001 api
-docker run -d -p 5001:5001 \
-  --read-only \
-  --cap-drop=ALL \
-  --user=1000 \
-  api
-```
-
-Resources:
+Resources
 - .NET
   - [Series: Deploying ASP.NET Core applications to Kubernetes](https://andrewlock.net/series/deploying-asp-net-core-applications-to-kubernetes/)
   - [Single-File Executables in .NET](https://levelup.gitconnected.com/single-file-executables-in-net-core-3-1-and-the-quest-for-a-sub-50mb-docker-container-f44cb1274121)
