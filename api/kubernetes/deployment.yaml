@@ -41,9 +41,11 @@ spec:
               cpu: 120m
               memory: 320Mi
           readinessProbe:
+            initialDelaySeconds: 15
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:5001", "-rpc-timeout=5s"]
           livenessProbe:
+            initialDelaySeconds: 15
             tcpSocket:
               port: 5001
       nodeSelector:
