@@ -4,6 +4,7 @@ Repo for my presentation "Sail Sharp": An illustrated demonstration with ASP.NET
 
 - [web-app](https://github.com/mathieu-benoit/dotnet-web-app)
 - [grpc-api](https://github.com/mathieu-benoit/dotnet-grpc-api)
+- [kubernetes manifests](https://github.com/mathieu-benoit/my-kubernetes-deployments/tree/main/namespaces/dotnet)
 
 FIXME - architecture diagram
 
