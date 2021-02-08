@@ -6,9 +6,13 @@ Repo for my presentation "Sail Sharp": An illustrated demonstration with ASP.NET
 - [grpc-api](https://github.com/mathieu-benoit/dotnet-grpc-api)
 - [kubernetes manifests](https://github.com/mathieu-benoit/my-kubernetes-deployments/tree/main/namespaces/dotnet)
 
-FIXME - architecture diagram
+Architecture diagram
 
-FIXME - workflow diagram
+![architecture diagram](architecture.png)
+
+Workflow diagram & personas
+
+![workflow diagram & personas](personas.png)
 
 Resources
 - .NET
