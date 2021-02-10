@@ -25,7 +25,8 @@ It consists on 2 aspects:
   - [container security context on kubernetes](https://alwaysupalwayson.com/pod-security-context/)
   - [kubernetes network policies](https://alwaysupalwayson.com/posts/2019/09/calico/)
   - [Intro to Microservice Patterns for .NET Developers](https://www.youtube.com/watch?v=zW4INO353Xg)
-  - [Production checklist for web apps on Kuberntes](https://srcco.de/posts/web-service-on-kubernetes-production-checklist-2019.html)
+  - [Production checklist for web apps on Kubernetes](https://srcco.de/posts/web-service-on-kubernetes-production-checklist-2019.html)
+  - [Health checking your gRPC servers on Kubernetes](https://cloud.google.com/blog/topics/developers-practitioners/health-checking-your-grpc-servers-gke)
 - Istio
   - [Istio by example](https://www.istiobyexample.dev/)
   - [Deploy ASP.NET Core app to Google Kubernetes Engine with Istio (Part 1)](https://codelabs.developers.google.com/codelabs/cloud-istio-aspnetcore-part1#0)
