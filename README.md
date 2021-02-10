@@ -1,20 +1,19 @@
-Repo for my presentation "Sail Sharp": An illustrated demonstration with ASP.NET Core, containers and Kubernetes. In this repository I cover a variety of topics and things I've learned in deploying ASP.NET Core applications to Kubernetes. You could find 2 kind of best practices:
-- Specific to ASP.NET Core: .NET 5, Entity Framework, gRPC, SQL database, unit testing, optimized and unprivileged container, etc.
-- Generic for any workload running on Kubernetes: Continuous Integration (CI) with GitHub Actions, Continuous Deliver (CD) with GitOps (Flux), etc.
+`Sail Sharp, .NET Core & Kubernetes` is an opiniated implementation to illustrate best practices to build and deploy .NET Core apps on Kubernetes.
 
-- [web-app](https://github.com/mathieu-benoit/dotnet-web-app)
-- [grpc-api](https://github.com/mathieu-benoit/dotnet-grpc-api)
-- [kubernetes manifests](https://github.com/mathieu-benoit/my-kubernetes-deployments/tree/main/namespaces/dotnet)
+It consists in 2 aspects:
+- [.NET Core app](https://github.com/mathieu-benoit/cartservice) repo to host the code of the app and the Continuous Integration (CI) part
+- [Kubernetes manifests](https://github.com/mathieu-benoit/my-kubernetes-deployments/tree/main/namespaces/onlineboutique) repo to host the manifest files ready to be deployed in Kubernetes via a GitOps CD way
 
-Architecture diagram
+## Architecture
 
 ![architecture diagram](architecture.png)
 
-Workflow diagram & personas
+## Workflow & personas
 
 ![workflow diagram & personas](personas.png)
 
-Resources
+## Resources
+
 - .NET
   - [Series: Deploying ASP.NET Core applications to Kubernetes](https://andrewlock.net/series/deploying-asp-net-core-applications-to-kubernetes/)
   - [Single-File Executables in .NET](https://levelup.gitconnected.com/single-file-executables-in-net-core-3-1-and-the-quest-for-a-sub-50mb-docker-container-f44cb1274121)
@@ -28,6 +27,7 @@ Resources
   - [Intro to Microservice Patterns for .NET Developers](https://www.youtube.com/watch?v=zW4INO353Xg)
   - [Production checklist for web apps on Kuberntes](https://srcco.de/posts/web-service-on-kubernetes-production-checklist-2019.html)
 - Istio
+  - [Istio by example](https://www.istiobyexample.dev/)
   - [Deploy ASP.NET Core app to Google Kubernetes Engine with Istio (Part 1)](https://codelabs.developers.google.com/codelabs/cloud-istio-aspnetcore-part1#0)
   - [Deploy ASP.NET Core app to Google Kubernetes Engine with Istio (Part 2)](https://codelabs.developers.google.com/codelabs/cloud-istio-aspnetcore-part2#0)
 - GitHub actions
