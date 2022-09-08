@@ -35,13 +35,19 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:7.0.0-alpine3.16-amd64
 ...
 ```
 
-### 2.3. optimized `dotnet publish`: `Trimmed`, `SingleFile`, `SelfContained`
+### 2.3. optimized `dotnet publish`
 
 ```
-dotnet publish -p:PublishSingleFile=true -r linux-musl-x64 --self-contained true -p:PublishTrimmed=True -p:TrimMode=Link -c release
+dotnet publish \
+    -p:PublishSingleFile=true \
+    -r linux-musl-x64 \
+    --self-contained true \
+    -p:PublishTrimmed=True \
+    -p:TrimMode=Link \
+    -c release
 ```
 
-### 2.4. For grpc, embedded `grpc_health_probe` component
+### 2.4. embedded `grpc_health_probe` component
 
 ```
 
