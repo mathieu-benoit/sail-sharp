@@ -21,4 +21,5 @@ jobs:
           docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 ${IMAGE_NAME}
       - name: test
         run: |
+          sleep 10
           curl localhost:8080
