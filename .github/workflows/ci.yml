@@ -6,7 +6,7 @@ on:
   push:
 jobs:
   container:
-    runs-on: ubuntu-22.04
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3.3.0
       - name: prepare environment variables
