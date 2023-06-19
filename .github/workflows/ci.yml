@@ -3,6 +3,7 @@ permissions:
   contents: read
 on:
   pull_request:
+  push:
 jobs:
   container:
     runs-on: ubuntu-22.04
