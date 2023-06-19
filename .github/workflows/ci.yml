@@ -1,0 +1,23 @@
+name: ci
+permissions:
+  contents: read
+on:
+  pull_request:
+jobs:
+  container:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3.3.0
+        with:
+          submodules: true
+      - name: prepare environment variables
+        run: |
+          shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
+          echo "IMAGE_NAME=my-sample-app:$shortSha" >> $GITHUB_ENV
+      - name: build container
+        run: |
+          cd app
+          docker build --tag ${IMAGE_NAME} .
+      - name: run container locally as a test
+        run: |
+          docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 ${IMAGE_NAME}
