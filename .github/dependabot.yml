@@ -1,10 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: "docker"
-    directory: "/my-sample-app"
+    directory: "/"
     schedule:
       interval: "daily"
   - package-ecosystem: "nuget"
-    directory: "/my-sample-app"
+    directory: "/"
     schedule:
       interval: "daily"
