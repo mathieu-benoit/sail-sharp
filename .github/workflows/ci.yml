@@ -19,3 +19,6 @@ jobs:
       - name: run container locally as a test
         run: |
           docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 ${IMAGE_NAME}
+      - name: test
+        run: |
+          curl localhost:8080
