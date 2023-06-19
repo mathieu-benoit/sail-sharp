@@ -15,7 +15,6 @@ jobs:
           echo "IMAGE_NAME=my-sample-app:$shortSha" >> $GITHUB_ENV
       - name: build container
         run: |
-          cd app
           docker build --tag ${IMAGE_NAME} .
       - name: run container locally as a test
         run: |
