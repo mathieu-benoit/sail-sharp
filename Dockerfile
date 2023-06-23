@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0.304-alpine3.18@sha256:abc6384a7ab7fe335e772ab3b154711a89407d2cc3aa077145fdcd65a6f40370 as builder
+FROM mcr.microsoft.com/dotnet/sdk:7.0.305-alpine3.18@sha256:414bb303d88c0b8f9d7dd27177b94250784d3d83008ce684773ee5e0dcb7114f as builder
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
