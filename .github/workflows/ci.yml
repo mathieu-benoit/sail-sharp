@@ -9,13 +9,9 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3.3.0
-      - name: prepare environment variables
-        run: |
-          shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
-          echo "IMAGE_NAME=my-sample-app:$shortSha" >> $GITHUB_ENV
       - name: build container
         run: |
-          docker build --tag ${IMAGE_NAME} app/
+          docker build --tag my-sample-app app/
       - name: run container locally as a test
         run: |
           docker run \
@@ -23,7 +19,7 @@ jobs:
               -p 8080:8080 \
               --read-only \
               --cap-drop=ALL \
-              --user=1000 ${IMAGE_NAME}
+              --user=1000 my-sample-app
       - name: test
         run: |
           sleep 10
