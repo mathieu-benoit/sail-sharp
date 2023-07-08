@@ -1,4 +1,4 @@
-name: ci-push-tag-ghcr
+name: ci-push-tag-gar
 permissions:
   contents: read
   id-token: write
@@ -21,7 +21,7 @@ jobs:
           version: latest
       - name: prepare environment variables
         run: |
-          imageName=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}
+          imageName=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-app
           echo "IMAGE_NAME=$imageName" >> $GITHUB_ENV
       - name: sign-in to artifact registry
         run: |
