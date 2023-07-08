@@ -30,7 +30,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: my-sample-app:latest
+          image: ghcr.io/mathieu-benoit/my-sample-app:latest
           ports:
             - containerPort: 8080
       nodeSelector:
