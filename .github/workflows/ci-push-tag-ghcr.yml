@@ -1,4 +1,4 @@
-name: ci-push-ghcr
+name: ci-push-tag-ghcr
 permissions:
   contents: read
   packages: write
