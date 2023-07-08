@@ -1,3 +1,4 @@
+# You need to set up Workload Identity Federation in your Google Cloud project in order to use this GitHub Actions definition: https://medium.com/p/3932dce678b8.
 name: ci-push-tag-gar
 permissions:
   contents: read
