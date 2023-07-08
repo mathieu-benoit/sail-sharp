@@ -1,6 +1,6 @@
 **Associate blog post: [Sail Sharp, 8 tips to optimize and secure your .NET containers for Kubernetes](https://medium.com/p/c68ba253844a).**
 
-## Deploy the application
+## Deploy the pre-built container
 
 Run the pre-built container:
 ```bash
@@ -13,13 +13,13 @@ docker run \
     ghcr.io/mathieu-benoit/my-sample-app:latest
 ```
 
-Deploy the application on Kubernetes:
+Deploy the pre-built container on Kubernetes:
 ```bash
 kubectl apply \
     -f deployment.yaml
 ```
 
-Expose publicly the application on Kubernetes:
+Expose publicly the pre-built container on Kubernetes:
 ```bash
 kubectl apply \
     -f service.yaml
