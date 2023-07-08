@@ -26,12 +26,12 @@ jobs:
       - name: sign-in to artifact registry
         run: |
           gcloud auth configure-docker ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev --quiet
-      - name: build the application
+      - name: build the container
         run: |
           docker build \
               --tag ${IMAGE_NAME}:latest \
               app/
-      - name: push the container in GAR
+      - name: push the container to GAR
         run: |
           docker push \
               ${IMAGE_NAME}:latest
