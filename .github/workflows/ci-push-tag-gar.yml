@@ -1,0 +1,38 @@
+name: ci-push-tag-ghcr
+permissions:
+  contents: read
+  id-token: write
+on:
+  pull_requests:
+  push:
+    tags:        
+      - '*'
+jobs:
+  container:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
+          service_account: '${{ secrets.GSA_ID }}'
+          token_format: 'access_token'
+      - uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: latest
+      - name: prepare environment variables
+        run: |
+          imageName=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}
+          echo "IMAGE_NAME=$imageName" >> $GITHUB_ENV
+      - name: sign-in to artifact registry
+        run: |
+          gcloud auth configure-docker ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev --quiet
+      - name: build the application
+        run: |
+          docker build \
+              --tag ${IMAGE_NAME}:latest \
+              app/
+      - name: push the container in GAR
+        run: |
+          docker push \
+              ${IMAGE_NAME}:latest
