@@ -15,10 +15,15 @@ jobs:
           echo "IMAGE_NAME=my-sample-app:$shortSha" >> $GITHUB_ENV
       - name: build container
         run: |
-          docker build --tag ${IMAGE_NAME} .
+          docker build --tag ${IMAGE_NAME} app/
       - name: run container locally as a test
         run: |
-          docker run -d -p 8080:8080 --read-only --cap-drop=ALL --user=1000 ${IMAGE_NAME}
+          docker run \
+              -d \
+              -p 8080:8080 \
+              --read-only \
+              --cap-drop=ALL \
+              --user=1000 ${IMAGE_NAME}
       - name: test
         run: |
           sleep 10
