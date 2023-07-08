@@ -1,4 +1,4 @@
-name: ci
+name: ci-pr
 permissions:
   contents: read
 on:
