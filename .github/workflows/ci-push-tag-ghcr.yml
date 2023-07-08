@@ -18,7 +18,7 @@ jobs:
               app/
       - name: login to ghcr
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login login \
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login \
               ghcr.io \
               -u $ \
               --password-stdin
