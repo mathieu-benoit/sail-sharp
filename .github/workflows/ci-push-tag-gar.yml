@@ -16,6 +16,7 @@ jobs:
         with:
           workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
           service_account: '${{ secrets.GSA_ID }}'
+          token_format: 'access_token'
       - uses: google-github-actions/setup-gcloud@v1
         with:
           version: latest
