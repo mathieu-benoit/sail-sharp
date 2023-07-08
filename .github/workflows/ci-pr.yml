@@ -8,10 +8,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3.3.0
-      - name: build container
+      - name: build the application
         run: |
-          docker build --tag my-sample-app app/
-      - name: run container locally as a test
+          docker build \
+              --tag my-sample-app \
+              app/
+      - name: run the application
         run: |
           docker run \
               -d \
@@ -19,7 +21,7 @@ jobs:
               --read-only \
               --cap-drop=ALL \
               --user=1000 my-sample-app
-      - name: test
+      - name: test the application
         run: |
           sleep 10
           curl localhost:8080
