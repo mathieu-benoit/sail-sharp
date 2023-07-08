@@ -7,7 +7,7 @@ on:
     tags:        
       - '*'
 jobs:
-  container:
+  job:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -16,13 +16,13 @@ jobs:
           docker build \
               --tag ghcr.io/${{ github.repository_owner }}/my-sample-app:latest \
               app/
-      - name: login to ghcr
+      - name: login to GHCR
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login \
               ghcr.io \
               -u $ \
               --password-stdin
-      - name: push the container in ghcr
+      - name: push the container in GHCR
         run: |
           docker push \
               ghcr.io/${{ github.repository_owner }}/my-sample-app:latest
