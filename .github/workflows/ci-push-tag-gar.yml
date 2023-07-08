@@ -3,7 +3,7 @@ permissions:
   contents: read
   id-token: write
 on:
-  pull_requests:
+  pull_request:
   push:
     tags:        
       - '*'
