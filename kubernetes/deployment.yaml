@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-sample-app
+  labels:
+    app: my-sample-app
+spec:
+  selector:
+    matchLabels:
+      app: my-sample-app
+  template:
+    metadata:
+      labels:
+        app: my-sample-app
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: my-sample-app
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+          image: my-sample-app:latest
+          ports:
+            - containerPort: 8080
+      nodeSelector:
+        kubernetes.io/os: linux
