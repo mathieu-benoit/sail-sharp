@@ -8,7 +8,7 @@ on:
     tags:        
       - '*'
 jobs:
-  container:
+  job:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
