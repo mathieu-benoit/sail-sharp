@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - 'score/**'
-      - '.github/workflows/deploy-dev.yaml'
+      - '.github/workflows/deploy-dev.yml'
 env:
   ENVIRONMENT_ID: 'development'
   SCORE_HUMANITEC_VERSION: 0.5.0
