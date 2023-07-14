@@ -22,7 +22,8 @@ jobs:
           export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
           export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
           .github/workflows/bin/humctl create app ${{ env.APP_NAME }} \
-              --name ${{ env.APP_NAME }}
+              --name ${{ env.APP_NAME }} \
+              || true
       - name: install score-humanitec
         run: |
           wget https://github.com/score-spec/score-humanitec/releases/download/${{ env.SCORE_HUMANITEC_VERSION }}/score-humanitec_${{ env.SCORE_HUMANITEC_VERSION }}_linux_amd64.tar.gz
