@@ -1,4 +1,4 @@
-name: Pull Request
+name: close-pr
 on:
   pull_request:
     types:
