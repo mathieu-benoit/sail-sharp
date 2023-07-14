@@ -10,13 +10,14 @@ jobs:
   build-run-push:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - name: build the container
+      - name: checkout code
+        uses: actions/checkout@v3
+      - name: build container
         run: |
           docker build \
               -t ${{ vars.APP_NAME }}:${{ env.ENVIRONMENT_ID }} \
               app/
-      - name: run the container
+      - name: run container
         run: |
           docker run \
               -d \
@@ -25,15 +26,17 @@ jobs:
               --cap-drop=ALL \
               --user=1000 \
               ${{ vars.APP_NAME }}:${{ env.ENVIRONMENT_ID }}
-      - name: test the container
+      - name: test container
         run: |
           sleep 10
           curl localhost:8080
-      - uses: google-github-actions/auth@v1
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
           service_account: '${{ secrets.GSA_ID }}'
-      - uses: google-github-actions/setup-gcloud@v1
+      - name: setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
         with:
           version: latest
       - name: prepare environment variables
@@ -58,7 +61,8 @@ jobs:
       ENVIRONMENT_TYPE: 'development'
       ENVIRONMENT_NAME: PR-${{ github.event.number }}
     steps:
-      - uses: actions/checkout@v3
+      - name: checkout code
+        uses: actions/checkout@v3
       - name: create humanitec preview env
         run: |
           export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
@@ -85,8 +89,8 @@ jobs:
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} \
-              -f app/score.yaml \
-              --extensions app/humanitec.score.yaml \
+              -f score/score.yaml \
+              --extensions score/humanitec.score.yaml \
               | tee score_output.json
       - name: Wait for deployment
         run: |
