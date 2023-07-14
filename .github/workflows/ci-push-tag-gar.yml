@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     tags:        
-      - '*'
+      - 'v*'
 jobs:
   job:
     runs-on: ubuntu-22.04
@@ -21,8 +21,7 @@ jobs:
           version: latest
       - name: prepare environment variables
         run: |
-          shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
-          echo "IMAGE_TAG=$shortSha" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
           imageName=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-app
           echo "IMAGE_NAME=$imageName" >> $GITHUB_ENV
       - name: sign-in to artifact registry
