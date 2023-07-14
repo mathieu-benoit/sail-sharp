@@ -14,7 +14,7 @@ RUN dotnet publish my-sample-app.csproj \
     -p:PublishTrimmed=true \
     -p:TrimMode=full
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:7.0.7-alpine3.18@sha256:fb139645871d653c5cc427961fc1fcec5a84e7a39775fc1346a3de7640d04af5
+FROM mcr.microsoft.com/dotnet/runtime-deps:7.0.9-alpine3.18@sha256:6e0490817a7a4512add425809272051a85f12d65ab1f07bac0aee65360f5ef6c
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
