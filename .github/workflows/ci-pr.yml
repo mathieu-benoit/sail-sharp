@@ -2,10 +2,12 @@ name: ci-pr
 permissions:
   contents: read
   id-token: write
+  pull-requests: write
 on:
   pull_request:
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
+  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
 jobs:
   build-run-push:
     runs-on: ubuntu-22.04
@@ -15,7 +17,7 @@ jobs:
       - name: build container
         run: |
           docker build \
-              -t ${{ vars.APP_NAME }}:${{ env.ENVIRONMENT_ID }} \
+              -t ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               app/
       - name: run container
         run: |
@@ -25,7 +27,7 @@ jobs:
               --read-only \
               --cap-drop=ALL \
               --user=1000 \
-              ${{ vars.APP_NAME }}:${{ env.ENVIRONMENT_ID }}
+              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
       - name: test container
         run: |
           sleep 10
@@ -39,20 +41,13 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: latest
-      - name: prepare environment variables
-        run: |
-          echo "IMAGE_NAME=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}" >> $GITHUB_ENV
       - name: sign-in to gar
         run: |
           gcloud auth configure-docker ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev --quiet
-      - name: tag the container
-        run: |
-          docker tag \
-              ${{ vars.APP_NAME }}:${{ env.ENVIRONMENT_ID }} ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID }}
       - name: push the container to gar
         run: |
           docker push \
-              ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID  }}
+              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
     needs: build-run-push
     runs-on: ubuntu-latest
@@ -73,15 +68,16 @@ jobs:
               -t ${{ env.ENVIRONMENT_TYPE }} \
               --from ${{ env.BASE_ENVIRONMENT }} \
               || true
-      - name: Install score-humanitec
+      - name: install score-humanitec
         run: |
           SCORE_HUMANITEC_VERSION=$(curl -sL https://api.github.com/repos/score-spec/score-humanitec/releases/latest | jq -r .tag_name)
           wget https://github.com/score-spec/score-humanitec/releases/download/${SCORE_HUMANITEC_VERSION}/score-humanitec_${SCORE_HUMANITEC_VERSION}_linux_amd64.tar.gz
           tar -xvf score-humanitec_${SCORE_HUMANITEC_VERSION}_linux_amd64.tar.gz
           chmod +x score-humanitec
           mv score-humanitec /usr/local/bin
-      - name: Run Score
+      - name: deploy score-humanitec
         run: |
+          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }},g" score/score.yaml
           score-humanitec delta \
               --retry \
               --deploy \
@@ -92,7 +88,7 @@ jobs:
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
               | tee score_output.json
-      - name: Wait for deployment
+      - name: wait for deployment
         run: |
           export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
           export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
@@ -116,7 +112,7 @@ jobs:
               IS_DONE=true
             fi
           done
-      - name: Build Comment Message
+      - name: build comment message
         run: |
           export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
           export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
