@@ -21,6 +21,7 @@ jobs:
           export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
           export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
           .github/workflows/bin/humctl create app ${{ vars.APP_NAME }} \
+              --context /orgs/${HUMANITEC_ORG} \
               --name ${{ vars.APP_NAME }} \
               || true
       - name: install score-humanitec
