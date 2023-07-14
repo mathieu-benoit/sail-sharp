@@ -39,5 +39,4 @@ jobs:
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
-              --extensions score/humanitec.score.yaml \
-              | tee score_output.json
+              --extensions score/humanitec.score.yaml
