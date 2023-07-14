@@ -21,6 +21,8 @@ jobs:
           version: latest
       - name: prepare environment variables
         run: |
+          shortSha=`echo ${GITHUB_SHA} | cut -c1-7`
+          echo "IMAGE_TAG=$shortSha" >> $GITHUB_ENV
           imageName=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-app
           echo "IMAGE_NAME=$imageName" >> $GITHUB_ENV
       - name: sign-in to artifact registry
@@ -29,9 +31,12 @@ jobs:
       - name: build the container
         run: |
           docker build \
-              --tag ${IMAGE_NAME}:latest \
+              --tag ${IMAGE_NAME}:${IMAGE_TAG} \
               app/
       - name: push the container to GAR
         run: |
+          docker push \
+              ${IMAGE_NAME}:${IMAGE_TAG}
+          docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
           docker push \
               ${IMAGE_NAME}:latest
