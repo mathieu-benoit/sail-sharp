@@ -49,8 +49,9 @@ jobs:
       - name: push the container to gar
         run: |
           docker push \
-              ${IMAGE_NAME}:${{ env.IMAGE_TAG }}
+              ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID  }}
   deploy-preview-env:
+    needs: build-run-push
     runs-on: ubuntu-latest
     env:
       BASE_ENVIRONMENT: 'development'
