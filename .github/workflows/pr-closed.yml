@@ -16,3 +16,25 @@ jobs:
           .github/workflows/bin/humctl delete env ${{ env.ENVIRONMENT_ID }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}
+      - uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
+          service_account: '${{ secrets.GSA_ID }}'
+      - uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: latest
+      - name: prepare environment variables
+        run: |
+          echo "IMAGE_NAME=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}" >> $GITHUB_ENV
+      - name: sign-in to gar
+        run: |
+          gcloud auth configure-docker \
+              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
+              --quiet
+      - name: delete container image in gar
+        run: |
+          gcloud artifacts docker images delete \
+              ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID }} \
+              --delete-tags \
+              --quiet
+
