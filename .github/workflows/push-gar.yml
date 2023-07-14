@@ -1,0 +1,41 @@
+# You need to set up Workload Identity Federation in your Google Cloud project in order to use this GitHub Actions definition: https://medium.com/p/3932dce678b8.
+name: push-gar
+permissions:
+  contents: read
+  id-token: write
+on:
+  push:
+    tags:        
+      - 'v*'
+jobs:
+  job:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
+          service_account: '${{ secrets.GSA_ID }}'
+      - uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: latest
+      - name: prepare environment variables
+        run: |
+          echo "IMAGE_TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
+          imageName=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
+          echo "IMAGE_NAME=$imageName" >> $GITHUB_ENV
+      - name: sign-in to gar
+        run: |
+          gcloud auth configure-docker ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev --quiet
+      - name: build the container
+        run: |
+          docker build \
+              --tag ${IMAGE_NAME}:${IMAGE_TAG} \
+              app/
+      - name: push the container to gar
+        run: |
+          docker push \
+              ${IMAGE_NAME}:${IMAGE_TAG}
+          docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+          docker push \
+              ${IMAGE_NAME}:latest

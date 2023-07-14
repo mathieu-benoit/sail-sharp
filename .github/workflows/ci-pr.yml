@@ -11,7 +11,7 @@ jobs:
       - name: build the application
         run: |
           docker build \
-              --tag my-sample-app \
+              --tag ${{ vars.APP_NAME }} \
               app/
       - name: run the application
         run: |
@@ -20,7 +20,8 @@ jobs:
               -p 8080:8080 \
               --read-only \
               --cap-drop=ALL \
-              --user=1000 my-sample-app
+              --user=1000 \
+              ${{ vars.APP_NAME }}
       - name: test the application
         run: |
           sleep 10
