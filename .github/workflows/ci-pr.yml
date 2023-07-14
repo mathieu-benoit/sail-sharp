@@ -5,16 +5,16 @@ permissions:
 on:
   pull_request:
 env:
-  IMAGE_TAG: ${{ github.event.number }}
+  ENVIRONMENT_ID: pr-${{ github.event.number }}
 jobs:
-  job:
+  build-run-push:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: build the container
         run: |
           docker build \
-              -t ${{ vars.APP_NAME }}:${{ env.IMAGE_TAG }} \
+              -t ${{ vars.APP_NAME }}:${{ env.ENVIRONMENT_ID }} \
               app/
       - name: run the container
         run: |
@@ -24,7 +24,7 @@ jobs:
               --read-only \
               --cap-drop=ALL \
               --user=1000 \
-              ${{ vars.APP_NAME }}:${{ env.IMAGE_TAG }}
+              ${{ vars.APP_NAME }}:${{ env.ENVIRONMENT_ID }}
       - name: test the container
         run: |
           sleep 10
@@ -44,8 +44,121 @@ jobs:
           gcloud auth configure-docker ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev --quiet
       - name: tag the container
         run: |
-         docker tag ${{ vars.APP_NAME }}:${{ env.IMAGE_TAG }} ${IMAGE_NAME}:${{ env.IMAGE_TAG }}
+          docker tag \
+              ${{ vars.APP_NAME }}:${{ env.ENVIRONMENT_ID }} ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID }}
       - name: push the container to gar
         run: |
           docker push \
               ${IMAGE_NAME}:${{ env.IMAGE_TAG }}
+  deploy-preview-env:
+    runs-on: ubuntu-latest
+    env:
+      BASE_ENVIRONMENT: 'development'
+      ENVIRONMENT_TYPE: 'development'
+      ENVIRONMENT_NAME: PR-${{ github.event.number }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: create humanitec preview env
+        run: |
+          export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
+          export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
+          .github/workflows/bin/humctl create environment ${{ env.ENVIRONMENT_ID }} \
+              --context /orgs/${HUMANITEC_ORG}/apps/${{ vars.APP_NAME }} \
+              --name ${{ env.ENVIRONMENT_NAME }} \
+              -t ${{ env.ENVIRONMENT_TYPE }} \
+              --from ${{ env.BASE_ENVIRONMENT }} \
+              || true
+      - name: Install score-humanitec
+        run: |
+          SCORE_HUMANITEC_VERSION=$(curl -sL https://api.github.com/repos/score-spec/score-humanitec/releases/latest | jq -r .tag_name)
+          wget https://github.com/score-spec/score-humanitec/releases/download/${SCORE_HUMANITEC_VERSION}/score-humanitec_${SCORE_HUMANITEC_VERSION}_linux_amd64.tar.gz
+          tar -xvf score-humanitec_${SCORE_HUMANITEC_VERSION}_linux_amd64.tar.gz
+          chmod +x score-humanitec
+          mv score-humanitec /usr/local/bin
+      - name: Run Score
+        run: |
+          score-humanitec delta \
+              --retry \
+              --deploy \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env ${{ env.ENVIRONMENT_ID }} \
+              -f app/score.yaml \
+              --extensions app/humanitec.score.yaml \
+              | tee score_output.json
+      - name: Wait for deployment
+        run: |
+          export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
+          export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
+          
+          sleep 1
+
+          IS_DONE=false
+
+          while [ "$IS_DONE" = false ]; do
+            CURRENT_STATUS=$(.github/workflows/bin/humctl get environment ${{ env.ENVIRONMENT_ID }} -o json \
+              --context /orgs/${HUMANITEC_ORG}/apps/${{ vars.APP_NAME }} \
+              | jq -r .object.last_deploy.status)
+            
+            INPROGRESS="in progress"
+
+            if [ "$CURRENT_STATUS" = "$INPROGRESS" ]; then
+              echo "Deployment still in progress..."
+              sleep 1
+            else
+              echo "Deployment complete!"
+              IS_DONE=true
+            fi
+          done
+      - name: Build Comment Message
+        run: |
+          export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
+          export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
+          
+          ENV_URL=$(jq -r ".metadata.url" score_output.json)
+          DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
+          DOMAINS=$(.github/workflows/bin/humctl get active-resources \
+                      --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json \
+                      | jq -r '. | map(. | select(.object.type == "dns")) | map((.object.res_id | split(".") | .[1]) + ": [" + .object.resource.host + "](https://" + .object.resource.host + ")") | join("\n")')
+          
+          echo "## Deployment Complete for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
+          echo "" >> pr_message.txt
+          
+          echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
+          echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
+
+          echo "" >> pr_message.txt
+          echo "### Domains:" >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "$DOMAINS" >> pr_message.txt
+          echo "" >> pr_message.txt
+          
+          echo "<details><summary>Deployment diff</summary>" >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "### Deployment diff:" >> pr_message.txt
+          echo '```json' >> pr_message.txt
+          echo "" >> pr_message.txt
+          .github/workflows/bin/humctl diff env ${{ env.ENVIRONMENT_ID }} ${{ env.BASE_ENVIRONMENT }} \
+              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} -o json >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo '```' >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "</details>" >> pr_message.txt
+
+          echo "<details><summary>Score Output</summary>" >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "### Score Output:" >> pr_message.txt
+          echo '```json' >> pr_message.txt
+          echo "" >> pr_message.txt
+          cat score_output.json >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo '```' >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "</details>" >> pr_message.txt
+
+          cat pr_message.txt
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: pr_message.txt  
