@@ -62,7 +62,7 @@ jobs:
         run: |
           .github/workflows/bin/humctl create environment ${{ env.ENVIRONMENT_ID }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${HUMANITEC_ORG}/apps/${{ vars.APP_NAME }} \
+              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
               --name ${{ env.ENVIRONMENT_NAME }} \
               -t ${{ env.ENVIRONMENT_TYPE }} \
               --from ${{ env.BASE_ENVIRONMENT }} \
@@ -96,7 +96,7 @@ jobs:
           while [ "$IS_DONE" = false ]; do
             CURRENT_STATUS=$(.github/workflows/bin/humctl get environment ${{ env.ENVIRONMENT_ID }} -o json \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${HUMANITEC_ORG}/apps/${{ vars.APP_NAME }} \
+              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
               | jq -r .object.last_deploy.status)
             
             INPROGRESS="in progress"
