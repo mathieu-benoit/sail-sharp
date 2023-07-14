@@ -60,9 +60,8 @@ jobs:
         uses: actions/checkout@v3
       - name: create humanitec preview env
         run: |
-          export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
-          export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
           .github/workflows/bin/humctl create environment ${{ env.ENVIRONMENT_ID }} \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
               --context /orgs/${HUMANITEC_ORG}/apps/${{ vars.APP_NAME }} \
               --name ${{ env.ENVIRONMENT_NAME }} \
               -t ${{ env.ENVIRONMENT_TYPE }} \
@@ -90,15 +89,13 @@ jobs:
               | tee score_output.json
       - name: wait for deployment
         run: |
-          export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
-          export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
-          
           sleep 1
 
           IS_DONE=false
 
           while [ "$IS_DONE" = false ]; do
             CURRENT_STATUS=$(.github/workflows/bin/humctl get environment ${{ env.ENVIRONMENT_ID }} -o json \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
               --context /orgs/${HUMANITEC_ORG}/apps/${{ vars.APP_NAME }} \
               | jq -r .object.last_deploy.status)
             
@@ -114,12 +111,10 @@ jobs:
           done
       - name: build comment message
         run: |
-          export HUMANITEC_ORG=${{ secrets.HUMANITEC_ORG }}
-          export HUMANITEC_TOKEN=${{ secrets.HUMANITEC_TOKEN }}
-          
           ENV_URL=$(jq -r ".metadata.url" score_output.json)
           DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
           DOMAINS=$(.github/workflows/bin/humctl get active-resources \
+                      --token ${{ secrets.HUMANITEC_TOKEN }} \
                       --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json \
                       | jq -r '. | map(. | select(.object.type == "dns")) | map((.object.res_id | split(".") | .[1]) + ": [" + .object.resource.host + "](https://" + .object.resource.host + ")") | join("\n")')
           
@@ -141,6 +136,7 @@ jobs:
           echo '```json' >> pr_message.txt
           echo "" >> pr_message.txt
           .github/workflows/bin/humctl diff env ${{ env.ENVIRONMENT_ID }} ${{ env.BASE_ENVIRONMENT }} \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
               --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} -o json >> pr_message.txt
           echo "" >> pr_message.txt
           echo '```' >> pr_message.txt
@@ -159,7 +155,7 @@ jobs:
           echo "</details>" >> pr_message.txt
 
           cat pr_message.txt
-      - name: Comment PR
+      - name: comment pr
         uses: thollander/actions-comment-pull-request@v2
         with:
           filePath: pr_message.txt  
