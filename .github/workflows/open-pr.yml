@@ -1,4 +1,4 @@
-name: ci-pr
+name: open-pr
 permissions:
   contents: read
   id-token: write
@@ -43,7 +43,9 @@ jobs:
           version: latest
       - name: sign-in to gar
         run: |
-          gcloud auth configure-docker ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev --quiet
+          gcloud auth configure-docker \
+              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
+              --quiet
       - name: push the container to gar
         run: |
           docker push \
