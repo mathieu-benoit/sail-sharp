@@ -4,7 +4,7 @@ permissions:
 on:
   pull_request:
 env:
-  IMAGE_TAG: ${GITHUB_EVENT_NUMBER}
+  IMAGE_TAG: ${{ github.event.number }}
 jobs:
   build:
     runs-on: ubuntu-22.04
