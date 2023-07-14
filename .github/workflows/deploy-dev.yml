@@ -1,0 +1,34 @@
+name: deploy-dev
+permissions:
+  contents: read
+on:
+  push:
+    paths:
+      - 'score/**'
+      - '.github/workflows/deploy-dev.yaml'
+env:
+  ENVIRONMENT_ID: 'development'
+  SCORE_HUMANITEC_VERSION: 0.5.0
+jobs:
+  job:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: install score-humanitec
+        run: |
+          wget https://github.com/score-spec/score-humanitec/releases/download/${{ env.SCORE_HUMANITEC_VERSION }}/score-humanitec_${{ env.SCORE_HUMANITEC_VERSION }}_linux_amd64.tar.gz
+          tar -xvf score-humanitec_${{ env.SCORE_HUMANITEC_VERSION }}_linux_amd64.tar.gz
+          chmod +x score-humanitec
+          mv score-humanitec /usr/local/bin
+      - name: deploy score-humanitec
+        run: |
+          score-humanitec delta \
+              --retry \
+              --deploy \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env ${{ env.ENVIRONMENT_ID }} \
+              -f score/score.yaml \
+              --extensions score/humanitec.score.yaml \
+              | tee score_output.json

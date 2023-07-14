@@ -1,0 +1,16 @@
+apiVersion: score.dev/v1b1
+metadata:
+  name: my-sample-app
+containers:
+  frontend:
+    image: my-sample-app
+    variables:
+      MESSAGE: "Hello, World!"
+resources:
+  dns: 
+    type: dns
+service:
+  ports:
+    tcp:
+      port: 8080
+      targetPort: 8080
