@@ -5,7 +5,7 @@ permissions:
 on:
   push:
     tags:        
-      - '*'
+      - 'v*'
 jobs:
   job:
     runs-on: ubuntu-22.04
