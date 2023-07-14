@@ -22,8 +22,7 @@ jobs:
       - name: prepare environment variables
         run: |
           echo "IMAGE_TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
-          imageName=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
-          echo "IMAGE_NAME=$imageName" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}" >> $GITHUB_ENV
       - name: sign-in to gar
         run: |
           gcloud auth configure-docker ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev --quiet
