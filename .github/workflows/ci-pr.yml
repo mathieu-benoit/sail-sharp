@@ -4,7 +4,7 @@ permissions:
 on:
   pull_request:
 env:
-  IMAGE_TAG: $GITHUB_EVENT_NUMBER
+  IMAGE_TAG: ${GITHUB_EVENT_NUMBER}
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -16,6 +16,7 @@ jobs:
               -t ${{ vars.APP_NAME }}:${{ env.IMAGE_TAG }} \
               app/
   test:
+    needs: build
     runs-on: ubuntu-22.04
     steps:
       - name: run the container
@@ -32,6 +33,7 @@ jobs:
           sleep 10
           curl localhost:8080
   push:
+    needs: test
     runs-on: ubuntu-22.04
     steps:
       - uses: google-github-actions/auth@v1
