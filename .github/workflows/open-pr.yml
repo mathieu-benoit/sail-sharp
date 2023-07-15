@@ -19,6 +19,7 @@ jobs:
           docker build \
               -t ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               app/
+          
       - name: run container
         run: |
           docker run \
