@@ -101,7 +101,8 @@ jobs:
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               -d '{
                 "name": "'${{ env.IMAGE_NAME }}'",
-                "version": "'${IMAGE_DIGEST}'",
+                "version": "'${{ env.IMAGE_TAG }}'",
+                "digest": "'${IMAGE_DIGEST}'",
                 "type": "container",
                 "commit": "'$(echo ${GITHUB_SHA} | cut -c1-7)'",
                 "ref": "'${GITHUB_REF}'"
