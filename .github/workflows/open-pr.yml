@@ -1,3 +1,5 @@
+# You need to set up Workload Identity Federation in your Google Cloud project in order to use this GitHub Actions definition: https://medium.com/p/3932dce678b8.
+# And the secrets.GSA_ID needs to have the roles/artifactregistry.repoAdmin role in order push and delete container images.
 name: open-pr
 permissions:
   contents: read
@@ -46,6 +48,13 @@ jobs:
           gcloud auth configure-docker \
               ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
               --quiet
+      - name: delete previous container image in gar
+        run: |
+          gcloud artifacts docker images delete \
+              ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID }} \
+              --delete-tags \
+              --quiet \
+              || true
       - name: push the container to gar
         run: |
           docker push \
@@ -69,6 +78,25 @@ jobs:
               -t ${{ env.ENVIRONMENT_TYPE }} \
               --from ${{ env.BASE_ENVIRONMENT }} \
               || true
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
+          service_account: '${{ secrets.GSA_ID }}'
+      - name: setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: latest
+      - name: sign-in to gar
+        run: |
+          gcloud auth configure-docker \
+              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
+              --quiet
+      - name: save container image digest as env var
+        run: |
+          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
+              --descriptor \
+              | jq -r .digest)" >> $GITHUB_ENV
       - name: install score-humanitec
         run: |
           SCORE_HUMANITEC_VERSION=$(curl -sL https://api.github.com/repos/score-spec/score-humanitec/releases/latest | jq -r .tag_name)
@@ -78,7 +106,7 @@ jobs:
           mv score-humanitec /usr/local/bin
       - name: deploy score-humanitec
         run: |
-          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }},g" score/score.yaml
+          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST},g" score/score.yaml
           score-humanitec delta \
               --retry \
               --deploy \
