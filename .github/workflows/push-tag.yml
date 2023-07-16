@@ -75,9 +75,28 @@ jobs:
           tar -xvf score-humanitec_${SCORE_HUMANITEC_VERSION}_linux_amd64.tar.gz
           chmod +x score-humanitec
           mv score-humanitec /usr/local/bin
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
+          service_account: '${{ secrets.GSA_ID }}'
+      - name: setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: latest
+      - name: sign-in to gar
+        run: |
+          gcloud auth configure-docker \
+              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
+              --quiet
+      - name: save container image digest as env var
+        run: |
+          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+              --descriptor \
+              | jq -r .digest)" >> $GITHUB_ENV
       - name: deploy score-humanitec
         run: |
-          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }},g" score/score.yaml
+          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST},g" score/score.yaml
           score-humanitec delta \
               --retry \
               --deploy \
