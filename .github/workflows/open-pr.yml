@@ -59,6 +59,11 @@ jobs:
         run: |
           docker push \
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+      - name: set container image digest as env var
+        run: |
+          echo "IMAGE_DIGEST=$(docker inspect \
+              --format='{{index .Id}}' \
+              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }})" >> $GITHUB_ENV
   deploy-preview-env:
     needs: build-run-push
     runs-on: ubuntu-latest
@@ -87,7 +92,7 @@ jobs:
           mv score-humanitec /usr/local/bin
       - name: deploy score-humanitec
         run: |
-          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }},g" score/score.yaml
+          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}:${IMAGE_DIGEST},g" score/score.yaml
           score-humanitec delta \
               --retry \
               --deploy \
