@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.Builder;
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
-app.MapGet("/", () => "Hello, World!");
+
+var message = builder.Configuration["MESSAGE"];
+
+app.MapGet("/", () => message ?? "Hello, World!");
 app.Run();
