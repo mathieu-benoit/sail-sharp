@@ -1,4 +1,5 @@
 # You need to set up Workload Identity Federation in your Google Cloud project in order to use this GitHub Actions definition: https://medium.com/p/3932dce678b8.
+# And the secrets.GSA_ID needs to have the roles/artifactregistry.writer role in order push container images.
 name: push-tag
 permissions:
   contents: read
@@ -94,6 +95,17 @@ jobs:
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
               --descriptor \
               | jq -r .digest)" >> $GITHUB_ENV
+      - name: notify humanitec with new container image
+        run: |-
+          .github/workflows/bin/humctl api POST /orgs/${{ secrets.HUMANITEC_ORG }}/artefact-versions \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              -d '{
+                "name": "'${{ env.IMAGE_NAME }}'",
+                "version": "'${{ env.IMAGE_TAG }}'",
+                "type": "container",
+                "commit": "'$(echo ${GITHUB_SHA} | cut -c1-7)'",
+                "ref": "'${GITHUB_REF}'"
+            }'
       - name: deploy score-humanitec
         run: |
           sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST},g" score/score.yaml
