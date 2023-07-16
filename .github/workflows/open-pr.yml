@@ -106,7 +106,7 @@ jobs:
           mv score-humanitec /usr/local/bin
       - name: deploy score-humanitec
         run: |
-          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}:${IMAGE_DIGEST},g" score/score.yaml
+          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST},g" score/score.yaml
           score-humanitec delta \
               --retry \
               --deploy \
