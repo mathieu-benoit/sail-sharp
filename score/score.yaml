@@ -5,7 +5,7 @@ containers:
   frontend:
     image: my-sample-app
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "Hello, Humanitec!"
 resources:
   dns: 
     type: dns
