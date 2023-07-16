@@ -59,11 +59,6 @@ jobs:
         run: |
           docker push \
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-      - name: set container image digest as env var
-        run: |
-          echo "IMAGE_DIGEST=$(docker inspect \
-              --format='{{index .Id}}' \
-              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }})" >> $GITHUB_ENV
   deploy-preview-env:
     needs: build-run-push
     runs-on: ubuntu-latest
@@ -83,6 +78,25 @@ jobs:
               -t ${{ env.ENVIRONMENT_TYPE }} \
               --from ${{ env.BASE_ENVIRONMENT }} \
               || true
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
+          service_account: '${{ secrets.GSA_ID }}'
+      - name: setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: latest
+      - name: sign-in to gar
+        run: |
+          gcloud auth configure-docker \
+              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
+              --quiet
+      - name: save container image digest as env var
+        run: |
+          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
+              --descriptor \
+              | jq -r .digest)" >> $GITHUB_ENV
       - name: install score-humanitec
         run: |
           SCORE_HUMANITEC_VERSION=$(curl -sL https://api.github.com/repos/score-spec/score-humanitec/releases/latest | jq -r .tag_name)
