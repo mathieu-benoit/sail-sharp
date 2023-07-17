@@ -16,20 +16,35 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v3
-      - name: build container
+      - name: install score-compose
         run: |
-          docker build \
-              -t ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
-              app/
-      - name: run container
+          SCORE_COMPOSE_VERSION=$(curl -sL https://api.github.com/repos/score-spec/score-compose/releases/latest | jq -r .tag_name)
+          wget https://github.com/score-spec/score-compose/releases/download/${SCORE_COMPOSE_VERSION}/score-compose_${SCORE_COMPOSE_VERSION}_linux_amd64.tar.gz
+          tar -xvf score-compose_${SCORE_COMPOSE_VERSION}_linux_amd64.tar.gz
+          chmod +x score-compose
+          mv score-compose /usr/local/bin
+      - name: generate docker compose files
         run: |
-          docker run \
-              -d \
-              -p 8080:8080 \
-              --read-only \
-              --cap-drop=ALL \
-              --user=1000 \
-              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+          score-compose run \
+              --build app/ \
+              -f score/score.yaml \
+              -o ${{ vars.APP_NAME }}-compose.yaml
+          cat <<EOF > base-compose.yaml
+          services:
+            my-sample-app:
+              image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+              read_only: true
+              cap_drop:
+                - ALL
+              user: "1000"
+          EOF
+      - name: build & run container
+        run: |
+          docker compose \
+              -f ${{ vars.APP_NAME }}-compose.yaml \
+              -f base-compose.yaml \
+              up \
+              -d
       - name: test container
         run: |
           sleep 10
