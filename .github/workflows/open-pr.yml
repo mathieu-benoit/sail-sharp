@@ -11,8 +11,8 @@ env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
 jobs:
-  build-run-push:
-    runs-on: ubuntu-22.04
+  build-run-test-push:
+    runs-on: ubuntu-latest
     steps:
       - name: checkout code
         uses: actions/checkout@v3
@@ -44,11 +44,16 @@ jobs:
               -f ${{ vars.APP_NAME }}-compose.yaml \
               -f base-compose.yaml \
               up \
-              -d
+              -d \
+              --wait \
+              --wait-timeout 30
       - name: test container
         run: |
           sleep 10
-          curl -s localhost:8080
+          curl \
+              -s \
+              --connect-timeout 30 \
+              localhost:8080
       - name: create kind cluster
         run: |
           kind create cluster
@@ -74,17 +79,19 @@ jobs:
               ${{ vars.APP_NAME }} \
               score-helm-charts/workload \
               --values ${{ vars.APP_NAME }}-values.yaml \
+              --set containers.${{ vars.APP_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --wait \
-              --timeout=60s
+              --timeout=30s
           kubectl wait \
               --for=condition=available \
-              --timeout=60s \
+              --timeout=30s \
               deployment/${{ vars.APP_NAME }}
       - name: catch helm install errors
         if: ${{ failure() && steps.helm-install.outcome == 'failure' }}
         run: |
           kubectl get events
-          kubectl logs -l app.kubernetes.io/name=${{ vars.APP_NAME }}
+          kubectl logs \
+              -l app.kubernetes.io/name=${{ vars.APP_NAME }}
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v1
         with:
@@ -111,7 +118,7 @@ jobs:
           docker push \
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
-    needs: build-run-push
+    needs: build-run-test-push
     runs-on: ubuntu-latest
     env:
       BASE_ENVIRONMENT: 'development'
@@ -143,7 +150,7 @@ jobs:
           gcloud auth configure-docker \
               ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
               --quiet
-      - name: save container image digest as env var
+      - name: get container image digest
         run: |
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --descriptor \
