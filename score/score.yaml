@@ -2,7 +2,7 @@ apiVersion: score.dev/v1b1
 metadata:
   name: my-sample-app
 containers:
-  frontend:
+  my-sample-app:
     image: my-sample-app
     variables:
       MESSAGE: "Hello, World!"
