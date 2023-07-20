@@ -79,6 +79,8 @@ jobs:
               --for=condition=available \
               --timeout=60s \
               deployment/${{ vars.APP_NAME }}
+          kubectl get events
+          kubectl logs -l app.kubernetes.io/name=${{ vars.APP_NAME }}
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v1
         with:
