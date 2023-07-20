@@ -49,6 +49,36 @@ jobs:
         run: |
           sleep 10
           curl localhost:8080
+      - name: create kind cluster
+        run: |
+          kind create cluster
+      - name: install score-helm
+        run: |
+          SCORE_HELM_VERSION=$(curl -sL https://api.github.com/repos/score-spec/score-helm/releases/latest | jq -r .tag_name)
+          wget https://github.com/score-spec/score-helm/releases/download/${SCORE_HELM_VERSION}/score-helm_${SCORE_HELM_VERSION}_linux_amd64.tar.gz
+          tar -xvf score-helm_${SCORE_HELM_VERSION}_linux_amd64.tar.gz
+          chmod +x score-helm
+          mv score-helm /usr/local/bin
+      - name: generate helm values file
+        run: |
+          score-helm run \
+              -f score/score.yaml \
+              -o ${{ vars.APP_NAME }}-values.yaml
+      - name: helm install
+        run: |
+          helm repo add \
+              score-helm-charts \
+              https://score-spec.github.io/score-helm-charts
+          helm install \
+              ${{ vars.APP_NAME }} \
+              score-helm-charts/workload \
+              --values ${{ vars.APP_NAME }}-values.yaml \
+              --wait \
+              --timeout=60s
+          kubectl wait \
+              --for=condition=available \
+              --timeout=60s \
+              deployment/${{ vars.APP_NAME }}
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v1
         with:
