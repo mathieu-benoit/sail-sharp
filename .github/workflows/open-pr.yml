@@ -57,6 +57,7 @@ jobs:
       - name: create kind cluster
         run: |
           kind create cluster
+          kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
       - name: install score-helm
         run: |
           SCORE_HELM_VERSION=$(curl -sL https://api.github.com/repos/score-spec/score-helm/releases/latest | jq -r .tag_name)
