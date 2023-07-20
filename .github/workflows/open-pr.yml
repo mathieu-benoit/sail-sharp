@@ -48,7 +48,7 @@ jobs:
       - name: test container
         run: |
           sleep 10
-          curl localhost:8080
+          curl -s localhost:8080
       - name: create kind cluster
         run: |
           kind create cluster
@@ -66,6 +66,7 @@ jobs:
               -o ${{ vars.APP_NAME }}-values.yaml
       - name: helm install
         run: |
+          id: helm-install
           helm repo add \
               score-helm-charts \
               https://score-spec.github.io/score-helm-charts
@@ -79,6 +80,9 @@ jobs:
               --for=condition=available \
               --timeout=60s \
               deployment/${{ vars.APP_NAME }}
+      - name: catch helm install errors
+        if: ${{ failure() && steps.helm-install.outcome == 'failure' }}
+        run: |
           kubectl get events
           kubectl logs -l app.kubernetes.io/name=${{ vars.APP_NAME }}
       - name: authenticate to google cloud
