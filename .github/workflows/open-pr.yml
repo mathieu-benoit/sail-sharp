@@ -65,8 +65,8 @@ jobs:
               -f score/score.yaml \
               -o ${{ vars.APP_NAME }}-values.yaml
       - name: helm install
+        id: helm-install
         run: |
-          id: helm-install
           helm repo add \
               score-helm-charts \
               https://score-spec.github.io/score-helm-charts
