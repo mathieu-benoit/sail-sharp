@@ -71,11 +71,7 @@ jobs:
               || true
       - name: install score-humanitec
         run: |
-          SCORE_HUMANITEC_VERSION=$(curl -sL https://api.github.com/repos/score-spec/score-humanitec/releases/latest | jq -r .tag_name)
-          wget https://github.com/score-spec/score-humanitec/releases/download/${SCORE_HUMANITEC_VERSION}/score-humanitec_${SCORE_HUMANITEC_VERSION}_linux_amd64.tar.gz
-          tar -xvf score-humanitec_${SCORE_HUMANITEC_VERSION}_linux_amd64.tar.gz
-          chmod +x score-humanitec
-          mv score-humanitec /usr/local/bin
+          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/06c49e649f630bc91199da119046d7e821e4337e/install-score-humanitec.sh | bash
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v1
         with:
