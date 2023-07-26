@@ -153,7 +153,6 @@ jobs:
           curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-helm.sh | bash
       - name: deploy score-humanitec
         run: |
-          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST},g" score/score.yaml
           score-humanitec delta \
               --retry \
               --deploy \
@@ -163,6 +162,7 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
+              --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST}
               | tee score_output.json
       - name: wait for deployment
         run: |
