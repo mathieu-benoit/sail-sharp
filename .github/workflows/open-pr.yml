@@ -150,7 +150,7 @@ jobs:
               | jq -r .digest)" >> $GITHUB_ENV
       - name: install score-humanitec
         run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-helm.sh | bash
+          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-humanitec.sh | bash
       - name: deploy score-humanitec
         run: |
           score-humanitec delta \
@@ -162,7 +162,7 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
-              --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST}
+              --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               | tee score_output.json
       - name: wait for deployment
         run: |
