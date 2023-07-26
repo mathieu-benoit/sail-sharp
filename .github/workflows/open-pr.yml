@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v3
       - name: install score-compose
         run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/d13c341bef0047e41253a0250010fcbdd5c142ff/install-score-compose.sh | bash
+          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-compose.sh | bash
       - name: generate docker compose files
         run: |
           score-compose run \
@@ -56,7 +56,7 @@ jobs:
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
       - name: install score-helm
         run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/5d19e6032ec8d7fa27d0ae33b2f2586fad69add1/install-score-helm.sh | bash
+          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-helm.sh | bash
       - name: generate helm values file
         run: |
           score-helm run \
@@ -150,7 +150,7 @@ jobs:
               | jq -r .digest)" >> $GITHUB_ENV
       - name: install score-humanitec
         run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/06c49e649f630bc91199da119046d7e821e4337e/install-score-humanitec.sh | bash
+          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-helm.sh | bash
       - name: deploy score-humanitec
         run: |
           sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST},g" score/score.yaml
