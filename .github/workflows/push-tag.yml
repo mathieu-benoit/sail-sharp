@@ -105,7 +105,6 @@ jobs:
             }'
       - name: deploy score-humanitec
         run: |
-          sed -i "s,image: ${{ vars.APP_NAME }},image: ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST},g" score/score.yaml
           score-humanitec delta \
               --retry \
               --deploy \
@@ -114,4 +113,5 @@ jobs:
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
-              --extensions score/humanitec.score.yaml
+              --extensions score/humanitec.score.yaml \
+              --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST}
