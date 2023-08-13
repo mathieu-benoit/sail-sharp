@@ -2,10 +2,10 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0.400-alpine3.18@sha256:e3b051cbad561cec1b1c
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
-    --use-current-runtime
+    -r linux-musl-x64
 COPY . .
 RUN dotnet publish my-sample-app.csproj \
-    --use-current-runtime \
+    -r linux-musl-x64 \
     -c release \
     -o /my-sample-app \
     --no-restore \
