@@ -10,15 +10,19 @@ on:
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
+  SCORE_COMPOSE_VERSION: '0.6.0'
+  SCORE_HELM_VERSION: '0.6.0'
+  SCORE_HUMANITEC_VERSION: '0.6.0'
 jobs:
   build-run-test-push:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
         uses: actions/checkout@v3
-      - name: install score-compose
-        run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-compose.sh | bash
+      - uses: score-spec/setup-score@v2
+        with:
+          file: score-compose
+          version: ${{ env.SCORE_COMPOSE_VERSION }}
       - name: generate docker compose files
         run: |
           score-compose run \
@@ -54,9 +58,10 @@ jobs:
         run: |
           kind create cluster
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-      - name: install score-helm
-        run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-helm.sh | bash
+      - uses: score-spec/setup-score@v2
+        with:
+          file: score-helm
+          version: ${{ env.SCORE_HELM_VERSION }}
       - name: generate helm values file
         run: |
           score-helm run \
@@ -148,9 +153,10 @@ jobs:
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --descriptor \
               | jq -r .digest)" >> $GITHUB_ENV
-      - name: install score-humanitec
-        run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-humanitec.sh | bash
+      - uses: score-spec/setup-score@v2
+        with:
+          file: score-humanitec
+          version: ${{ env.SCORE_HUMANITEC_VERSION }}
       - name: deploy score-humanitec
         run: |
           score-humanitec delta \
