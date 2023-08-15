@@ -16,9 +16,10 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v3
-      - name: install score-compose
-        run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-compose.sh | bash
+      - uses: actions/setup-score@v2
+        with:
+          file: score-compose
+          version: '0.6.0'
       - name: generate docker compose files
         run: |
           score-compose run \
@@ -54,9 +55,10 @@ jobs:
         run: |
           kind create cluster
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-      - name: install score-helm
-        run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-helm.sh | bash
+      - uses: actions/setup-score@v2
+        with:
+          file: score-helm
+          version: '0.6.0'
       - name: generate helm values file
         run: |
           score-helm run \
@@ -148,9 +150,10 @@ jobs:
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --descriptor \
               | jq -r .digest)" >> $GITHUB_ENV
-      - name: install score-humanitec
-        run: |
-          curl https://gist.githubusercontent.com/mathieu-benoit/18ecd796c50c27badf0f00218bac2ba2/raw/56767b5d9fd9dcb4189b6ec6214a014c7659f657/install-score-humanitec.sh | bash
+      - uses: actions/setup-score@v2
+        with:
+          file: score-humanitec
+          version: '0.6.0'
       - name: deploy score-humanitec
         run: |
           score-humanitec delta \
