@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v3
-      - uses: actions/setup-score@v2
+      - uses: score-spec/setup-score@v2
         with:
           file: score-compose
           version: '0.6.0'
@@ -55,7 +55,7 @@ jobs:
         run: |
           kind create cluster
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-      - uses: actions/setup-score@v2
+      - uses: score-spec/setup-score@v2
         with:
           file: score-helm
           version: '0.6.0'
@@ -150,7 +150,7 @@ jobs:
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --descriptor \
               | jq -r .digest)" >> $GITHUB_ENV
-      - uses: actions/setup-score@v2
+      - uses: score-spec/setup-score@v2
         with:
           file: score-humanitec
           version: '0.6.0'
