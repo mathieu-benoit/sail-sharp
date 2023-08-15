@@ -10,6 +10,9 @@ on:
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
+  SCORE_COMPOSE_VERSION: '0.6.0'
+  SCORE_HELM_VERSION: '0.6.0'
+  SCORE_HUMANITEC_VERSION: '0.6.0'
 jobs:
   build-run-test-push:
     runs-on: ubuntu-latest
@@ -19,7 +22,7 @@ jobs:
       - uses: score-spec/setup-score@v2
         with:
           file: score-compose
-          version: '0.6.0'
+          version: ${{ env.SCORE_COMPOSE_VERSION }}
       - name: generate docker compose files
         run: |
           score-compose run \
@@ -58,7 +61,7 @@ jobs:
       - uses: score-spec/setup-score@v2
         with:
           file: score-helm
-          version: '0.6.0'
+          version: ${{ env.SCORE_HELM_VERSION }}
       - name: generate helm values file
         run: |
           score-helm run \
@@ -153,7 +156,7 @@ jobs:
       - uses: score-spec/setup-score@v2
         with:
           file: score-humanitec
-          version: '0.6.0'
+          version: ${{ env.SCORE_HUMANITEC_VERSION }}
       - name: deploy score-humanitec
         run: |
           score-humanitec delta \
