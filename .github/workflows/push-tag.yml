@@ -13,7 +13,7 @@ env:
   IMAGE_TAG: ${GITHUB_REF_NAME}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
   ENVIRONMENT_ID: development
-  SCORE_HUMANITEC_VERSION: '0.6.0'
+  SCORE_HUMANITEC_VERSION: 'latest'
 jobs:
   build-push:
     runs-on: ubuntu-22.04
@@ -70,9 +70,11 @@ jobs:
               --context /orgs/${{ secrets.HUMANITEC_ORG }} \
               --name ${{ vars.APP_NAME }} \
               || true
-      - uses: score-spec/setup-score@v2
+      - name: install score-humanitec
+        uses: score-spec/setup-score@v2
         with:
           file: score-humanitec
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_HUMANITEC_VERSION }}
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v1

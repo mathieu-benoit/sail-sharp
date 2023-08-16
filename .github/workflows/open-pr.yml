@@ -10,18 +10,20 @@ on:
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
-  SCORE_COMPOSE_VERSION: '0.6.0'
-  SCORE_HELM_VERSION: '0.6.0'
-  SCORE_HUMANITEC_VERSION: '0.6.0'
+  SCORE_COMPOSE_VERSION: 'latest'
+  SCORE_HELM_VERSION: 'latest'
+  SCORE_HUMANITEC_VERSION: 'latest'
 jobs:
   build-run-test-push:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
         uses: actions/checkout@v3
-      - uses: score-spec/setup-score@v2
+      - name: install score-compose
+        uses: score-spec/setup-score@v2
         with:
           file: score-compose
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_COMPOSE_VERSION }}
       - name: generate docker compose files
         run: |
@@ -58,9 +60,11 @@ jobs:
         run: |
           kind create cluster
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-      - uses: score-spec/setup-score@v2
+      - name: install score-helm
+        uses: score-spec/setup-score@v2
         with:
           file: score-helm
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_HELM_VERSION }}
       - name: generate helm values file
         run: |
@@ -153,9 +157,11 @@ jobs:
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --descriptor \
               | jq -r .digest)" >> $GITHUB_ENV
-      - uses: score-spec/setup-score@v2
+      - name: install score-humanitec
+        uses: score-spec/setup-score@v2
         with:
           file: score-humanitec
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_HUMANITEC_VERSION }}
       - name: deploy score-humanitec
         run: |
