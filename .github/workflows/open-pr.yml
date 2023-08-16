@@ -19,7 +19,8 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v3
-      - uses: score-spec/setup-score@v2
+      - name: install score-compose
+        uses: score-spec/setup-score@v2
         with:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -59,7 +60,8 @@ jobs:
         run: |
           kind create cluster
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-      - uses: score-spec/setup-score@v2
+      - name: install score-helm
+        uses: score-spec/setup-score@v2
         with:
           file: score-helm
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -155,7 +157,8 @@ jobs:
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --descriptor \
               | jq -r .digest)" >> $GITHUB_ENV
-      - uses: score-spec/setup-score@v2
+      - name: install score-humanitec
+        uses: score-spec/setup-score@v2
         with:
           file: score-humanitec
           token: ${{ secrets.GITHUB_TOKEN }}
