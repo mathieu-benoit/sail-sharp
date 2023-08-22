@@ -186,11 +186,10 @@ jobs:
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
               | jq -r .object.last_deploy.status)
-            INPROGRESS="in progress"
-            if [ "$CURRENT_STATUS" = "$INPROGRESS" ]; then
+            if [ "$CURRENT_STATUS" = "in progress" ]; then
               echo "Deployment still in progress..."
               sleep 1
-            else if [ "$CURRENT_STATUS" = "failed" ]; then
+            elif [ "$CURRENT_STATUS" = "failed" ]; then
               echo "Deployment failed!"
               IS_DONE=true
             else
