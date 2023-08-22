@@ -238,6 +238,7 @@ jobs:
             echo '```' >> pr_message.txt
             echo "" >> pr_message.txt
             echo "</details>" >> pr_message.txt
+            echo "" >> pr_message.txt
           fi
           
           echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
