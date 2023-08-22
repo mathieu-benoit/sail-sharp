@@ -193,12 +193,16 @@ jobs:
             if [ "$CURRENT_STATUS" = "$INPROGRESS" ]; then
               echo "Deployment still in progress..."
               sleep 1
+            else if [ "$CURRENT_STATUS" = "failed" ]; then
+              echo "Deployment failed!"
+              exit 1
             else
-              echo "Deployment complete!"
+              echo "Deployment successfully completed!"
               IS_DONE=true
             fi
           done
       - name: build comment message
+        if: ${{ always() }}
         run: |
           ENV_URL=$(jq -r ".metadata.url" score_output.json)
           DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
