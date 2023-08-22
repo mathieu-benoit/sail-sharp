@@ -1,10 +1,2 @@
 apiVersion: humanitec.org/v1b1
 profile: humanitec/default-module
-spec:
-  ingress:
-    rules:
-      "${resources.dns}":
-        http:
-          "/":
-            type: prefix
-            port: 8080
