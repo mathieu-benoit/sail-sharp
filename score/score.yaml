@@ -12,7 +12,8 @@ resources:
   route:
     type: route
     params:
-      host: ${resources.dns.host}
+      # host: ${resources.dns.host}
+      host: ${resources.['dns#modules.my-sample-app.externals.dns'].outputs.host}
       path: /
       port: 8080
 service:
