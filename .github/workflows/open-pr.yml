@@ -229,6 +229,7 @@ jobs:
             echo '```' >> pr_message.txt
             echo "" >> pr_message.txt
             echo "<details><summary>Errors details</summary>" >> pr_message.txt
+            echo "" >> pr_message.txt
             echo "### Errors details:" >> pr_message.txt
             echo '```json' >> pr_message.txt
             echo "" >> pr_message.txt
