@@ -222,8 +222,18 @@ jobs:
             echo "" >> pr_message.txt
             echo "### Errors:" >> pr_message.txt
             echo "" >> pr_message.txt
+            echo "$DEPLOYMENT_ERRORS" | jq .[0].object.message >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo "<details><summary>Deployment diff</summary>" >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo "### Errors details:" >> pr_message.txt
+            echo '```json' >> pr_message.txt
+            echo "" >> pr_message.txt
             echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
             echo "" >> pr_message.txt
+            echo '```' >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo "</details>" >> pr_message.txt
           fi
           
           echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
