@@ -224,11 +224,11 @@ jobs:
             echo "" >> pr_message.txt
             echo '```json' >> pr_message.txt
             echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" | jq .[0].object.message >> pr_message.txt
+            echo "$DEPLOYMENT_ERRORS" | jq .[0].object.message -r >> pr_message.txt
             echo "" >> pr_message.txt
             echo '```' >> pr_message.txt
             echo "" >> pr_message.txt
-            echo "<details><summary>Deployment diff</summary>" >> pr_message.txt
+            echo "<details><summary>Errors details</summary>" >> pr_message.txt
             echo "### Errors details:" >> pr_message.txt
             echo '```json' >> pr_message.txt
             echo "" >> pr_message.txt
