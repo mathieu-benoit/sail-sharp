@@ -212,6 +212,7 @@ jobs:
                       | jq -r '. | map(. | select(.object.type == "dns")) | map((.object.res_id | split(".") | .[1]) + ": [" + .object.resource.host + "](https://" + .object.resource.host + ")") | join("\n")')
           
           DEPLOYMENT_ERRORS=$(.github/workflows/bin/humctl get deployment-error \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
               --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json)
           if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
