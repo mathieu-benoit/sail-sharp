@@ -174,7 +174,7 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
-              --message $(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=100" | jq -r .[-1].commit.message) \
+              --message "$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=100" | jq -r .[-1].commit.message)" \
               --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               | tee score_output.json
       - name: wait for deployment
