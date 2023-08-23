@@ -174,7 +174,7 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
-              --message "my custom message" \
+              --message ${{ github.event.head_commit.message }} \
               --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               | tee score_output.json
       - name: wait for deployment
