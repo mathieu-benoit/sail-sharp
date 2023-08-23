@@ -24,4 +24,5 @@ jobs:
           git log --format=%B -n 1 HEAD | head -n 1
           git log -1 --no-merges --pretty=%B
           echo ${{ github.event.head_commit.message }}
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=100" | jq -r .[-1].commit.message
       
