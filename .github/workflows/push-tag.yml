@@ -118,4 +118,5 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
+              --message ${{ github.ref_name }} \
               --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST}
