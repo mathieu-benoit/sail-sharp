@@ -19,9 +19,6 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v3
-      - name: Logging
-        run: |
-          echo "${{toJSON(github.event)}}"
       - name: install score-compose
         uses: score-spec/setup-score@v2
         with:
@@ -177,6 +174,7 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
+              --message $(git log --format=%B -n 1 HEAD | head -n 1) \
               --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               | tee score_output.json
       - name: wait for deployment
