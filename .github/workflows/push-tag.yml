@@ -10,7 +10,7 @@ on:
     tags:        
       - 'v*'
 env:
-  IMAGE_TAG: ${{ github.ref.name }}
+  IMAGE_TAG: ${{ github.ref_name }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
   ENVIRONMENT_ID: development
   SCORE_HUMANITEC_VERSION: 'latest'
