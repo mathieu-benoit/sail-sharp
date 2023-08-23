@@ -25,4 +25,3 @@ jobs:
           git log -1 --no-merges --pretty=%B
           echo ${{ github.event.head_commit.message }}
           curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=100" | jq -r .[-1].commit.message
-      
