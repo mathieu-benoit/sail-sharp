@@ -156,7 +156,7 @@ jobs:
         run: |
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --descriptor \
-              | jq -r .digest)" >> $GITHUB_ENV
+              | jq -r .digest)" >> ${{ github.env }}
       - name: install score-humanitec
         uses: score-spec/setup-score@v2
         with:
