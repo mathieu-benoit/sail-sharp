@@ -13,7 +13,7 @@ env:
   IMAGE_TAG: ${{ github.ref_name }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
   ENVIRONMENT_ID: development
-  SCORE_HUMANITEC_VERSION: '0.6.0'
+  SCORE_HUMANITEC_VERSION: 'latest'
 jobs:
   build-push:
     runs-on: ubuntu-22.04
@@ -164,11 +164,13 @@ jobs:
           else
             echo "## Deployment failed for ${{ env.ENVIRONMENT_ID }}! :x:"
             echo ""
+            echo "### Errors:"
+            echo ""
             echo "$DEPLOYMENT_ERRORS"
             echo ""
           fi
           
-          echo "### View in Humanitec: $ENV_URL)"
+          echo "### View in Humanitec: $ENV_URL"
           echo ""
           echo "### Deployment ID: $DEPLOYMENT_ID"
           echo ""
