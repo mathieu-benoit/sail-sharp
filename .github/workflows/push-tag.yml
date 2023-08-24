@@ -13,7 +13,7 @@ env:
   IMAGE_TAG: ${{ github.ref_name }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
   ENVIRONMENT_ID: development
-  SCORE_HUMANITEC_VERSION: 'latest'
+  SCORE_HUMANITEC_VERSION: '0.6.0'
 jobs:
   build-push:
     runs-on: ubuntu-22.04
@@ -145,7 +145,7 @@ jobs:
           if [ "$CURRENT_STATUS" = "failed" ]; then
               exit 1
           fi
-      - name: build comment message
+      - name: get deployment information
         if: ${{ always() }}
         run: |
           ENV_URL=$(jq -r ".metadata.url" score_output.json)
