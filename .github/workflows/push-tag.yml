@@ -119,4 +119,70 @@ jobs:
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
               --message ${{ github.ref_name }} \
-              --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST}
+              --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
+              | tee score_output.json
+      - name: wait for deployment
+        run: |
+          sleep 1
+          IS_DONE=false
+          CURRENT_STATUS=""
+          while [ "$IS_DONE" = false ]; do
+            CURRENT_STATUS=$(.github/workflows/bin/humctl get environment ${{ env.ENVIRONMENT_ID }} -o json \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
+              | jq -r .object.last_deploy.status)
+            if [ "$CURRENT_STATUS" = "in progress" ]; then
+              echo "Deployment still in progress..."
+              sleep 1
+            elif [ "$CURRENT_STATUS" = "failed" ]; then
+              echo "Deployment failed!"
+              IS_DONE=true
+            else
+              echo "Deployment successfully completed!"
+              IS_DONE=true
+            fi
+          done
+          echo $CURRENT_STATUS
+          if [ "$CURRENT_STATUS" = "failed" ]; then
+              exit 1
+          fi
+      - name: get deployment information
+        if: ${{ always() }}
+        run: |
+          ENV_URL=$(jq -r ".metadata.url" score_output.json)
+          DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
+          DOMAINS=$(.github/workflows/bin/humctl get active-resources \
+                      --token ${{ secrets.HUMANITEC_TOKEN }} \
+                      --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json \
+                      | jq -r '. | map(. | select(.object.type == "dns")) | map((.object.res_id | split(".") | .[1]) + ": [" + .object.resource.host + "](https://" + .object.resource.host + ")") | join("\n")')
+          
+          DEPLOYMENT_ERRORS=$(.github/workflows/bin/humctl get deployment-error \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json)
+          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
+            echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_ID }}! :tada:"
+            echo ""
+          else
+            echo "## Deployment failed for ${{ env.ENVIRONMENT_ID }}! :x:"
+            echo ""
+            echo "### Errors:"
+            echo ""
+            echo "$DEPLOYMENT_ERRORS"
+            echo ""
+          fi
+          
+          echo "### View in Humanitec: $ENV_URL"
+          echo ""
+          echo "### Deployment ID: $DEPLOYMENT_ID"
+          echo ""
+          echo "### Domains:"
+          echo ""
+          echo "$DOMAINS"
+          echo ""
+          
+          echo "### Deployment diff:"
+          echo ""
+          .github/workflows/bin/humctl diff deploy +1 . \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json
+          echo ""
