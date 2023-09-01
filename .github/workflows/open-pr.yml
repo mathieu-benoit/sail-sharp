@@ -13,6 +13,7 @@ env:
   SCORE_COMPOSE_VERSION: 'latest'
   SCORE_HELM_VERSION: 'latest'
   SCORE_HUMANITEC_VERSION: 'latest'
+  WORKLOAD_NAME: my-sample-app
 jobs:
   build-run-test-push:
     runs-on: ubuntu-latest
@@ -30,10 +31,10 @@ jobs:
           score-compose run \
               --build app/ \
               -f score/score.yaml \
-              -o ${{ vars.APP_NAME }}-compose.yaml
+              -o ${{ env.WORKLOAD_NAME }}-compose.yaml
           cat <<EOF > base-compose.yaml
           services:
-            my-sample-app:
+            ${{ env.WORKLOAD_NAME }}:
               image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
               read_only: true
               cap_drop:
@@ -43,7 +44,7 @@ jobs:
       - name: build & run container
         run: |
           docker compose \
-              -f ${{ vars.APP_NAME }}-compose.yaml \
+              -f ${{ env.WORKLOAD_NAME }}-compose.yaml \
               -f base-compose.yaml \
               up \
               -d \
@@ -70,7 +71,7 @@ jobs:
         run: |
           score-helm run \
               -f score/score.yaml \
-              -o ${{ vars.APP_NAME }}-values.yaml
+              -o ${{ env.WORKLOAD_NAME }}-values.yaml
       - name: helm install
         id: helm-install
         run: |
@@ -78,22 +79,22 @@ jobs:
               score-helm-charts \
               https://score-spec.github.io/score-helm-charts
           helm install \
-              ${{ vars.APP_NAME }} \
+              ${{ env.WORKLOAD_NAME }} \
               score-helm-charts/workload \
-              --values ${{ vars.APP_NAME }}-values.yaml \
-              --set containers.${{ vars.APP_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
+              --values ${{ env.WORKLOAD_NAME }}-values.yaml \
+              --set containers.${{ env.WORKLOAD_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --wait \
               --timeout=30s
           kubectl wait \
               --for=condition=available \
               --timeout=30s \
-              deployment/${{ vars.APP_NAME }}
+              deployment/${{ env.WORKLOAD_NAME }}
       - name: catch helm install errors
         if: ${{ failure() && steps.helm-install.outcome == 'failure' }}
         run: |
           kubectl get events
           kubectl logs \
-              -l app.kubernetes.io/name=${{ vars.APP_NAME }}
+              -l app.kubernetes.io/name=${{ env.WORKLOAD_NAME }}
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v1
         with:
@@ -174,7 +175,7 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
-              --property containers.${{ vars.APP_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
+              --property containers.${{ env.WORKLOAD_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               | tee score_output.json
       - name: wait for deployment
         run: |
