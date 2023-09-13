@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0.401-alpine3.18@sha256:ba04d2d249d045c4324f8f238f0b82a08528a61db969ba9b0c549b8bc1dc9127 as builder
+FROM mcr.microsoft.com/dotnet/sdk:8.0.100-rc.1-alpine3.18-amd64@sha256:22d2de7f9568bc05083bd834b6fcfa0066dec6a62570b943ac98c9c56b7a372c as builder
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
@@ -14,7 +14,7 @@ RUN dotnet publish my-sample-app.csproj \
     -p:PublishTrimmed=true \
     -p:TrimMode=full
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:7.0.11-alpine3.18@sha256:276b70790c33051bcf79ada1fc2dd91428330c9e02a7d0aaf27d070f096793cf
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.0-rc.1-alpine3.18-amd64@sha256:1f58b2f92e2720df01ade6fd1c9e6cc69b79beddbebced5eb128eb3d5e83d8ef
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
