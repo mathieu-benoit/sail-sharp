@@ -20,7 +20,7 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.0-rc.1-alpine3.18-amd64@sha256:1f
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
-ENV ASPNETCORE_URLS=http://*:8080
+ENV ASPNETCORE_HTTP_PORTS=8080
 ENV DOTNET_EnableDiagnostics=0
 USER 1000
 ENTRYPOINT ["/app/my-sample-app"]
