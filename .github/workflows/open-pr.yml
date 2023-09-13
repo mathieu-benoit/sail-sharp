@@ -47,6 +47,7 @@ jobs:
               -f ${{ env.WORKLOAD_NAME }}-compose.yaml \
               -f base-compose.yaml \
               up \
+              --build \
               -d \
               --wait \
               --wait-timeout 30
