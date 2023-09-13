@@ -1,5 +1,6 @@
 # https://mcr.microsoft.com/en-us/product/dotnet/sdk
 FROM mcr.microsoft.com/dotnet/sdk:8.0.100-rc.1-alpine3.18-amd64@sha256:22d2de7f9568bc05083bd834b6fcfa0066dec6a62570b943ac98c9c56b7a372c as builder
+RUN apk add clang build-base zlib-dev
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
