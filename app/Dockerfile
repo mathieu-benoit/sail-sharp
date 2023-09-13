@@ -11,7 +11,6 @@ RUN dotnet publish my-sample-app.csproj \
     -o /my-sample-app \
     --no-restore \
     --self-contained true \
-    -p:PublishSingleFile=true \
     -p:PublishTrimmed=true \
     -p:TrimMode=full
 
