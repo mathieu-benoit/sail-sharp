@@ -3,8 +3,6 @@
 name: open-pr
 permissions:
   contents: read
-  #id-token: write
-  pull-requests: write
 on:
   pull_request:
 env:
@@ -78,82 +76,3 @@ jobs:
           if [ "$CURRENT_STATUS" = "failed" ]; then
               exit 1
           fi
-      - name: build comment message
-        if: ${{ always() }}
-        run: |
-          ENV_URL=$(jq -r ".metadata.url" score_output.json)
-          DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
-          DOMAINS=$(.github/workflows/bin/humctl get active-resources \
-                      --token ${{ secrets.HUMANITEC_TOKEN }} \
-                      --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json \
-                      | jq -r '. | map(. | select(.object.type == "dns")) | map((.object.res_id | split(".") | .[1]) + ": [" + .object.resource.host + "](https://" + .object.resource.host + ")") | join("\n")')
-          
-          DEPLOYMENT_ERRORS=$(.github/workflows/bin/humctl get deployment-error \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json)
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
-            echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
-            echo "" >> pr_message.txt
-          else
-            echo "## Deployment failed for ${{ env.ENVIRONMENT_NAME }}! :x:" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "### Errors:" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```json' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" | jq .[0].object.message -r >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "<details><summary>Errors details</summary>" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "### Errors details:" >> pr_message.txt
-            echo '```json' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "</details>" >> pr_message.txt
-            echo "" >> pr_message.txt
-          fi
-          
-          echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
-          echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
-
-          echo "" >> pr_message.txt
-          echo "### Domains:" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "$DOMAINS" >> pr_message.txt
-          echo "" >> pr_message.txt
-          
-          echo "<details><summary>Deployment diff</summary>" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "### Deployment diff:" >> pr_message.txt
-          echo '```json' >> pr_message.txt
-          echo "" >> pr_message.txt
-          .github/workflows/bin/humctl diff env ${{ env.ENVIRONMENT_ID }} ${{ env.BASE_ENVIRONMENT }} \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} -o json >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo '```' >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "</details>" >> pr_message.txt
-
-          echo "<details><summary>Score Output</summary>" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "### Score Output:" >> pr_message.txt
-          echo '```json' >> pr_message.txt
-          echo "" >> pr_message.txt
-          cat score_output.json >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo '```' >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "</details>" >> pr_message.txt
-
-          cat pr_message.txt
-      - name: comment pr
-        if: ${{ always() }}
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          filePath: pr_message.txt  
