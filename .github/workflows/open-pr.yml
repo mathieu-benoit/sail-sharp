@@ -3,7 +3,7 @@
 name: open-pr
 permissions:
   contents: read
-  id-token: write
+  #id-token: write
   pull-requests: write
 on:
   pull_request:
