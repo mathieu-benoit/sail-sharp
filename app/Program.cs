@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
 var app = builder.Build();
 
 var message = builder.Configuration["MESSAGE"];

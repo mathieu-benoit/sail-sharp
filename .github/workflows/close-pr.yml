@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout humctl bin
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: delete humanitec env
         run: |
           .github/workflows/bin/humctl delete env ${{ env.ENVIRONMENT_ID }} \
