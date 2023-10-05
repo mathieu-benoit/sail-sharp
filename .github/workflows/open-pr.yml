@@ -15,114 +15,7 @@ env:
   SCORE_HUMANITEC_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
 jobs:
-  build-run-test-push:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v4
-      - name: install score-compose
-        uses: score-spec/setup-score@v2
-        with:
-          file: score-compose
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.SCORE_COMPOSE_VERSION }}
-      - name: generate docker compose files
-        run: |
-          score-compose run \
-              --build app/ \
-              -f score/score.yaml \
-              -o ${{ env.WORKLOAD_NAME }}-compose.yaml
-          cat <<EOF > base-compose.yaml
-          services:
-            ${{ env.WORKLOAD_NAME }}:
-              image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-              read_only: true
-              cap_drop:
-                - ALL
-              user: "1000"
-          EOF
-      - name: build & run container
-        run: |
-          docker compose \
-              -f ${{ env.WORKLOAD_NAME }}-compose.yaml \
-              -f base-compose.yaml \
-              up \
-              --build \
-              -d \
-              --wait \
-              --wait-timeout 30
-      - name: test container
-        run: |
-          sleep 10
-          curl \
-              -s \
-              --connect-timeout 30 \
-              localhost:8080
-      - name: create kind cluster
-        run: |
-          kind create cluster
-          kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-      - name: install score-helm
-        uses: score-spec/setup-score@v2
-        with:
-          file: score-helm
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.SCORE_HELM_VERSION }}
-      - name: generate helm values file
-        run: |
-          score-helm run \
-              -f score/score.yaml \
-              -o ${{ env.WORKLOAD_NAME }}-values.yaml
-      - name: helm install
-        id: helm-install
-        run: |
-          helm repo add \
-              score-helm-charts \
-              https://score-spec.github.io/score-helm-charts
-          helm install \
-              ${{ env.WORKLOAD_NAME }} \
-              score-helm-charts/workload \
-              --values ${{ env.WORKLOAD_NAME }}-values.yaml \
-              --set containers.${{ env.WORKLOAD_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
-              --wait \
-              --timeout=30s
-          kubectl wait \
-              --for=condition=available \
-              --timeout=30s \
-              deployment/${{ env.WORKLOAD_NAME }}
-      - name: catch helm install errors
-        if: ${{ failure() && steps.helm-install.outcome == 'failure' }}
-        run: |
-          kubectl get events
-          kubectl logs \
-              -l app.kubernetes.io/name=${{ env.WORKLOAD_NAME }}
-      - name: authenticate to google cloud
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
-          service_account: '${{ secrets.GSA_ID }}'
-      - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          version: latest
-      - name: sign-in to gar
-        run: |
-          gcloud auth configure-docker \
-              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
-              --quiet
-      - name: delete previous container image in gar
-        run: |
-          gcloud artifacts docker images delete \
-              ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID }} \
-              --delete-tags \
-              --quiet \
-              || true
-      - name: push the container to gar
-        run: |
-          docker push \
-              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
-    needs: build-run-test-push
     runs-on: ubuntu-latest
     env:
       BASE_ENVIRONMENT: 'development'
@@ -140,25 +33,6 @@ jobs:
               -t ${{ env.ENVIRONMENT_TYPE }} \
               --from ${{ env.BASE_ENVIRONMENT }} \
               || true
-      - name: authenticate to google cloud
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
-          service_account: '${{ secrets.GSA_ID }}'
-      - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          version: latest
-      - name: sign-in to gar
-        run: |
-          gcloud auth configure-docker \
-              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
-              --quiet
-      - name: get container image digest
-        run: |
-          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
-              --descriptor \
-              | jq -r .digest)" >> ${{ github.env }}
       - name: install score-humanitec
         uses: score-spec/setup-score@v2
         with:
@@ -177,7 +51,7 @@ jobs:
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
               --message "$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=100" | jq -r .[-1].commit.message)" \
-              --property containers.${{ env.WORKLOAD_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
+              --property containers.${{ env.WORKLOAD_NAME }}.image=${{ env.IMAGE_NAME }}@${{ env.ENVIRONMENT_ID }} \
               | tee score_output.json
       - name: wait for deployment
         run: |
