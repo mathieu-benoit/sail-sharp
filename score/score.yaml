@@ -5,7 +5,7 @@ containers:
   my-sample-app:
     image: my-sample-app
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "Hello, Ephemeral Environment!"
 resources:
   dns: 
     type: dns
