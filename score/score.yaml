@@ -6,6 +6,8 @@ containers:
     image: my-sample-app
     variables:
       MESSAGE: "Hello, World!"
+      POD_NAME: "${pod.metadata.name}"
+      NAMESPACE_NAME: "${pod.metadata.namespace}"
 resources:
   dns: 
     type: dns
