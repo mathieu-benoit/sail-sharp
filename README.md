@@ -15,7 +15,7 @@ docker run \
     -p 8080:8080 \
     --read-only \
     --cap-drop=ALL \
-    --user=1000 \
+    --user=65532 \
     ghcr.io/mathieu-benoit/my-sample-app:latest
 ```
 
@@ -47,7 +47,7 @@ docker run \
     -p 8080:8080 \
     --read-only \
     --cap-drop=ALL \
-    --user=1000 \
+    --user=65532 \
     my-sample-app
 ```
 

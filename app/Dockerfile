@@ -23,6 +23,5 @@ WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
 ENV ASPNETCORE_HTTP_PORTS=8080
-ENV DOTNET_EnableDiagnostics=0
-USER 1000
+USER 65532
 ENTRYPOINT ["/app/my-sample-app"]
