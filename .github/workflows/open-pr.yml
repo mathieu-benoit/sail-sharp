@@ -97,7 +97,7 @@ jobs:
           kubectl logs \
               -l app.kubernetes.io/name=${{ env.WORKLOAD_NAME }}
       - name: authenticate to google cloud
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
           service_account: '${{ secrets.GSA_ID }}'
@@ -141,7 +141,7 @@ jobs:
               --from ${{ env.BASE_ENVIRONMENT }} \
               || true
       - name: authenticate to google cloud
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
           service_account: '${{ secrets.GSA_ID }}'
