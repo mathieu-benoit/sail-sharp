@@ -27,7 +27,7 @@ jobs:
           workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
           service_account: '${{ secrets.GSA_ID }}'
       - name: install gcloud
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           version: latest
       - name: sign-in to gar
@@ -83,7 +83,7 @@ jobs:
           workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
           service_account: '${{ secrets.GSA_ID }}'
       - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           version: latest
       - name: sign-in to gar

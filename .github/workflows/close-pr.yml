@@ -24,7 +24,7 @@ jobs:
         with:
           workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
           service_account: '${{ secrets.GSA_ID }}'
-      - uses: google-github-actions/setup-gcloud@v1
+      - uses: google-github-actions/setup-gcloud@v2
         with:
           version: latest
       - name: prepare environment variables
