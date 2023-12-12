@@ -196,7 +196,7 @@ jobs:
           
           echo "### Deployment diff:"
           echo ""
-          humctl diff deploy +1 . \
+          humctl diff sets deploy/+1 deploy/. \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
