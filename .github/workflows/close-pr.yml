@@ -8,17 +8,26 @@ on:
       - closed
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
+  HUMCTL_VERSION: '0.11.0'
 jobs:
   ob-pr-closed:
     runs-on: ubuntu-latest
     steps:
       - name: checkout humctl bin
         uses: actions/checkout@v4
+      - name: install humctl
+        run: |
+          curl -fLO https://storage.googleapis.com/humctl-releases/v${{ env.HUMCTL_VERSION }}/cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz
+          tar xvzf cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz
+          rm cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz README.md
+          chmod +x humctl
+          mv humctl /usr/local/bin
       - name: delete humanitec env
         run: |
-          .github/workflows/bin/humctl delete env ${{ env.ENVIRONMENT_ID }} \
+          humctl delete env ${{ env.ENVIRONMENT_ID }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
               || true
       - uses: google-github-actions/auth@v2
         with:

@@ -15,6 +15,7 @@ env:
   ENVIRONMENT_ID: development
   SCORE_HUMANITEC_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
+  HUMCTL_VERSION: '0.11.0'
 jobs:
   build-push:
     runs-on: ubuntu-22.04
@@ -64,11 +65,18 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: install humctl
+        run: |
+          curl -fLO https://storage.googleapis.com/humctl-releases/v${{ env.HUMCTL_VERSION }}/cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz
+          tar xvzf cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz
+          rm cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz README.md
+          chmod +x humctl
+          mv humctl /usr/local/bin
       - name: create humanitec app
         run: |
-          .github/workflows/bin/humctl create app ${{ vars.APP_NAME }} \
+          humctl create app ${{ vars.APP_NAME }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
               --name ${{ vars.APP_NAME }} \
               || true
       - name: install score-humanitec
@@ -98,7 +106,7 @@ jobs:
               | jq -r .digest)" >> ${{ github.env }}
       - name: notify humanitec
         run: |-
-          .github/workflows/bin/humctl api POST /orgs/${{ secrets.HUMANITEC_ORG }}/artefact-versions \
+          humctl api POST /orgs/${{ secrets.HUMANITEC_ORG }}/artefact-versions \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               -d '{
                 "name": "'${{ env.IMAGE_NAME }}'",
@@ -128,9 +136,10 @@ jobs:
           IS_DONE=false
           CURRENT_STATUS=""
           while [ "$IS_DONE" = false ]; do
-            CURRENT_STATUS=$(.github/workflows/bin/humctl get environment ${{ env.ENVIRONMENT_ID }} -o json \
+            CURRENT_STATUS=$(humctl get environment ${{ env.ENVIRONMENT_ID }} -o json \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
               | jq -r .object.last_deploy.status)
             if [ "$CURRENT_STATUS" = "in progress" ]; then
               echo "Deployment still in progress..."
@@ -152,14 +161,18 @@ jobs:
         run: |
           ENV_URL=$(jq -r ".metadata.url" score_output.json)
           DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
-          DOMAINS=$(.github/workflows/bin/humctl get active-resources \
+          DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
-                      --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json \
+                      --org ${{ secrets.HUMANITEC_ORG }} \
+                      --app ${{ vars.APP_NAME }} \
+                      --env ${{ env.ENVIRONMENT_ID }} -o json \
                       | jq -r '. | map(. | select(.object.type == "dns")) | map((.object.res_id | split(".") | .[1]) + ": [" + .object.resource.host + "](https://" + .object.resource.host + ")") | join("\n")')
           
-          DEPLOYMENT_ERRORS=$(.github/workflows/bin/humctl get deployment-error \
+          DEPLOYMENT_ERRORS=$(humctl get deployment-error \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json)
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env ${{ env.ENVIRONMENT_ID }} -o json)
           if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_ID }}! :tada:"
             echo ""
@@ -183,7 +196,9 @@ jobs:
           
           echo "### Deployment diff:"
           echo ""
-          .github/workflows/bin/humctl diff deploy +1 . \
+          humctl diff sets deploy/+1 deploy/. \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env ${{ env.ENVIRONMENT_ID }} -o json
           echo ""
