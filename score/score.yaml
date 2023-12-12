@@ -5,7 +5,7 @@ containers:
   my-sample-app:
     image: my-sample-app
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "Hello, Test!"
       POD_NAME: "${pod.metadata.name}"
       NAMESPACE_NAME: "${pod.metadata.namespace}"
 resources:
