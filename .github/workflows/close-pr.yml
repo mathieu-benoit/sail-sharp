@@ -26,7 +26,8 @@ jobs:
         run: |
           humctl delete env ${{ env.ENVIRONMENT_ID }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
               || true
       - uses: google-github-actions/auth@v2
         with:

@@ -143,7 +143,8 @@ jobs:
         run: |
           humctl create environment ${{ env.ENVIRONMENT_ID }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
               --name ${{ env.ENVIRONMENT_NAME }} \
               -t ${{ env.ENVIRONMENT_TYPE }} \
               --from ${{ env.BASE_ENVIRONMENT }} \
@@ -195,7 +196,8 @@ jobs:
           while [ "$IS_DONE" = false ]; do
             CURRENT_STATUS=$(humctl get environment ${{ env.ENVIRONMENT_ID }} -o json \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
               | jq -r .object.last_deploy.status)
             if [ "$CURRENT_STATUS" = "in progress" ]; then
               echo "Deployment still in progress..."
@@ -219,12 +221,16 @@ jobs:
           DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
           DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
-                      --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json \
+                      --org ${{ secrets.HUMANITEC_ORG }} \
+                      --app ${{ vars.APP_NAME }} \
+                      --env ${{ env.ENVIRONMENT_ID }} -o json \
                       | jq -r '. | map(. | select(.object.type == "dns")) | map((.object.res_id | split(".") | .[1]) + ": [" + .object.resource.host + "](https://" + .object.resource.host + ")") | join("\n")')
           
           DEPLOYMENT_ERRORS=$(humctl get deployment-error \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }} -o json)
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env ${{ env.ENVIRONMENT_ID }} -o json)
           if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
             echo "" >> pr_message.txt
@@ -268,7 +274,8 @@ jobs:
           echo "" >> pr_message.txt
           humctl diff env ${{ env.ENVIRONMENT_ID }} ${{ env.BASE_ENVIRONMENT }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --context /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }} -o json >> pr_message.txt
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} -o json >> pr_message.txt
           echo "" >> pr_message.txt
           echo '```' >> pr_message.txt
           echo "" >> pr_message.txt
