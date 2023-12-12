@@ -194,11 +194,12 @@ jobs:
           IS_DONE=false
           CURRENT_STATUS=""
           while [ "$IS_DONE" = false ]; do
-            CURRENT_STATUS=$(humctl get environment ${{ env.ENVIRONMENT_ID }} -o json \
+            CURRENT_STATUS=$(humctl get deployment . -o json \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
-              | jq -r .object.last_deploy.status)
+              --env ${{ env.ENVIRONMENT_ID }} \
+              | jq -r .status.status)
             if [ "$CURRENT_STATUS" = "in progress" ]; then
               echo "Deployment still in progress..."
               sleep 1
@@ -224,7 +225,7 @@ jobs:
                       --org ${{ secrets.HUMANITEC_ORG }} \
                       --app ${{ vars.APP_NAME }} \
                       --env ${{ env.ENVIRONMENT_ID }} -o json \
-                      | jq -r '. | map(. | select(.object.type == "dns")) | map((.object.res_id | split(".") | .[1]) + ": [" + .object.resource.host + "](https://" + .object.resource.host + ")") | join("\n")')
+                      | jq -r '. | map(. | select(.metadata.type == "dns")) | map((.metadata.res_id | split(".") | .[1]) + ": [" + .status.resource.host + "](https://" + .status.resource.host + ")") | join("\n")')
           
           DEPLOYMENT_ERRORS=$(humctl get deployment-error \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
@@ -241,7 +242,7 @@ jobs:
             echo "" >> pr_message.txt
             echo '```json' >> pr_message.txt
             echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" | jq .[0].object.message -r >> pr_message.txt
+            echo "$DEPLOYMENT_ERRORS" | jq .[0].status.message -r >> pr_message.txt
             echo "" >> pr_message.txt
             echo '```' >> pr_message.txt
             echo "" >> pr_message.txt
