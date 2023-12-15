@@ -67,6 +67,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: install humctl
         uses: humanitec/setup-cli-action@v1
+        with:
+          version: ${{ env.HUMCTL_VERSION }}
       - name: create humanitec app
         run: |
           humctl create app ${{ vars.APP_NAME }} \

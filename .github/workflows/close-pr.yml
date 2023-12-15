@@ -17,6 +17,8 @@ jobs:
         uses: actions/checkout@v4
       - name: install humctl
         uses: humanitec/setup-cli-action@v1
+        with:
+          version: ${{ env.HUMCTL_VERSION }}
       - name: delete humanitec env
         run: |
           humctl delete env ${{ env.ENVIRONMENT_ID }} \
