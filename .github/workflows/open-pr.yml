@@ -133,12 +133,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v4
       - name: install humctl
-        run: |
-          curl -fLO https://storage.googleapis.com/humctl-releases/v${{ env.HUMCTL_VERSION }}/cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz
-          tar xvzf cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz
-          rm cli_${{ env.HUMCTL_VERSION }}_linux_amd64.tar.gz README.md
-          chmod +x humctl
-          mv humctl /usr/local/bin
+        uses: humanitec/setup-cli-action@v1
       - name: create humanitec preview env
         run: |
           humctl create environment ${{ env.ENVIRONMENT_ID }} \
