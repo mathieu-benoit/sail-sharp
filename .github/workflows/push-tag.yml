@@ -104,6 +104,8 @@ jobs:
       - name: notify humanitec
         run: |-
           humctl create artefact-version \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
               -t container \
               -n ${{ env.IMAGE_NAME }} \
               --version ${{ env.IMAGE_TAG }} \
