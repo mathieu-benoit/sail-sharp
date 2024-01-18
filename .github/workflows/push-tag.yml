@@ -15,7 +15,7 @@ env:
   ENVIRONMENT_ID: development
   SCORE_HUMANITEC_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
-  HUMCTL_VERSION: '0.12.0'
+  HUMCTL_VERSION: '0.13.0'
 jobs:
   build-push:
     runs-on: ubuntu-22.04
@@ -103,16 +103,13 @@ jobs:
               | jq -r .digest)" >> ${{ github.env }}
       - name: notify humanitec
         run: |-
-          humctl api POST /orgs/${{ secrets.HUMANITEC_ORG }}/artefact-versions \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              -d '{
-                "name": "'${{ env.IMAGE_NAME }}'",
-                "version": "'${{ env.IMAGE_TAG }}'",
-                "digest": "'${IMAGE_DIGEST}'",
-                "type": "container",
-                "commit": "'$(echo ${{ github.sha }} | cut -c1-7)'",
-                "ref": "'${{ github.ref }}'"
-            }'
+          humctl create artefact-version \
+              -t container \
+              -n ${{ env.IMAGE_NAME }} \
+              --version ${{ env.IMAGE_TAG }} \
+              --ref ${{ github.ref }} \
+              --commit $(echo ${{ github.sha }} | cut -c1-7) \
+              --digest ${IMAGE_DIGEST}
       - name: deploy score-humanitec
         run: |
           score-humanitec delta \
