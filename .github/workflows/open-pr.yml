@@ -279,9 +279,9 @@ jobs:
           echo "" >> pr_message.txt
           echo "</details>" >> pr_message.txt
 
-          echo "<details><summary>Score Output</summary>" >> pr_message.txt
+          echo "<details><summary>Score output</summary>" >> pr_message.txt
           echo "" >> pr_message.txt
-          echo "### Score Output:" >> pr_message.txt
+          echo "### Score output:" >> pr_message.txt
           echo '```json' >> pr_message.txt
           echo "" >> pr_message.txt
           cat score_output.json >> pr_message.txt
@@ -290,20 +290,22 @@ jobs:
           echo "" >> pr_message.txt
           echo "</details>" >> pr_message.txt
 
-          echo "<details><summary>Score Output</summary>" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "### Resources graph:" >> pr_message.txt
-          echo "![Alt text](https://g.gravizo.com/svg?" >> pr_message.txt
-          echo "" >> pr_message.txt
-          HUMANITEC_CLI_ALPHA_FEATURES=resource-graph humctl resource-graph \
-              --env ${{ env.ENVIRONMENT_ID }} \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo ')' >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "</details>" >> pr_message.txt
+          if [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
+            echo "<details><summary>Resources graph</summary>" >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo "### New resources graph:" >> pr_message.txt
+            echo "![Alt text](https://g.gravizo.com/svg?" >> pr_message.txt
+            echo "" >> pr_message.txt
+            HUMANITEC_CLI_ALPHA_FEATURES=resource-graph humctl resource-graph \
+                --env ${{ env.ENVIRONMENT_ID }} \
+                --token ${{ secrets.HUMANITEC_TOKEN }} \
+                --org ${{ secrets.HUMANITEC_ORG }} \
+                --app ${{ vars.APP_NAME }} >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo ")" >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo "</details>" >> pr_message.txt
+          fi
 
           cat pr_message.txt
       - name: comment pr
