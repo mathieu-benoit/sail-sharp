@@ -14,7 +14,7 @@ env:
   SCORE_HELM_VERSION: 'latest'
   SCORE_HUMANITEC_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
-  HUMCTL_VERSION: '0.13.0'
+  HUMCTL_VERSION: '0.13.1'
 jobs:
   build-run-test-push:
     runs-on: ubuntu-latest
@@ -287,6 +287,21 @@ jobs:
           cat score_output.json >> pr_message.txt
           echo "" >> pr_message.txt
           echo '```' >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "</details>" >> pr_message.txt
+
+          echo "<details><summary>Score Output</summary>" >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "### Resources graph:" >> pr_message.txt
+          echo "![Alt text](https://g.gravizo.com/svg?" >> pr_message.txt
+          echo "" >> pr_message.txt
+          HUMANITEC_CLI_ALPHA_FEATURES=resource-graph humctl resource-graph \
+              --env ${{ env.ENVIRONMENT_ID }} \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo ')' >> pr_message.txt
           echo "" >> pr_message.txt
           echo "</details>" >> pr_message.txt
 
