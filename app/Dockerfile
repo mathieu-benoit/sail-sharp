@@ -1,6 +1,6 @@
 # https://mcr.microsoft.com/product/dotnet/sdk
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/sdk:8.0.100-1-alpine3.18-amd64@sha256:e97f44b8eee02de110cfe3a22230e0931db167c9d1faa9220c269e88fb0d7a73 as builder
+FROM mcr.microsoft.com/dotnet/sdk:8.0.101-alpine3.18-amd64@sha256:70c1c8249e539a34a7ca55888c139b0217f72f2ecd6c0b9fb0d651a0f7f2ab25 as builder
 RUN apk add clang build-base zlib-dev
 WORKDIR /app
 COPY my-sample-app.csproj .
