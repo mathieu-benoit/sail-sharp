@@ -3,13 +3,13 @@ metadata:
   name: my-sample-app
 containers:
   my-sample-app:
-    image: my-sample-app
+    image: .
     variables:
       MESSAGE: "Hello, World!"
       POD_NAME: "${pod.metadata.name}"
       NAMESPACE_NAME: "${pod.metadata.namespace}"
 resources:
-  dns: 
+  dns:
     type: dns
   route:
     type: route
