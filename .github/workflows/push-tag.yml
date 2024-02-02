@@ -124,7 +124,7 @@ jobs:
               -f score/score.yaml \
               --extensions score/humanitec.score.yaml \
               --message ${{ github.ref_name }} \
-              --property containers.${{ env.WORKLOAD_NAME }}.image=${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
+              --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               | tee score_output.json
       - name: wait for deployment
         run: |
