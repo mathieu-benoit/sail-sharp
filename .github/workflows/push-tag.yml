@@ -125,6 +125,7 @@ jobs:
               --extensions score/humanitec.score.yaml \
               --message ${{ github.ref_name }} \
               --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
+              --workload-source-url "https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/score/score.yaml" \
               | tee score_output.json
       - name: wait for deployment
         run: |
