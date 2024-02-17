@@ -32,8 +32,8 @@ jobs:
           score-compose run \
               --build app/ \
               -f score/score.yaml \
-              -o ${{ env.WORKLOAD_NAME }}-compose.yaml
-          cat <<EOF > base-compose.yaml
+              -o compose.yaml
+          cat <<EOF > compose.override.yaml
           services:
             ${{ env.WORKLOAD_NAME }}:
               image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
@@ -45,8 +45,6 @@ jobs:
       - name: build & run container
         run: |
           docker compose \
-              -f ${{ env.WORKLOAD_NAME }}-compose.yaml \
-              -f base-compose.yaml \
               up \
               --build \
               -d \
