@@ -4,6 +4,13 @@ metadata:
 containers:
   my-sample-app:
     image: .
+    resources:
+      limits:
+        memory: "256Mi"
+        cpu: "250m"
+      requests:
+        memory: "64Mi"
+        cpu: "25m"
     variables:
       MESSAGE: "Hello, World!"
       POD_NAME: "${pod.metadata.name}"
