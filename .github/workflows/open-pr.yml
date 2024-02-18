@@ -29,6 +29,7 @@ jobs:
           version: ${{ env.SCORE_COMPOSE_VERSION }}
       - name: generate docker compose files
         run: |
+          docker build -t ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} .
           score-compose run \
               --build app/ \
               -f score/score.yaml \
