@@ -12,11 +12,10 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "${resources.env.MESSAGE}"
       POD_NAME: "${pod.metadata.name}"
       NAMESPACE_NAME: "${pod.metadata.namespace}"
     files:
-      - target: /app/config/appsettings.json
+      - target: /app/appsettings.json
         mode: "444"
         content: "${resources.env.APP_SETTINGS}"
 resources:

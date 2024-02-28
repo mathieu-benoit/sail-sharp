@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateSlimBuilder(args);
-builder.Configuration.AddJsonFile("config/appsettings.json", true, true);
+builder.Configuration.AddJsonFile("appsettings.json", true, true);
 builder.Configuration.AddEnvironmentVariables();
 var app = builder.Build();
 
