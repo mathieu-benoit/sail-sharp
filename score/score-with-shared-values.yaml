@@ -12,10 +12,12 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "${resources.env.MESSAGE}"
       POD_NAME: "${pod.metadata.name}"
       NAMESPACE_NAME: "${pod.metadata.namespace}"
 resources:
+  env:
+    type: environment
   dns:
     type: dns
   route:
