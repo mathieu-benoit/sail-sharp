@@ -14,7 +14,7 @@ env:
   SCORE_HELM_VERSION: 'latest'
   SCORE_HUMANITEC_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
-  HUMCTL_VERSION: '0.14.0'
+  HUMCTL_VERSION: '0.15.0'
 jobs:
   build-run-test-push:
     runs-on: ubuntu-latest
@@ -188,10 +188,17 @@ jobs:
       - name: wait for deployment
         run: |
           sleep 1
+          DEPLOYMENT_ID=$(humctl get deployment . -o json \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env ${{ env.ENVIRONMENT_ID }} \
+              | jq -r .metadata.id)
+          echo "DEPLOYMENT_ID=${DEPLOYMENT_ID}" >> ${{ github.env }}
           IS_DONE=false
           CURRENT_STATUS=""
           while [ "$IS_DONE" = false ]; do
-            CURRENT_STATUS=$(humctl get deployment . -o json \
+            CURRENT_STATUS=$(humctl get deployment ${DEPLOYMENT_ID} -o json \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
@@ -215,8 +222,7 @@ jobs:
       - name: build comment message
         if: ${{ always() }}
         run: |
-          ENV_URL=$(jq -r ".metadata.url" score_output.json)
-          DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
+          ENV_URL=https://" + .status.resource.host +
           DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
                       --org ${{ secrets.HUMANITEC_ORG }} \
