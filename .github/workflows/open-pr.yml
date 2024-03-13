@@ -222,7 +222,7 @@ jobs:
       - name: build comment message
         if: ${{ always() }}
         run: |
-          ENV_URL="https://app.humanitec.io/orgs/" + ${{ secrets.HUMANITEC_ORG }} + "/apps/" + ${{ vars.APP_NAME }} + "/envs/" + ${{ env.ENVIRONMENT_ID }} + "/deploys/" + ${DEPLOYMENT_ID}
+          ENV_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/deploys/"${DEPLOYMENT_ID}
           DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
                       --org ${{ secrets.HUMANITEC_ORG }} \
