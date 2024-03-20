@@ -12,7 +12,7 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "Hello, Paris!"
       POD_NAME: "${pod.metadata.name}"
       NAMESPACE_NAME: "${pod.metadata.namespace}"
 resources:
