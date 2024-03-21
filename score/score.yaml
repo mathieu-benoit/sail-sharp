@@ -13,8 +13,8 @@ containers:
         cpu: "25m"
     variables:
       MESSAGE: "Hello, Paris!"
-      POD_NAME: "${pod.metadata.name}"
-      NAMESPACE_NAME: "${pod.metadata.namespace}"
+      POD_NAME: "$${pod.metadata.name}"
+      NAMESPACE_NAME: "$${pod.metadata.namespace}"
 resources:
   dns:
     type: dns
