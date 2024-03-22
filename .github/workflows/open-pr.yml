@@ -10,7 +10,7 @@ on:
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
-  SCORE_COMPOSE_VERSION: '0.10.0'
+  SCORE_COMPOSE_VERSION: 'latest'
   SCORE_HELM_VERSION: 'latest'
   SCORE_HUMANITEC_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
