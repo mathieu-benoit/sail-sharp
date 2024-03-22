@@ -1,4 +1,10 @@
 apiVersion: humanitec.org/v1b1
 profile: humanitec/default-module
 spec:
-  terminationGracePeriodSeconds: 60
+  containers:
+    my-sample-app:
+      env:
+      - name: POD_NAME
+        value: "${pod.metadata.name}"
+      - name: NAMESPACE_NAME
+        value: "${pod.metadata.namespace}"
