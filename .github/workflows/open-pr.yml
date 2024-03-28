@@ -29,7 +29,8 @@ jobs:
         run: |
           humctl score validate score/score.yaml \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }}
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --strict
       - name: install score-compose
         uses: score-spec/setup-score@v2
         with:
