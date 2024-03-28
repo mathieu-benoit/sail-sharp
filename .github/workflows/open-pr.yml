@@ -299,17 +299,6 @@ jobs:
             echo "</details>" >> pr_message.txt
           fi
 
-          echo "<details><summary>Score Output</summary>" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "### Score Output:" >> pr_message.txt
-          echo '```json' >> pr_message.txt
-          echo "" >> pr_message.txt
-          cat score_output.json >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo '```' >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "</details>" >> pr_message.txt
-
           cat pr_message.txt
       - name: comment pr
         if: ${{ always() }}
