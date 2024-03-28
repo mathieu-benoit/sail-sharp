@@ -21,6 +21,15 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v4
+      - name: install humctl
+        uses: humanitec/setup-cli-action@v1
+        with:
+          version: ${{ env.HUMCTL_VERSION }}
+      - name: humctl score validate
+        run: |
+          humctl score validate score/score.yaml \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }}
       - name: install score-compose
         uses: score-spec/setup-score@v2
         with:
@@ -172,6 +181,7 @@ jobs:
           version: ${{ env.SCORE_HUMANITEC_VERSION }}
       - name: deploy score-humanitec
         run: |
+          
           score-humanitec delta \
               --retry \
               --deploy \
