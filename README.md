@@ -29,15 +29,14 @@ kubectl apply \
 
 Deploy the pre-built container with Score/Humanitec:
 ```bash
-score-humanitec delta \
-    --retry \
-    --deploy \
+humctl score deploy \
     --token ${HUMANITEC_TOKEN} \
     --org ${HUMANITEC_ORG} \
     --app ${APP_ID} \
     --env ${ENVIRONMENT_ID} \
     -f score/score.yaml \
-    -i ghcr.io/mathieu-benoit/my-sample-app:latest
+    -i ghcr.io/mathieu-benoit/my-sample-app:latest \
+    --wait
 ```
 
 ## Build and test the application locally
