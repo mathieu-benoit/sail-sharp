@@ -1,0 +1,4 @@
+workloads:
+  - name: my-sample-app/my-sample-app
+    specFile: ./score.yaml
+    extensionsFile: ./humanitec.score.yaml
