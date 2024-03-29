@@ -183,7 +183,7 @@ jobs:
       - name: humctl score deploy
         run: |
           HUMANITEC_CLI_ALPHA_FEATURES=score-deploy humctl score deploy \
-              --deploy-config score/deploy.score.yaml \
+              --deploy-config score/score.deploy.yaml \
               --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               --message "$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=10" | jq -r .[-1].commit.message)" \
               --workload-source-url "https://github.com/${{ github.repository }}/blob/${{ github.head_ref }}/score/score.yaml" \
