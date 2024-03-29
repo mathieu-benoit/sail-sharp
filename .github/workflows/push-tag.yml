@@ -112,53 +112,29 @@ jobs:
               --ref ${{ github.ref }} \
               --commit $(echo ${{ github.sha }} | cut -c1-7) \
               --digest ${IMAGE_DIGEST}
-      - name: deploy score-humanitec
+      - name: humctl score deploy
         run: |
-          score-humanitec delta \
-              --retry \
-              --deploy \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} \
-              -f score/score.yaml \
-              --extensions score/humanitec.score.yaml \
-              --message ${{ github.ref_name }} \
+          HUMANITEC_CLI_ALPHA_FEATURES=score-deploy humctl score deploy \
+              --artefact-name ${{ vars.APP_NAME }}-${{ env.WORKLOAD_NAME }} \
+              --deploy-config score/score.deploy.yaml \
               --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
+              --message ${{ github.ref_name }} \
               --workload-source-url "https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/score/score.yaml" \
-              | tee score_output.json
-      - name: wait for deployment
-        run: |
-          sleep 1
-          IS_DONE=false
-          CURRENT_STATUS=""
-          while [ "$IS_DONE" = false ]; do
-            CURRENT_STATUS=$(humctl get deployment . -o json \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} \
-              | jq -r .status.status)
-            if [ "$CURRENT_STATUS" = "in progress" ]; then
-              echo "Deployment still in progress..."
-              sleep 1
-            elif [ "$CURRENT_STATUS" = "failed" ]; then
-              echo "Deployment failed!"
-              IS_DONE=true
-            else
-              echo "Deployment successfully completed!"
-              IS_DONE=true
-            fi
-          done
-          echo $CURRENT_STATUS
-          if [ "$CURRENT_STATUS" = "failed" ]; then
-              exit 1
-          fi
+              --wait
       - name: get deployment information
         if: ${{ always() }}
         run: |
-          ENV_URL=$(jq -r ".metadata.url" score_output.json)
-          DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
+          DEPLOYMENT_ID=$(humctl get deployment . -o json \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env ${{ env.ENVIRONMENT_ID }} \
+              | jq -r .metadata.id)
+          ENV_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/deploys/"${DEPLOYMENT_ID}
           DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
                       --org ${{ secrets.HUMANITEC_ORG }} \
