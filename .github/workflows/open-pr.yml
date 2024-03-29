@@ -12,7 +12,6 @@ env:
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
   SCORE_COMPOSE_VERSION: 'latest'
   SCORE_HELM_VERSION: 'latest'
-  SCORE_HUMANITEC_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
   HUMCTL_VERSION: '0.19.1'
 jobs:
@@ -174,12 +173,6 @@ jobs:
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --descriptor \
               | jq -r .digest)" >> ${{ github.env }}
-      - name: install score-humanitec
-        uses: score-spec/setup-score@v2
-        with:
-          file: score-humanitec
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.SCORE_HUMANITEC_VERSION }}
       - name: humctl score deploy
         run: |
           HUMANITEC_CLI_ALPHA_FEATURES=score-deploy humctl score deploy \
