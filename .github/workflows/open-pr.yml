@@ -14,13 +14,23 @@ env:
   SCORE_HELM_VERSION: 'latest'
   SCORE_HUMANITEC_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
-  HUMCTL_VERSION: '0.15.0'
+  HUMCTL_VERSION: '0.19.1'
 jobs:
   build-run-test-push:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
         uses: actions/checkout@v4
+      - name: install humctl
+        uses: humanitec/setup-cli-action@v1
+        with:
+          version: ${{ env.HUMCTL_VERSION }}
+      - name: humctl score validate
+        run: |
+          humctl score validate score/score.yaml \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --strict
       - name: install score-compose
         uses: score-spec/setup-score@v2
         with:
@@ -170,58 +180,28 @@ jobs:
           file: score-humanitec
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_HUMANITEC_VERSION }}
-      - name: deploy score-humanitec
+      - name: humctl score deploy
         run: |
-          score-humanitec delta \
-              --retry \
-              --deploy \
+          HUMANITEC_CLI_ALPHA_FEATURES=score-deploy humctl score deploy \
+              -f score/score.yaml \
+              --extensions score/humanitec.score.yaml \
+              --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
+              --message "$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=10" | jq -r .[-1].commit.message)" \
+              --workload-source-url "https://github.com/${{ github.repository }}/blob/${{ github.head_ref }}/score/score.yaml" \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} \
-              -f score/score.yaml \
-              --extensions score/humanitec.score.yaml \
-              --message "$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=10" | jq -r .[-1].commit.message)" \
-              --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
-              --workload-source-url "https://github.com/${{ github.repository }}/blob/${{ github.head_ref }}/score/score.yaml" \
-              | tee score_output.json
-      - name: wait for deployment
+              --wait
+      - name: build comment message
+        if: ${{ always() }}
         run: |
-          sleep 1
           DEPLOYMENT_ID=$(humctl get deployment . -o json \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} \
               | jq -r .metadata.id)
-          echo "DEPLOYMENT_ID=${DEPLOYMENT_ID}" >> ${{ github.env }}
-          IS_DONE=false
-          CURRENT_STATUS=""
-          while [ "$IS_DONE" = false ]; do
-            CURRENT_STATUS=$(humctl get deployment ${DEPLOYMENT_ID} -o json \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} \
-              | jq -r .status.status)
-            if [ "$CURRENT_STATUS" = "in progress" ]; then
-              echo "Deployment still in progress..."
-              sleep 1
-            elif [ "$CURRENT_STATUS" = "failed" ]; then
-              echo "Deployment failed!"
-              IS_DONE=true
-            else
-              echo "Deployment successfully completed!"
-              IS_DONE=true
-            fi
-          done
-          echo $CURRENT_STATUS
-          if [ "$CURRENT_STATUS" = "failed" ]; then
-              exit 1
-          fi
-      - name: build comment message
-        if: ${{ always() }}
-        run: |
           ENV_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/deploys/"${DEPLOYMENT_ID}
           DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
@@ -318,17 +298,6 @@ jobs:
             echo "" >> pr_message.txt
             echo "</details>" >> pr_message.txt
           fi
-
-          echo "<details><summary>Score Output</summary>" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "### Score Output:" >> pr_message.txt
-          echo '```json' >> pr_message.txt
-          echo "" >> pr_message.txt
-          cat score_output.json >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo '```' >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "</details>" >> pr_message.txt
 
           cat pr_message.txt
       - name: comment pr
