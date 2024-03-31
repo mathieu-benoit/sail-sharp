@@ -112,7 +112,7 @@ jobs:
               --deploy-config score/score.deploy.yaml \
               --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               --message ${{ github.ref_name }} \
-              --workload-source-url "https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/score/score.yaml" \
+              --workload-source-url-prefix "https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/score" \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
