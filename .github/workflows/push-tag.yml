@@ -108,7 +108,6 @@ jobs:
       - name: humctl score deploy
         run: |
           HUMANITEC_CLI_ALPHA_FEATURES=score-deploy humctl score deploy \
-              --artefact-name ${{ vars.APP_NAME }}-${{ env.WORKLOAD_NAME }} \
               --deploy-config score/score.deploy.yaml \
               --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               --message ${{ github.ref_name }} \
