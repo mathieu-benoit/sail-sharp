@@ -13,6 +13,7 @@ env:
   SCORE_COMPOSE_VERSION: 'latest'
   SCORE_HELM_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-app
+  CONTAINER_NAME: my-sample-app
   HUMCTL_VERSION: '0.19.1'
 jobs:
   build-run-test-push:
@@ -36,17 +37,15 @@ jobs:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_COMPOSE_VERSION }}
-      - name: generate docker compose files
+      - name: score-compose generate
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} app/
-          score-compose run \
-              --build app/ \
-              -f score/score.yaml \
-              -o compose.yaml
+          score-compose init
+          score-compose generate score.yaml \
+		          --build=${{ env.CONTAINER_NAME }}=app/
+
           cat <<EOF > compose.override.yaml
           services:
-            ${{ env.WORKLOAD_NAME }}:
-              image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+            ${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }}:
               read_only: true
               cap_drop:
                 - ALL
@@ -54,12 +53,7 @@ jobs:
           EOF
       - name: build & run container
         run: |
-          docker compose \
-              up \
-              --build \
-              -d \
-              --wait \
-              --wait-timeout 30
+          docker compose up --build -d --wait --wait-timeout 30
       - name: test container
         run: |
           sleep 10
