@@ -40,7 +40,7 @@ jobs:
       - name: score-compose generate
         run: |
           score-compose init
-          score-compose generate score.yaml \
+          score-compose generate score/score.yaml \
               --build=${{ env.CONTAINER_NAME }}=app/
 
           cat <<EOF > compose.override.yaml
