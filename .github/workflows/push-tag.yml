@@ -14,7 +14,7 @@ env:
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-app
   ENVIRONMENT_ID: development
   WORKLOAD_NAME: my-sample-app
-  HUMCTL_VERSION: '0.19.1'
+  HUMCTL_VERSION: '0.21.0'
 jobs:
   build-push:
     runs-on: ubuntu-22.04
