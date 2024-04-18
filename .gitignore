@@ -1,0 +1,5 @@
+.score-compose/99-default.provisioners.yaml
+.score-compose/state.yaml
+.score-compose/mounts/routing-ToNP4f/nginx.conf
+.score-compose/mounts/routing-opq6wX/nginx.conf
+compose.yaml

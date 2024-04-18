@@ -1,8 +1,8 @@
 apiVersion: score.dev/v1b1
 metadata:
-  name: my-sample-app
+  name: my-sample-workload
 containers:
-  my-sample-app:
+  my-sample-container:
     image: .
     resources:
       limits:

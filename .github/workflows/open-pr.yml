@@ -12,7 +12,7 @@ env:
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
   SCORE_COMPOSE_VERSION: 'latest'
   SCORE_HELM_VERSION: 'latest'
-  WORKLOAD_NAME: my-sample-app
+  WORKLOAD_NAME: my-sample-workload
   HUMCTL_VERSION: '0.21.0'
 jobs:
   build-run-test-push:
@@ -41,7 +41,7 @@ jobs:
           make score-compose
           cat <<EOF > compose.override.yaml
           services:
-            ${{ env.WORKLOAD_NAME }}:
+            ${{ env.WORKLOAD_NAME }}-my-sample-container:
               read_only: true
               cap_drop:
                 - ALL
