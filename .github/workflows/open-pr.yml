@@ -42,7 +42,6 @@ jobs:
           cat <<EOF > compose.override.yaml
           services:
             ${{ env.WORKLOAD_NAME }}:
-              image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
               read_only: true
               cap_drop:
                 - ALL
