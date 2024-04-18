@@ -36,13 +36,9 @@ jobs:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_COMPOSE_VERSION }}
-      - name: generate docker compose files
+      - name: score-compose
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} app/
-          score-compose run \
-              --build app/ \
-              -f score/score.yaml \
-              -o compose.yaml
+          make score-compose
           cat <<EOF > compose.override.yaml
           services:
             ${{ env.WORKLOAD_NAME }}:
@@ -52,21 +48,13 @@ jobs:
                 - ALL
               user: "1000"
           EOF
-      - name: build & run container
+      - name: compose-up
         run: |
-          docker compose \
-              up \
-              --build \
-              -d \
-              --wait \
-              --wait-timeout 30
-      - name: test container
+          make compose-up
+      - name: compose-test
         run: |
           sleep 10
-          curl \
-              -s \
-              --connect-timeout 30 \
-              localhost:8080
+          make compose-test
       - name: create kind cluster
         run: |
           kind create cluster
