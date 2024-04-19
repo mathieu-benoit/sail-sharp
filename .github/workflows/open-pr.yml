@@ -79,7 +79,7 @@ jobs:
               ${{ env.WORKLOAD_NAME }} \
               score-helm-charts/workload \
               --values ${{ env.WORKLOAD_NAME }}-values.yaml \
-              --set containers.${{ env.WORKLOAD_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
+              --set containers.${{ env.WORKLOAD_NAME }}.image.name=sail-sharp-${{ env.WORKLOAD_NAME }}-my-sample-container \
               --wait \
               --timeout=30s
           kubectl wait \
