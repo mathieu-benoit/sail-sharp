@@ -25,6 +25,7 @@ compose-up: compose.yaml
 
 .PHONY: compose-test
 compose-test: compose-up
+	sleep 5
 	curl localhost:8080
 
 .PHONY: compose-down
@@ -38,6 +39,7 @@ values.yaml: score/score.yaml
 		-p containers.my-sample-container.variables.MESSAGE="Hello, Kubernetes!" \
 		-o values.yaml
 
+.PHONY: kind-load-image
 kind-load-image:
 	kind load docker-image ${CONTAINER_IMAGE}
 
@@ -57,7 +59,7 @@ k8s-up: values.yaml
 
 .PHONY: k8s-test
 k8s-test: k8s-up
-	sleep 10
+	sleep 5
 	kubectl port-forward service/my-sample-workload 8080:8080
 
 .PHONY: k8s-down

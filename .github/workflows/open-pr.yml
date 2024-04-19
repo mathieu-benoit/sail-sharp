@@ -37,9 +37,9 @@ jobs:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_COMPOSE_VERSION }}
-      - name: make score-compose
+      - name: make compose.yaml
         run: |
-          make score-compose
+          make compose.yaml
           cat <<EOF > compose.override.yaml
           services:
             ${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }}:
@@ -53,24 +53,22 @@ jobs:
           make compose-up
       - name: make compose-test
         run: |
-          sleep 10
           make compose-test
       - name: create kind cluster
         run: |
           kind create cluster
-      - name: prepare container image
+      - name: make kind-load-image
         run: |
-          docker tag sail-sharp-${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-          kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+          make kind-load-image
       - name: install score-helm
         uses: score-spec/setup-score@v2
         with:
           file: score-helm
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_HELM_VERSION }}
-      - name: make score-helm
+      - name: make values.yaml
         run: |
-          make score-helm
+          make values.yaml
       - name: make k8s-up
         id: helm-install
         run: |
@@ -104,6 +102,7 @@ jobs:
               || true
       - name: push the container to gar
         run: |
+          docker tag ${{ env.CONTAINER_NAME }}:test ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
           docker push \
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
