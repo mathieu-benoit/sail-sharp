@@ -58,7 +58,10 @@ jobs:
       - name: create kind cluster
         run: |
           kind create cluster
-          kind load docker-image sail-sharp-${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }}
+      - name: prepare container image
+        run |
+          docker tag sail-sharp-${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+          kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
       - name: install score-helm
         uses: score-spec/setup-score@v2
         with:
@@ -80,7 +83,7 @@ jobs:
               ${{ env.WORKLOAD_NAME }} \
               score-helm-charts/workload \
               --values ${{ env.WORKLOAD_NAME }}-values.yaml \
-              --set containers.${{ env.CONTAINER_NAME }}.image.name=sail-sharp-${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }} \
+              --set containers.${{ env.CONTAINER_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --wait \
               --timeout=30s
           kubectl wait \
@@ -116,7 +119,6 @@ jobs:
               || true
       - name: push the container to gar
         run: |
-          docker tag sail-sharp-${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
           docker push \
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
