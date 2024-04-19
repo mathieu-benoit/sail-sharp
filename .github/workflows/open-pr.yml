@@ -37,7 +37,7 @@ jobs:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_COMPOSE_VERSION }}
-      - name: score-compose
+      - name: make score-compose
         run: |
           make score-compose
           cat <<EOF > compose.override.yaml
@@ -48,10 +48,10 @@ jobs:
                 - ALL
               user: "1000"
           EOF
-      - name: compose-up
+      - name: make compose-up
         run: |
           make compose-up
-      - name: compose-test
+      - name: make compose-test
         run: |
           sleep 10
           make compose-test
@@ -68,28 +68,13 @@ jobs:
           file: score-helm
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_HELM_VERSION }}
-      - name: generate helm values file
+      - name: make score-helm
         run: |
-          score-helm run \
-              -f score/score.yaml \
-              -o ${{ env.WORKLOAD_NAME }}-values.yaml
-      - name: helm install
+          make score-helm
+      - name: make k8s-up
         id: helm-install
         run: |
-          helm repo add \
-              score-helm-charts \
-              https://score-spec.github.io/score-helm-charts
-          helm install \
-              ${{ env.WORKLOAD_NAME }} \
-              score-helm-charts/workload \
-              --values ${{ env.WORKLOAD_NAME }}-values.yaml \
-              --set containers.${{ env.CONTAINER_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
-              --wait \
-              --timeout=30s
-          kubectl wait \
-              --for=condition=available \
-              --timeout=30s \
-              deployment/${{ env.WORKLOAD_NAME }}
+          make k8s-up
       - name: catch helm install errors
         if: ${{ failure() && steps.helm-install.outcome == 'failure' }}
         run: |
