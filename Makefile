@@ -65,8 +65,15 @@ k8s-up: values.yaml
 ## Expose the container deployed in Kubernetes via port-forward.
 .PHONY: k8s-test
 k8s-test: k8s-up
-	sleep 5
-	kubectl port-forward service/my-sample-workload 8080:8080
+	kubectl wait pods \
+		-n ${NAMESPACE} \
+		-l app.kubernetes.io/name=my-sample-workload \
+		--for condition=Ready \
+		--timeout=90s
+	kubectl port-forward \
+		-n ${NAMESPACE} \
+		service/my-sample-workload \
+		8080:8080
 
 ## Delete the the deployment of the local container in Kubernetes.
 .PHONY: k8s-down
