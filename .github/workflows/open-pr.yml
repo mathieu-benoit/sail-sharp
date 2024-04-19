@@ -57,7 +57,7 @@ jobs:
       - name: create kind cluster
         run: |
           kind create cluster
-          kind load docker-image ${{ env.WORKLOAD_NAME }}-my-sample-container
+          kind load docker-image sail-sharp-${{ env.WORKLOAD_NAME }}-my-sample-container
       - name: install score-helm
         uses: score-spec/setup-score@v2
         with:
@@ -115,7 +115,7 @@ jobs:
               || true
       - name: push the container to gar
         run: |
-          docker tag ${{ env.WORKLOAD_NAME }}-my-sample-container ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+          docker tag sail-sharp-${{ env.WORKLOAD_NAME }}-my-sample-container ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
           docker push \
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
