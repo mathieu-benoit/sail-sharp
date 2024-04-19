@@ -59,7 +59,7 @@ jobs:
         run: |
           kind create cluster
       - name: prepare container image
-        run |
+        run: |
           docker tag sail-sharp-${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
       - name: install score-helm
