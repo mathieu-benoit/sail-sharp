@@ -37,9 +37,9 @@ jobs:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_COMPOSE_VERSION }}
-      - name: score-compose
+      - name: make compose.yaml
         run: |
-          make score-compose
+          make compose.yaml
           cat <<EOF > compose.override.yaml
           services:
             ${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }}:
@@ -48,48 +48,31 @@ jobs:
                 - ALL
               user: "1000"
           EOF
-      - name: compose-up
+      - name: make compose-up
         run: |
           make compose-up
-      - name: compose-test
+      - name: make compose-test
         run: |
-          sleep 10
           make compose-test
       - name: create kind cluster
         run: |
           kind create cluster
-      - name: prepare container image
+      - name: make kind-load-image
         run: |
-          docker tag sail-sharp-${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-          kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+          make kind-load-image
       - name: install score-helm
         uses: score-spec/setup-score@v2
         with:
           file: score-helm
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_HELM_VERSION }}
-      - name: generate helm values file
+      - name: make values.yaml
         run: |
-          score-helm run \
-              -f score/score.yaml \
-              -o ${{ env.WORKLOAD_NAME }}-values.yaml
-      - name: helm install
+          make values.yaml
+      - name: make k8s-up
         id: helm-install
         run: |
-          helm repo add \
-              score-helm-charts \
-              https://score-spec.github.io/score-helm-charts
-          helm install \
-              ${{ env.WORKLOAD_NAME }} \
-              score-helm-charts/workload \
-              --values ${{ env.WORKLOAD_NAME }}-values.yaml \
-              --set containers.${{ env.CONTAINER_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
-              --wait \
-              --timeout=30s
-          kubectl wait \
-              --for=condition=available \
-              --timeout=30s \
-              deployment/${{ env.WORKLOAD_NAME }}
+          make k8s-up
       - name: catch helm install errors
         if: ${{ failure() && steps.helm-install.outcome == 'failure' }}
         run: |
@@ -119,6 +102,7 @@ jobs:
               || true
       - name: push the container to gar
         run: |
+          docker tag ${{ env.CONTAINER_NAME }}:test ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
           docker push \
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
