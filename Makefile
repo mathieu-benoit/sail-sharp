@@ -19,15 +19,18 @@ compose.yaml: score/score.yaml
 		--build 'my-sample-container={"context":"app/","tags":["${CONTAINER_IMAGE}"]}' \
 		--override-property containers.my-sample-container.variables.MESSAGE="Hello, Compose!"
 
+## Generate a compose.yaml file from the score spec and launch it.
 .PHONY: compose-up
 compose-up: compose.yaml
 	docker compose up --build -d --remove-orphans
 
+## Generate a compose.yaml file from the score spec, launch it and test (curl) the exposed container.
 .PHONY: compose-test
 compose-test: compose-up
 	sleep 5
 	curl localhost:8080
 
+## Delete the containers running via compose down.
 .PHONY: compose-down
 compose-down:
 	docker compose down -v --remove-orphans || true
@@ -39,11 +42,13 @@ values.yaml: score/score.yaml
 		-p containers.my-sample-container.variables.MESSAGE="Hello, Kubernetes!" \
 		-o values.yaml
 
+## Load the local container image in the current Kind cluster.
 .PHONY: kind-load-image
 kind-load-image:
 	kind load docker-image ${CONTAINER_IMAGE}
 
 NAMESPACE ?= default
+## Deploy the local container in Kubernetes.
 .PHONY: k8s-up
 k8s-up: values.yaml
 	$(MAKE) k8s-down || true
@@ -57,11 +62,13 @@ k8s-up: values.yaml
 		workload \
 		--values values.yaml
 
+## Expose the container deployed in Kubernetes via port-forward.
 .PHONY: k8s-test
 k8s-test: k8s-up
 	sleep 5
 	kubectl port-forward service/my-sample-workload 8080:8080
 
+## Delete the the deployment of the local container in Kubernetes.
 .PHONY: k8s-down
 k8s-down:
 	helm uninstall \
