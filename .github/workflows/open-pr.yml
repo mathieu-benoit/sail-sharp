@@ -12,7 +12,8 @@ env:
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
   SCORE_COMPOSE_VERSION: 'latest'
   SCORE_HELM_VERSION: 'latest'
-  WORKLOAD_NAME: my-sample-app
+  WORKLOAD_NAME: my-sample-workload
+  CONTAINER_NAME: my-sample-container
   HUMCTL_VERSION: '0.21.0'
 jobs:
   build-run-test-push:
@@ -36,40 +37,30 @@ jobs:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_COMPOSE_VERSION }}
-      - name: generate docker compose files
+      - name: score-compose
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} app/
-          score-compose run \
-              --build app/ \
-              -f score/score.yaml \
-              -o compose.yaml
+          make score-compose
           cat <<EOF > compose.override.yaml
           services:
-            ${{ env.WORKLOAD_NAME }}:
-              image: ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+            ${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }}:
               read_only: true
               cap_drop:
                 - ALL
               user: "1000"
           EOF
-      - name: build & run container
+      - name: compose-up
         run: |
-          docker compose \
-              up \
-              --build \
-              -d \
-              --wait \
-              --wait-timeout 30
-      - name: test container
+          make compose-up
+      - name: compose-test
         run: |
           sleep 10
-          curl \
-              -s \
-              --connect-timeout 30 \
-              localhost:8080
+          make compose-test
       - name: create kind cluster
         run: |
           kind create cluster
+      - name: prepare container image
+        run: |
+          docker tag sail-sharp-${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }} ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
       - name: install score-helm
         uses: score-spec/setup-score@v2
@@ -92,7 +83,7 @@ jobs:
               ${{ env.WORKLOAD_NAME }} \
               score-helm-charts/workload \
               --values ${{ env.WORKLOAD_NAME }}-values.yaml \
-              --set containers.${{ env.WORKLOAD_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
+              --set containers.${{ env.CONTAINER_NAME }}.image.name=${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --wait \
               --timeout=30s
           kubectl wait \
