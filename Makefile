@@ -28,7 +28,7 @@ compose-up: compose.yaml
 .PHONY: compose-test
 compose-test: compose-up
 	sleep 5
-	curl localhost:8080
+	curl $$(score-compose resources get-outputs dns.default#my-sample-workload.dns --format '{{ .host }}:8080')
 
 ## Delete the containers running via compose down.
 .PHONY: compose-down
