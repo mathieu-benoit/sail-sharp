@@ -13,8 +13,8 @@ env:
   IMAGE_TAG: ${{ github.ref_name }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-app
   ENVIRONMENT_ID: development
-  WORKLOAD_NAME: my-sample-app
-  HUMCTL_VERSION: '0.21.1'
+  WORKLOAD_NAME: my-sample-workload
+  HUMCTL_VERSION: '0.23.1'
 jobs:
   build-push:
     runs-on: ubuntu-22.04
@@ -107,7 +107,7 @@ jobs:
               --digest ${IMAGE_DIGEST}
       - name: humctl score deploy
         run: |
-          HUMANITEC_CLI_ALPHA_FEATURES=score-deploy humctl score deploy \
+          humctl score deploy \
               --deploy-config score/score.deploy.yaml \
               --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
               --message ${{ github.ref_name }} \
