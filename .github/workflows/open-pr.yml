@@ -32,7 +32,7 @@ jobs:
               --org ${{ secrets.HUMANITEC_ORG }} \
               --strict
       - name: install score-compose
-        uses: score-spec/setup-score@v2
+        uses: score-spec/setup-score@v3
         with:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -58,7 +58,7 @@ jobs:
         run: |
           make kind-load-image
       - name: install score-helm
-        uses: score-spec/setup-score@v2
+        uses: score-spec/setup-score@v3
         with:
           file: score-helm
           token: ${{ secrets.GITHUB_TOKEN }}
