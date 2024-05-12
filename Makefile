@@ -11,13 +11,15 @@ help:
 .PHONY: .FORCE
 .FORCE:
 
-CONTAINER_IMAGE = my-sample-container:test
+WORKLOAD_NAME = my-sample-workload
+CONTAINER_NAME = my-sample-container
+CONTAINER_IMAGE = ${CONTAINER_NAME}:test
 compose.yaml: score/score.yaml
 	score-compose init \
 		--no-sample
 	score-compose generate score/score.yaml \
-		--build 'my-sample-container={"context":"app/","tags":["${CONTAINER_IMAGE}"]}' \
-		--override-property containers.my-sample-container.variables.MESSAGE="Hello, Compose!"
+		--build '${CONTAINER_NAME}={"context":"app/","tags":["${CONTAINER_IMAGE}"]}' \
+		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Compose!"
 
 ## Generate a compose.yaml file from the score spec and launch it.
 .PHONY: compose-up
@@ -28,7 +30,7 @@ compose-up: compose.yaml
 .PHONY: compose-test
 compose-test: compose-up
 	sleep 5
-	curl $$(score-compose resources get-outputs dns.default#my-sample-workload.dns --format '{{ .host }}:8080')
+	curl $$(score-compose resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}:8080')
 
 ## Delete the containers running via compose down.
 .PHONY: compose-down
@@ -38,8 +40,8 @@ compose-down:
 values.yaml: score/score.yaml
 	score-helm run \
 		-f score/score.yaml \
-		-p containers.my-sample-container.image=${CONTAINER_IMAGE} \
-		-p containers.my-sample-container.variables.MESSAGE="Hello, Kubernetes!" \
+		-p containers.${CONTAINER_NAME}.image=${CONTAINER_IMAGE} \
+		-p containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Kubernetes!" \
 		-o values.yaml
 
 ## Load the local container image in the current Kind cluster.
@@ -57,7 +59,7 @@ k8s-up: values.yaml
 		-n ${NAMESPACE} \
 		--install \
 		--create-namespace \
-		my-sample-workload \
+		${WORKLOAD_NAME} \
 		--repo https://score-spec.github.io/score-helm-charts \
 		workload \
 		--values values.yaml
@@ -67,12 +69,12 @@ k8s-up: values.yaml
 k8s-test: k8s-up
 	kubectl wait pods \
 		-n ${NAMESPACE} \
-		-l app.kubernetes.io/name=my-sample-workload \
+		-l app.kubernetes.io/name=${WORKLOAD_NAME} \
 		--for condition=Ready \
 		--timeout=90s
 	kubectl port-forward \
 		-n ${NAMESPACE} \
-		service/my-sample-workload \
+		service/${WORKLOAD_NAME} \
 		8080:8080
 
 ## Delete the the deployment of the local container in Kubernetes.
@@ -80,4 +82,4 @@ k8s-test: k8s-up
 k8s-down:
 	helm uninstall \
 		-n ${NAMESPACE} \
-		my-sample-workload
+		${WORKLOAD_NAME}
