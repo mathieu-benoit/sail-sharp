@@ -14,9 +14,12 @@ help:
 WORKLOAD_NAME = my-sample-workload
 CONTAINER_NAME = my-sample-container
 CONTAINER_IMAGE = ${CONTAINER_NAME}:test
-compose.yaml: score/score.yaml
+
+.score-compose/state.yaml:
 	score-compose init \
 		--no-sample
+
+compose.yaml: score.yaml .score-compose/state.yaml Makefile
 	score-compose generate score/score.yaml \
 		--build '${CONTAINER_NAME}={"context":"app/","tags":["${CONTAINER_IMAGE}"]}' \
 		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Compose!"
@@ -37,12 +40,14 @@ compose-test: compose-up
 compose-down:
 	docker compose down -v --remove-orphans || true
 
-values.yaml: score/score.yaml
-	score-helm run \
-		-f score/score.yaml \
-		-p containers.${CONTAINER_NAME}.image=${CONTAINER_IMAGE} \
-		-p containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Kubernetes!" \
-		-o values.yaml
+.score-k8s/state.yaml:
+	score-k8s init \
+		--no-sample
+
+manifests.yaml: score.yaml .score-k8s/state.yaml Makefile
+	score-k8s generate score.yaml \
+		--image ${CONTAINER_IMAGE} \
+		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Kubernetes!"
 
 ## Load the local container image in the current Kind cluster.
 .PHONY: kind-load-image
@@ -50,36 +55,28 @@ kind-load-image:
 	kind load docker-image ${CONTAINER_IMAGE}
 
 NAMESPACE ?= default
-## Deploy the local container in Kubernetes.
+## Generate a manifests.yaml file from the score spec and apply it in Kubernetes.
 .PHONY: k8s-up
-k8s-up: values.yaml
+k8s-up: manifests.yaml
 	$(MAKE) k8s-down || true
 	$(MAKE) compose-down || true
-	helm upgrade \
-		-n ${NAMESPACE} \
-		--install \
-		--create-namespace \
-		${WORKLOAD_NAME} \
-		--repo https://score-spec.github.io/score-helm-charts \
-		workload \
-		--values values.yaml
+	kubectl apply \
+		-f manifests.yaml \
+		-n ${NAMESPACE}
 
 ## Expose the container deployed in Kubernetes via port-forward.
 .PHONY: k8s-test
 k8s-test: k8s-up
 	kubectl wait pods \
 		-n ${NAMESPACE} \
-		-l app.kubernetes.io/name=${WORKLOAD_NAME} \
+		-l score-workload=${WORKLOAD_NAME} \
 		--for condition=Ready \
 		--timeout=90s
-	kubectl port-forward \
-		-n ${NAMESPACE} \
-		service/${WORKLOAD_NAME} \
-		8080:8080
+	kubectl -n nginx-gateway port-forward service/ngf-nginx-gateway-fabric 8080:80
 
-## Delete the the deployment of the local container in Kubernetes.
+## Delete the deployment of the local container in Kubernetes.
 .PHONY: k8s-down
 k8s-down:
-	helm uninstall \
-		-n ${NAMESPACE} \
-		${WORKLOAD_NAME}
+	kubectl delete \
+		-f manifests.yaml \
+		-n ${NAMESPACE}

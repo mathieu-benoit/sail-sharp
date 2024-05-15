@@ -11,7 +11,7 @@ env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
   SCORE_COMPOSE_VERSION: 'latest'
-  SCORE_HELM_VERSION: 'latest'
+  SCORE_K8S_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-workload
   CONTAINER_NAME: my-sample-container
   HUMCTL_VERSION: '0.23.1'
@@ -54,24 +54,40 @@ jobs:
       - name: create kind cluster
         run: |
           kind create cluster
+          kubectl apply \
+              -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+          helm install ngf oci://ghcr.io/nginxinc/charts/nginx-gateway-fabric \
+              --create-namespace \
+              -n nginx-gateway \
+              --set service.type=ClusterIP
+          kubectl apply -f - <<EOF
+          apiVersion: gateway.networking.k8s.io/v1
+          kind: Gateway
+          metadata:
+            name: default
+          spec:
+            gatewayClassName: nginx
+            listeners:
+            - name: http
+              port: 80
+              protocol: HTTP
+          EOF
+          make kind-load-image
       - name: make kind-load-image
         run: |
           make kind-load-image
-      - name: install score-helm
+      - name: install score-k8s
         uses: score-spec/setup-score@v3
         with:
-          file: score-helm
+          file: score-k8s
           token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.SCORE_HELM_VERSION }}
-      - name: make values.yaml
-        run: |
-          make values.yaml
+          version: ${{ env.SCORE_K8S_VERSION }}
       - name: make k8s-up
-        id: helm-install
+        id: k8s-up
         run: |
           make k8s-up
       - name: catch helm install errors
-        if: ${{ failure() && steps.helm-install.outcome == 'failure' }}
+        if: ${{ failure() && steps.k8s-up.outcome == 'failure' }}
         run: |
           kubectl get events
           kubectl logs \
