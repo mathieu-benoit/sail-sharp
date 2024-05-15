@@ -44,8 +44,8 @@ compose-down:
 	score-k8s init \
 		--no-sample
 
-manifests.yaml: score.yaml .score-k8s/state.yaml Makefile
-	score-k8s generate score.yaml \
+manifests.yaml: score/score.yaml .score-k8s/state.yaml Makefile
+	score-k8s generate score/score.yaml \
 		--image ${CONTAINER_IMAGE} \
 		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Kubernetes!"
 
