@@ -19,7 +19,7 @@ CONTAINER_IMAGE = ${CONTAINER_NAME}:test
 	score-compose init \
 		--no-sample
 
-compose.yaml: score.yaml .score-compose/state.yaml Makefile
+compose.yaml: score/score.yaml .score-compose/state.yaml Makefile
 	score-compose generate score/score.yaml \
 		--build '${CONTAINER_NAME}={"context":"app/","tags":["${CONTAINER_IMAGE}"]}' \
 		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Compose!"
