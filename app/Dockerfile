@@ -18,7 +18,7 @@ RUN dotnet publish my-sample-app.csproj \
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.5-alpine3.18-amd64@sha256:b5be3788895823d873d54b626a5d40919b4713f93cd015ab066f02126bc3ba3a
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.5-alpine3.18-amd64@sha256:70fe5d6b27bc6a722d24a38865c6763b5bf6a368a8c320114ac4924b8d442378
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
