@@ -1,6 +1,6 @@
 # https://mcr.microsoft.com/product/dotnet/sdk
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/sdk:8.0.301-alpine3.18-amd64@sha256:5ccd7acc1ff31f2a0377bcbc50bd0553c28d65cd4f5ec4366e68966aea60bf2f as builder
+FROM mcr.microsoft.com/dotnet/sdk:8.0.301-noble@sha256:e6982f8da3f29407d73d737af120bff652658c6c985ccf63e62f12ce49127cc7 as builder
 RUN apk add clang build-base zlib-dev
 WORKDIR /app
 COPY my-sample-app.csproj .
@@ -18,7 +18,7 @@ RUN dotnet publish my-sample-app.csproj \
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.6-alpine3.18-amd64@sha256:c76f58ad2aa1e0c4a61efb38222be359b434e1eae731fac8d806a3a3ef966bb5
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.6-noble-chiseled@sha256:1745aa8e322b6965ea3ec8524b9f9eb128f146c804e32b1fc2272ed07ada4c8e
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
