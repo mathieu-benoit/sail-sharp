@@ -1,14 +1,13 @@
 # https://mcr.microsoft.com/product/dotnet/sdk
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/sdk:8.0.301-alpine3.18-amd64@sha256:5ccd7acc1ff31f2a0377bcbc50bd0553c28d65cd4f5ec4366e68966aea60bf2f as builder
-RUN apk add clang build-base zlib-dev
+FROM mcr.microsoft.com/dotnet/nightly/sdk:8.0-noble-aot as builder
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
-    -r linux-musl-x64
+    -r linux-x64
 COPY . .
 RUN dotnet publish my-sample-app.csproj \
-    -r linux-musl-x64 \
+    -r linux-x64 \
     -c release \
     -o /my-sample-app \
     --no-restore \
@@ -18,7 +17,7 @@ RUN dotnet publish my-sample-app.csproj \
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.6-alpine3.18-amd64@sha256:c76f58ad2aa1e0c4a61efb38222be359b434e1eae731fac8d806a3a3ef966bb5
+FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-noble-chiseled-aot
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
