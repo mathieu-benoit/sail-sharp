@@ -1,6 +1,5 @@
 apiVersion: config.humanitec.io/v1b1
 kind: ScoreDeployConfig
 workloads:
-  - name: my-sample-app/my-sample-workload
-    specFile: ./score.yaml
+  - specFile: ./score.yaml
     extensionsFile: ./humanitec.score.yaml
