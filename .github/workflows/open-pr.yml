@@ -14,10 +14,10 @@ env:
   SCORE_K8S_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-workload
   CONTAINER_NAME: my-sample-container
-  HUMCTL_VERSION: '0.23.1'
+  HUMCTL_VERSION: '0.25.0'
 jobs:
   build-run-test-push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -51,28 +51,9 @@ jobs:
       - name: make compose-test
         run: |
           make compose-test
-      - name: create kind cluster
+      - name: make kind-create-cluster
         run: |
-          kind create cluster
-          kubectl apply \
-              -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
-          helm install ngf oci://ghcr.io/nginxinc/charts/nginx-gateway-fabric \
-              --create-namespace \
-              -n nginx-gateway \
-              --set service.type=ClusterIP
-          kubectl apply -f - <<EOF
-          apiVersion: gateway.networking.k8s.io/v1
-          kind: Gateway
-          metadata:
-            name: default
-          spec:
-            gatewayClassName: nginx
-            listeners:
-            - name: http
-              port: 80
-              protocol: HTTP
-          EOF
-          make kind-load-image
+          make kind-create-cluster
       - name: make kind-load-image
         run: |
           make kind-load-image
@@ -86,7 +67,7 @@ jobs:
         id: k8s-up
         run: |
           make k8s-up
-      - name: catch helm install errors
+      - name: catch k8s-up errors
         if: ${{ failure() && steps.k8s-up.outcome == 'failure' }}
         run: |
           kubectl get events
@@ -120,7 +101,7 @@ jobs:
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
     needs: build-run-test-push
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       BASE_ENVIRONMENT: 'development'
       ENVIRONMENT_TYPE: 'development'

@@ -8,10 +8,10 @@ on:
       - closed
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
-  HUMCTL_VERSION: '0.23.1'
+  HUMCTL_VERSION: '0.25.0'
 jobs:
   ob-pr-closed:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout humctl bin
         uses: actions/checkout@v4
