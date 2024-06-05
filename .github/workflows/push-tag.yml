@@ -14,10 +14,10 @@ env:
   IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-app
   ENVIRONMENT_ID: development
   WORKLOAD_NAME: my-sample-workload
-  HUMCTL_VERSION: '0.23.1'
+  HUMCTL_VERSION: '0.25.0'
 jobs:
   build-push:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
               ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:latest
   deploy-humanitec:
     needs: build-push
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: install humctl

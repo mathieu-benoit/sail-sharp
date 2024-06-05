@@ -28,11 +28,11 @@ compose.yaml: score/score.yaml .score-compose/state.yaml Makefile
 .PHONY: compose-up
 compose-up: compose.yaml
 	docker compose up --build -d --remove-orphans
+	sleep 5
 
 ## Generate a compose.yaml file from the score spec, launch it and test (curl) the exposed container.
 .PHONY: compose-test
 compose-test: compose-up
-	sleep 5
 	curl $$(score-compose resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}:8080')
 
 ## Delete the containers running via compose down.
@@ -49,30 +49,33 @@ manifests.yaml: score/score.yaml .score-k8s/state.yaml Makefile
 		--image ${CONTAINER_IMAGE} \
 		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Kubernetes!"
 
+## Create a local Kind cluster.
+.PHONY: kind-create-cluster
+kind-create-cluster:
+	./scripts/setup-kind-cluster.sh
+
 ## Load the local container image in the current Kind cluster.
 .PHONY: kind-load-image
 kind-load-image:
 	kind load docker-image ${CONTAINER_IMAGE}
 
 NAMESPACE ?= default
-## Generate a manifests.yaml file from the score spec and apply it in Kubernetes.
+## Generate a manifests.yaml file from the score spec, deploy it to Kubernetes and wait for the Pods to be Ready.
 .PHONY: k8s-up
 k8s-up: manifests.yaml
-	$(MAKE) k8s-down || true
-	$(MAKE) compose-down || true
 	kubectl apply \
 		-f manifests.yaml \
 		-n ${NAMESPACE}
+	kubectl wait pods \
+		-n ${NAMESPACE} \
+		-l app.kubernetes.io/name=${WORKLOAD_NAME} \
+		--for condition=Ready \
+		--timeout=90s
 
 ## Expose the container deployed in Kubernetes via port-forward.
 .PHONY: k8s-test
 k8s-test: k8s-up
-	kubectl wait pods \
-		-n ${NAMESPACE} \
-		-l score-workload=${WORKLOAD_NAME} \
-		--for condition=Ready \
-		--timeout=90s
-	kubectl -n nginx-gateway port-forward service/ngf-nginx-gateway-fabric 8080:80
+	curl $$(score-k8s resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}')
 
 ## Delete the deployment of the local container in Kubernetes.
 .PHONY: k8s-down
