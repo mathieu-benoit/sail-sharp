@@ -67,7 +67,7 @@ jobs:
         id: k8s-up
         run: |
           make k8s-up
-      - name: catch helm install errors
+      - name: catch k8s-up errors
         if: ${{ failure() && steps.k8s-up.outcome == 'failure' }}
         run: |
           kubectl get events

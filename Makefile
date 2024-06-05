@@ -66,6 +66,7 @@ k8s-up: manifests.yaml
 	kubectl apply \
 		-f manifests.yaml \
 		-n ${NAMESPACE}
+	sleep 5
 	kubectl wait pods \
 		-n ${NAMESPACE} \
 		-l app.kubernetes.io/name=${WORKLOAD_NAME} \
