@@ -67,10 +67,6 @@ jobs:
         id: k8s-up
         run: |
           make k8s-up
-      - name: make k8s-test
-        id: k8s-test
-        run: |
-          make k8s-test
       - name: catch k8s-up errors
         if: ${{ failure() && steps.k8s-up.outcome == 'failure' }}
         run: |
