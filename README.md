@@ -18,7 +18,7 @@ docker run \
     --read-only \
     --cap-drop=ALL \
     --user=65532 \
-    ghcr.io/mathieu-benoit/my-sample-app:latest
+    ghcr.io/mathieu-benoit/my-sample-workload:latest
 ```
 
 Deploy the pre-built container on Kubernetes:
@@ -57,6 +57,6 @@ humctl score deploy \
     --app ${APP_ID} \
     --env ${ENVIRONMENT_ID} \
     -f score/score.yaml \
-    -i ghcr.io/mathieu-benoit/my-sample-app:latest \
+    -i ghcr.io/mathieu-benoit/my-sample-workload:latest \
     --wait
 ```
