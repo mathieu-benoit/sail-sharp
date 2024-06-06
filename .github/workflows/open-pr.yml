@@ -9,7 +9,7 @@ on:
   pull_request:
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
-  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}
+  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ env.WORKLOAD_NAME }}
   SCORE_COMPOSE_VERSION: 'latest'
   SCORE_K8S_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-workload
@@ -96,7 +96,7 @@ jobs:
               || true
       - name: push the container to gar
         run: |
-          docker tag ${{ env.CONTAINER_NAME }}:test ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
+          docker tag ${{ env.WORKLOAD_NAME }}:test ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
           docker push \
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
