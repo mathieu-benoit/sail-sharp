@@ -13,7 +13,7 @@ help:
 
 WORKLOAD_NAME = my-sample-workload
 CONTAINER_NAME = my-sample-container
-CONTAINER_IMAGE = ${CONTAINER_NAME}:test
+CONTAINER_IMAGE = ${WORKLOAD_NAME}:test
 
 .score-compose/state.yaml:
 	score-compose init \
