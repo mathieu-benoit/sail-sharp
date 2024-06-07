@@ -91,6 +91,7 @@ jobs:
               --quiet
       - name: get container image digest
         run: |
+          docker pull ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
           echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} | jq -r .[].Digest)" >> ${{ github.env }}
       - name: notify humanitec
         run: |-
