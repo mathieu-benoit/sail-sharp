@@ -91,9 +91,7 @@ jobs:
               --quiet
       - name: get container image digest
         run: |
-          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
-              --descriptor \
-              | jq -r .digest)" >> ${{ github.env }}
+          echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} | jq -r .[].Digest)" >> ${{ github.env }}
       - name: notify humanitec
         run: |-
           humctl create artefact-version \
