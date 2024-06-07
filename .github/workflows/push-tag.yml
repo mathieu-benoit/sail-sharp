@@ -17,7 +17,7 @@ env:
   HUMCTL_VERSION: '0.25.0'
 jobs:
   build-push:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
               ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:latest
   deploy-humanitec:
     needs: build-push
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: install humctl
@@ -91,8 +91,9 @@ jobs:
               --quiet
       - name: get container image digest
         run: |
-          docker pull ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-          echo "IMAGE_DIGEST=$(docker inspect --format '{{.Digest}}' ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }})" >> ${{ github.env }}
+          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+              --descriptor \
+              | jq -r .digest)" >> ${{ github.env }}
       - name: notify humanitec
         run: |-
           humctl create artefact-version \
