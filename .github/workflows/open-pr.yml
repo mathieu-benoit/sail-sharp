@@ -140,7 +140,7 @@ jobs:
       - name: get container image digest
         run: |
           docker pull ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-          echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} | jq -r .[].Digest)" >> ${{ github.env }}
+          echo "IMAGE_DIGEST=$(docker inspect --format '{{.Digest}}' ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }})" >> ${{ github.env }}
       - name: humctl score deploy
         run: |
           humctl score deploy \
