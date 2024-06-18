@@ -5,10 +5,10 @@ ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
-    -a $TARGETARCH
+    -r $BUILDPLATFORM
 COPY . .
 RUN dotnet publish my-sample-app.csproj \
-    -a $TARGETARCH \
+    -r $BUILDPLATFORM \
     -c release \
     -o /my-sample-app \
     --no-restore \
