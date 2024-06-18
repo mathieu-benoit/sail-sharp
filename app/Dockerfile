@@ -1,13 +1,14 @@
 # https://mcr.microsoft.com/product/dotnet/sdk
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/nightly/sdk:8.0.302-noble-aot as builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/nightly/sdk:8.0.302-noble-aot as builder
+ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
-    -r linux-x64
+    -a $TARGETARCH
 COPY . .
 RUN dotnet publish my-sample-app.csproj \
-    -r linux-x64 \
+    -a $TARGETARCH \
     -c release \
     -o /my-sample-app \
     --no-restore \
@@ -17,7 +18,7 @@ RUN dotnet publish my-sample-app.csproj \
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0.6-noble-chiseled-aot
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0.6-noble-chiseled-aot
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
