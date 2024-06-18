@@ -21,7 +21,7 @@ CONTAINER_IMAGE = ${WORKLOAD_NAME}:test
 
 compose.yaml: score/score.yaml .score-compose/state.yaml Makefile
 	score-compose generate score/score.yaml \
-		--build '${CONTAINER_NAME}={"context":"app/","tags":["${CONTAINER_IMAGE}"], "platforms":["linux/amd64,linux/arm64"]}' \
+		--build '${CONTAINER_NAME}={"context":"app/","tags":["${CONTAINER_IMAGE}"],"platforms":["linux/amd64,linux/arm64"]}' \
 		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Compose!"
 
 ## Generate a compose.yaml file from the score spec and launch it.
