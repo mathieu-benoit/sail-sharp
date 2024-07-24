@@ -3,8 +3,6 @@ profile: humanitec/default-module
 spec:
   containers:
     my-sample-container:
-      env:
-      - name: POD_NAME
-        value: "${pod.metadata.name}"
-      - name: NAMESPACE_NAME
-        value: "${pod.metadata.namespace}"
+      variables:
+        POD_NAME: ${pod.metadata.name}
+        NAMESPACE_NAME: ${pod.metadata.namespace}
