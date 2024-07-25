@@ -14,7 +14,7 @@ env:
   SCORE_K8S_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-workload
   CONTAINER_NAME: my-sample-container
-  HUMCTL_VERSION: '0.25.0'
+  HUMCTL_VERSION: '*'
 jobs:
   build-run-test-push:
     runs-on: ubuntu-22.04

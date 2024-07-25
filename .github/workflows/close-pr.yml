@@ -8,7 +8,7 @@ on:
       - closed
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
-  HUMCTL_VERSION: '0.25.0'
+  HUMCTL_VERSION: '*'
 jobs:
   ob-pr-closed:
     runs-on: ubuntu-22.04
