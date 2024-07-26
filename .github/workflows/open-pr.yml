@@ -176,10 +176,12 @@ jobs:
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} -o json)
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
+          RUNTIME_ERRORS=$(humctl api get /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }}/runtime \
+              | grep '"status": "Failure"' -B 10)
+          if [ "$DEPLOYMENT_ERRORS" = "[]" ] && [ "$RUNTIME_ERRORS" = "" ]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
             echo "" >> pr_message.txt
-          else
+          elif [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
             echo "## Deployment failed for ${{ env.ENVIRONMENT_NAME }}! :x:" >> pr_message.txt
             echo "" >> pr_message.txt
             echo "### Errors:" >> pr_message.txt
@@ -200,6 +202,17 @@ jobs:
             echo '```' >> pr_message.txt
             echo "" >> pr_message.txt
             echo "</details>" >> pr_message.txt
+            echo "" >> pr_message.txt
+          else
+            echo "## Workload is unhealthy for ${{ env.ENVIRONMENT_NAME }}! :x:" >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo "### Errors:" >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo '```json' >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo "$RUNTIME_ERRORS" >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo '```' >> pr_message.txt
             echo "" >> pr_message.txt
           fi
           
@@ -226,7 +239,7 @@ jobs:
           echo "" >> pr_message.txt
           echo "</details>" >> pr_message.txt
 
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
+          if [ "$DEPLOYMENT_ERRORS" = "[]" ] && [ "$RUNTIME_ERRORS" = "" ]; then
             echo "<details><summary>Active Resources Usage</summary>" >> pr_message.txt
             echo "" >> pr_message.txt
             echo "### Active Resources Usage:" >> pr_message.txt
@@ -241,9 +254,7 @@ jobs:
             echo '```' >> pr_message.txt
             echo "" >> pr_message.txt
             echo "</details>" >> pr_message.txt
-          fi
 
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
             echo "<details><summary>Resources Graph</summary>" >> pr_message.txt
             echo "" >> pr_message.txt
             echo "### Resources Graph:" >> pr_message.txt
