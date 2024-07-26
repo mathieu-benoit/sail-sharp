@@ -25,8 +25,12 @@ jobs:
       - name: promote humanitec env
         run: |
           if [ "${{ github.event.inputs.environment }}" == "staging" ]; then
-              humctl deploy env development staging
+              humctl deploy env development staging \
+                  --token ${{ secrets.HUMANITEC_TOKEN }} \
+                  --org ${{ secrets.HUMANITEC_ORG }}
           else
-              humctl deploy env staging production
+              humctl deploy env staging production \
+                  --token ${{ secrets.HUMANITEC_TOKEN }} \
+                  --org ${{ secrets.HUMANITEC_ORG }}
           fi
 
