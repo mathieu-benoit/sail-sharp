@@ -13,8 +13,6 @@ jobs:
   ob-pr-closed:
     runs-on: ubuntu-22.04
     steps:
-      - name: checkout humctl bin
-        uses: actions/checkout@v4
       - name: install humctl
         uses: humanitec/setup-cli-action@v1
         with:

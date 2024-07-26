@@ -1,0 +1,32 @@
+name: promote-env
+permissions:
+  contents: read
+  id-token: write
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        required: true
+        type: choice
+        description: Environment to deploy to
+        options: 
+        - staging
+        - production
+env:
+  HUMCTL_VERSION: '*'
+jobs:
+  job:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: install humctl
+        uses: humanitec/setup-cli-action@v1
+        with:
+          version: ${{ env.HUMCTL_VERSION }}
+      - name: promote humanitec env
+        run: |
+          if [ "${{ github.event.inputs.name }}"" == "staging" ]; then
+              humctl deploy env development staging
+          else
+              humctl deploy env staging production
+          fi
+
