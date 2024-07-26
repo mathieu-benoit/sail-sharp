@@ -3,7 +3,7 @@ metadata:
   name: my-sample-workload
 containers:
   my-sample-container:
-    image: .
+    image: ghcr.io/mathieu-benoit/my-sample-workload:pouet
     resources:
       limits:
         memory: "256Mi"
@@ -13,10 +13,7 @@ containers:
         cpu: "25m"
     variables:
       MESSAGE: "Hello, Test!"
-      MISSING_VAR: ${resources.env.nonexistent-var}
 resources:
-  env:
-    type: environment
   dns:
     type: dns
   route:
