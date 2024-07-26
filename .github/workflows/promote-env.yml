@@ -27,10 +27,12 @@ jobs:
           if [ "${{ github.event.inputs.environment }}" == "staging" ]; then
               humctl deploy env development staging \
                   --token ${{ secrets.HUMANITEC_TOKEN }} \
-                  --org ${{ secrets.HUMANITEC_ORG }}
+                  --org ${{ secrets.HUMANITEC_ORG }} \
+                  --app ${{ vars.APP_NAME }}
           else
               humctl deploy env staging production \
                   --token ${{ secrets.HUMANITEC_TOKEN }} \
-                  --org ${{ secrets.HUMANITEC_ORG }}
+                  --org ${{ secrets.HUMANITEC_ORG }} \
+                  --app ${{ vars.APP_NAME }}
           fi
 
