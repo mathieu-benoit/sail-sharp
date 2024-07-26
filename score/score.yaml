@@ -12,7 +12,8 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "Hello, Redis!"
+      REDIS_CONNECTION: "${resources.redis-cart.host}:${resources.redis-cart.port},user=${resources.redis-cart.username},password=${resources.redis-cart.password}"
 resources:
   dns:
     type: dns
@@ -22,6 +23,8 @@ resources:
       host: ${resources.dns.host}
       path: /
       port: 8080
+  redis:
+    type: redis
 service:
   ports:
     tcp:
