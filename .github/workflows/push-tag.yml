@@ -11,7 +11,7 @@ on:
       - 'v*'
 env:
   IMAGE_TAG: ${{ github.ref_name }}
-  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-workload
+  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-app
   ENVIRONMENT_ID: development
   WORKLOAD_NAME: my-sample-workload
   HUMCTL_VERSION: '*'

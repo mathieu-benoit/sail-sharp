@@ -8,7 +8,6 @@ on:
       - closed
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
-  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-workload
   HUMCTL_VERSION: '*'
 jobs:
   ob-pr-closed:
@@ -32,6 +31,9 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           version: latest
+      - name: prepare environment variables
+        run: |
+          echo "IMAGE_NAME=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}" >> $GITHUB_ENV
       - name: sign-in to gar
         run: |
           gcloud auth configure-docker \
@@ -40,7 +42,7 @@ jobs:
       - name: delete container image in gar
         run: |
           gcloud artifacts docker images delete \
-              ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+              ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID }} \
               --delete-tags \
               --quiet
 
