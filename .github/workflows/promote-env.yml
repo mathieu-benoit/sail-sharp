@@ -1,7 +1,4 @@
 name: promote-env
-permissions:
-  contents: read
-  id-token: write
 on:
   workflow_dispatch:
     inputs:
