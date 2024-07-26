@@ -15,6 +15,8 @@ containers:
       MESSAGE: "Hello, Test!"
       MISSING_VAR: ${resources.env.nonexistent-var}
 resources:
+  env:
+    type: environment
   dns:
     type: dns
   route:
