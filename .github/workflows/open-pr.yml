@@ -163,34 +163,35 @@ jobs:
           else
             echo "## Deployment failed for ${{ env.ENVIRONMENT_NAME }}! :x:" >> pr_message.txt
             echo "" >> pr_message.txt
-            echo "### Errors:" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```json' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" | jq .[0].status.message -r >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "<details><summary>Errors details</summary>" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "### Errors details:" >> pr_message.txt
-            echo '```json' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "</details>" >> pr_message.txt
-            echo "" >> pr_message.txt
-          fi
+            
+            if [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
+              echo "### Deployment Errors:" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```json' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$DEPLOYMENT_ERRORS" | jq .[0].status.message -r >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "<details><summary>Errors details</summary>" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "### Errors details:" >> pr_message.txt
+              echo '```json' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "</details>" >> pr_message.txt
+              echo "" >> pr_message.txt
+            fi
 
-          
-          if [ "$RUNTIME_ERRORS" != "" ]; then
-            echo "" >> pr_message.txt
-            echo "### Runtime errors:" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$RUNTIME_ERRORS" >> pr_message.txt
-            echo "" >> pr_message.txt
+            if [ "$RUNTIME_ERRORS" != "" ]; then
+              echo "### Runtime errors:" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$RUNTIME_ERRORS" >> pr_message.txt
+              echo "" >> pr_message.txt
+            fi
           fi
           
           echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
