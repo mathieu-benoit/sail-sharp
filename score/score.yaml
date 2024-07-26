@@ -3,7 +3,7 @@ metadata:
   name: my-sample-workload
 containers:
   my-sample-container:
-    image: ghcr.io/mathieu-benoit/my-sample-workload:pouet
+    image: .
     resources:
       limits:
         memory: "256Mi"
@@ -12,7 +12,7 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, Test!"
+      MESSAGE: "Hello, World!"
 resources:
   dns:
     type: dns
