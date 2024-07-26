@@ -12,8 +12,7 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, Redis!"
-      REDIS_CONNECTION: "${resources.redis.host}:${resources.redis.port},user=${resources.redis.username},password=${resources.redis.password}"
+      MESSAGE: "Hello, World!"
 resources:
   dns:
     type: dns
@@ -23,8 +22,6 @@ resources:
       host: ${resources.dns.host}
       path: /
       port: 8080
-  redis:
-    type: redis
 service:
   ports:
     tcp:
