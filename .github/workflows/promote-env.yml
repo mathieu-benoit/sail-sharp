@@ -5,7 +5,7 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      env:
+      environment:
         required: true
         type: choice
         description: Environment to deploy to
@@ -24,7 +24,7 @@ jobs:
           version: ${{ env.HUMCTL_VERSION }}
       - name: promote humanitec env
         run: |
-          if [ "${{ github.event.inputs.name }}"" == "staging" ]; then
+          if [ "${{ github.event.inputs.environment }}" == "staging" ]; then
               humctl deploy env development staging
           else
               humctl deploy env staging production
