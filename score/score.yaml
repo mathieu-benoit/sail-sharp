@@ -13,7 +13,7 @@ containers:
         cpu: "25m"
     variables:
       MESSAGE: "Hello, Redis!"
-      REDIS_CONNECTION: "${resources.redis-cart.host}:${resources.redis-cart.port},user=${resources.redis-cart.username},password=${resources.redis-cart.password}"
+      REDIS_CONNECTION: "${resources.redis.host}:${resources.redis.port},user=${resources.redis.username},password=${resources.redis.password}"
 resources:
   dns:
     type: dns
