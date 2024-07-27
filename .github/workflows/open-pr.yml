@@ -209,7 +209,7 @@ jobs:
               echo "" >> pr_message.txt
             fi
 
-            if [ "$RUNTIME_ERRORS" != "" ]; then
+            if [ -n "$RUNTIME_ERRORS" ]; then
               echo "### Runtime errors:" >> pr_message.txt
               echo "" >> pr_message.txt
               echo "$RUNTIME_ERRORS" >> pr_message.txt
@@ -261,6 +261,7 @@ jobs:
             echo "<details><summary>Resources Graph</summary>" >> pr_message.txt
             echo "" >> pr_message.txt
             echo "### Resources Graph:" >> pr_message.txt
+            echo "Use a [Graphviz](https://graphviz.org) viewer for a visual representation." >> pr_message.txt
             echo '```none' >> pr_message.txt
             echo "" >> pr_message.txt
             humctl resources graph \
