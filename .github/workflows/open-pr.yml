@@ -180,7 +180,7 @@ jobs:
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               | grep '"status": "Failure"' -B 10 -A 1) \
               || true
-          if [ "$DEPLOYMENT_ERRORS" = "[]" && -z "$RUNTIME_ERRORS" ]; then
+          if [[ "$DEPLOYMENT_ERRORS" = "[]" && -z "$RUNTIME_ERRORS" ]]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
             echo "" >> pr_message.txt
           else
