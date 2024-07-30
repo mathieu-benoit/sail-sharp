@@ -176,38 +176,52 @@ jobs:
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} -o json)
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
+          RUNTIME_ERRORS=$(humctl api get /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }}/runtime \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              | grep '"status": "Failure"' -B 10 -A 1) \
+              || true
+          if [[ "$DEPLOYMENT_ERRORS" = "[]" && -z "$RUNTIME_ERRORS" ]]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
             echo "" >> pr_message.txt
           else
             echo "## Deployment failed for ${{ env.ENVIRONMENT_NAME }}! :x:" >> pr_message.txt
             echo "" >> pr_message.txt
-            echo "### Errors:" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```json' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" | jq .[0].status.message -r >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "<details><summary>Errors details</summary>" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "### Errors details:" >> pr_message.txt
-            echo '```json' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "</details>" >> pr_message.txt
-            echo "" >> pr_message.txt
+            
+            if [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
+              echo "### Deployment errors:" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```json' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$DEPLOYMENT_ERRORS" | jq .[0].status.message -r >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "<details><summary>Deployment errors details</summary>" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "### Deployment errors details:" >> pr_message.txt
+              echo '```json' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "</details>" >> pr_message.txt
+              echo "" >> pr_message.txt
+            fi
+
+            if [ -n "$RUNTIME_ERRORS" ]; then
+              echo "### Runtime errors:" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$RUNTIME_ERRORS" >> pr_message.txt
+              echo "" >> pr_message.txt
+            fi
           fi
           
           echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
           echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
 
           echo "" >> pr_message.txt
-          echo "### Domains:" >> pr_message.txt
+          echo "### URLs:" >> pr_message.txt
           echo "" >> pr_message.txt
           echo "$DOMAINS" >> pr_message.txt
           echo "" >> pr_message.txt
@@ -247,6 +261,7 @@ jobs:
             echo "<details><summary>Resources Graph</summary>" >> pr_message.txt
             echo "" >> pr_message.txt
             echo "### Resources Graph:" >> pr_message.txt
+            echo "Use a [Graphviz](https://graphviz.org) viewer for a visual representation." >> pr_message.txt
             echo '```none' >> pr_message.txt
             echo "" >> pr_message.txt
             humctl resources graph \
@@ -259,8 +274,6 @@ jobs:
             echo "" >> pr_message.txt
             echo "</details>" >> pr_message.txt
           fi
-
-          cat pr_message.txt
       - name: comment pr
         if: ${{ always() }}
         run: |
