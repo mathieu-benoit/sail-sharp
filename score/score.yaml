@@ -13,10 +13,7 @@ containers:
         cpu: "25m"
     variables:
       MESSAGE: "Hello, World!"
-      MISSING_VAR: ${resources.env.nonexistent-var}
 resources:
-  env:
-    type: environment
   dns:
     type: dns
   route:
