@@ -275,7 +275,9 @@ jobs:
             echo "</details>" >> pr_message.txt
           fi
 
-          cat pr_message.txt
+          if [ -n "$RUNTIME_ERRORS" ]; then
+            exit 0
+          fi
       - name: comment pr
         if: ${{ always() }}
         run: |
