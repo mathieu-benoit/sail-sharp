@@ -188,7 +188,7 @@ jobs:
             echo "" >> pr_message.txt
             
             if [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
-              echo "### Deployment Errors:" >> pr_message.txt
+              echo "### Deployment errors:" >> pr_message.txt
               echo "" >> pr_message.txt
               echo '```json' >> pr_message.txt
               echo "" >> pr_message.txt
@@ -196,9 +196,9 @@ jobs:
               echo "" >> pr_message.txt
               echo '```' >> pr_message.txt
               echo "" >> pr_message.txt
-              echo "<details><summary>Errors details</summary>" >> pr_message.txt
+              echo "<details><summary>Deployment errors details</summary>" >> pr_message.txt
               echo "" >> pr_message.txt
-              echo "### Errors details:" >> pr_message.txt
+              echo "### Deployment errors details:" >> pr_message.txt
               echo '```json' >> pr_message.txt
               echo "" >> pr_message.txt
               echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
@@ -221,7 +221,7 @@ jobs:
           echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
 
           echo "" >> pr_message.txt
-          echo "### Domains:" >> pr_message.txt
+          echo "### URLs:" >> pr_message.txt
           echo "" >> pr_message.txt
           echo "$DOMAINS" >> pr_message.txt
           echo "" >> pr_message.txt
