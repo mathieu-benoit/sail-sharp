@@ -40,7 +40,7 @@ jobs:
       - name: delete container image in gar
         run: |
           gcloud artifacts docker images delete \
-              ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --delete-tags \
               --quiet
 
