@@ -25,12 +25,14 @@ jobs:
               humctl deploy env development staging \
                   --token ${{ secrets.HUMANITEC_TOKEN }} \
                   --org ${{ secrets.HUMANITEC_ORG }} \
-                  --app ${{ vars.APP_NAME }}
+                  --app ${{ vars.APP_NAME }} \
+                  -m "Development to Staging"
           else
               humctl deploy env staging production \
                   --token ${{ secrets.HUMANITEC_TOKEN }} \
                   --org ${{ secrets.HUMANITEC_ORG }} \
-                  --app ${{ vars.APP_NAME }}
+                  --app ${{ vars.APP_NAME }} \
+                  -m "Staging to Production"
           fi
       - name: wait for deployment
         run: |
