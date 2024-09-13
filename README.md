@@ -9,6 +9,7 @@
 
 Associated blog posts:
 - [Sail Sharp, 8 tips to optimize and secure your .NET containers for Kubernetes](https://medium.com/p/c68ba253844a)
+- [alpine, distroless or scratch?](https://medium.com/google-cloud/alpine-distroless-or-scratch-caac35250e0b)
 - [Keyless Google Cloud Authentication to push your containers to Artifact Registry from GitHub Actions](https://medium.com/p/3932dce678b8)
 
 ## Deploy the pre-built container with `docker` and `kubectl`
