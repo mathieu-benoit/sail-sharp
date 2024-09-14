@@ -2,7 +2,7 @@
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
 # https://mcr.microsoft.com/product/dotnet/nightly/sdk
 # https://mcr.microsoft.com/v2/dotnet/nightly/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/nightly/sdk:9.0.100-rc.1-azurelinux3.0-distroless-aot AS builder
+FROM mcr.microsoft.com/dotnet/nightly/sdk:9.0.100-rc.1-azurelinux3.0-aot AS builder
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
