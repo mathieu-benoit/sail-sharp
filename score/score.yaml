@@ -13,9 +13,9 @@ containers:
         cpu: "25m"
     variables:
       MESSAGE: "Hello, Universe!"
-      REDIS_ADDR: "${resources.redis-cart.host}:${resources.redis-cart.port},user=${resources.redis-cart.username},password=${resources.redis-cart.password}"
+      REDIS_ADDR: "${resources.my-redis.host}:${resources.my-redis.port},user=${resources.my-redis.username},password=${resources.my-redis.password}"
 resources:
-  redis:
+  my-redis:
     type: redis
   dns:
     type: dns
