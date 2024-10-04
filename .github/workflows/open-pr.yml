@@ -115,14 +115,22 @@ jobs:
           version: ${{ env.HUMCTL_VERSION }}
       - name: create humanitec preview env
         run: |
-          humctl create environment ${{ env.ENVIRONMENT_ID }} \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --name ${{ env.ENVIRONMENT_NAME }} \
-              -t ${{ env.ENVIRONMENT_TYPE }} \
-              --from ${{ env.BASE_ENVIRONMENT }} \
-              || true
+          EXISTING_ENV_ID=$(humctl get environment ${{ env.ENVIRONMENT_ID }} \
+                              --token ${{ secrets.HUMANITEC_TOKEN }} \
+                              --org ${{ secrets.HUMANITEC_ORG }} \
+                              --app ${{ vars.APP_NAME }} \
+                              -o json \
+                              | jq .metadata.id \
+                              || true)
+          if [ -z "$EXISTING_ENV_ID" ]; then
+              humctl create environment ${{ env.ENVIRONMENT_ID }} \
+                --token ${{ secrets.HUMANITEC_TOKEN }} \
+                --org ${{ secrets.HUMANITEC_ORG }} \
+                --app ${{ vars.APP_NAME }} \
+                --name ${{ env.ENVIRONMENT_NAME }} \
+                -t ${{ env.ENVIRONMENT_TYPE }} \
+                --from ${{ env.BASE_ENVIRONMENT }}
+          fi
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v2
         with:
