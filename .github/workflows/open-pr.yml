@@ -122,6 +122,7 @@ jobs:
                               -o json \
                               | jq .metadata.id \
                               || true)
+          echo $EXISTING_ENV_ID
           if [ -z "$EXISTING_ENV_ID" ]; then
               humctl create environment ${{ env.ENVIRONMENT_ID }} \
                 --token ${{ secrets.HUMANITEC_TOKEN }} \
