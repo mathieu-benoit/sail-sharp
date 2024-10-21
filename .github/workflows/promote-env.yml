@@ -26,38 +26,13 @@ jobs:
                   --token ${{ secrets.HUMANITEC_TOKEN }} \
                   --org ${{ secrets.HUMANITEC_ORG }} \
                   --app ${{ vars.APP_NAME }} \
-                  -m "Development to Staging"
+                  -m "Development to Staging" \
+                  --wait
           else
               humctl deploy env staging production \
                   --token ${{ secrets.HUMANITEC_TOKEN }} \
                   --org ${{ secrets.HUMANITEC_ORG }} \
                   --app ${{ vars.APP_NAME }} \
-                  -m "Staging to Production"
-          fi
-      - name: wait for deployment
-        run: |
-          sleep 1
-          IS_DONE=false
-          CURRENT_STATUS=""
-          while [ "$IS_DONE" = false ]; do
-            CURRENT_STATUS=$(humctl get deployment . -o json \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ github.event.inputs.environment }} \
-              | jq -r .status.status)
-            if [ "$CURRENT_STATUS" = "in progress" ]; then
-              echo "Deployment still in progress..."
-              sleep 1
-            elif [ "$CURRENT_STATUS" = "failed" ]; then
-              echo "Deployment failed!"
-              IS_DONE=true
-            else
-              echo "Deployment successfully completed!"
-              IS_DONE=true
-            fi
-          done
-          echo $CURRENT_STATUS
-          if [ "$CURRENT_STATUS" = "failed" ]; then
-              exit 1
+                  -m "Staging to Production" \
+                  --wait
           fi
