@@ -17,7 +17,7 @@ env:
   HUMCTL_VERSION: '*'
 jobs:
   build-run-test-push:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -101,7 +101,7 @@ jobs:
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
     needs: build-run-test-push
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       BASE_ENVIRONMENT: 'development'
       ENVIRONMENT_TYPE: 'development'
@@ -147,9 +147,7 @@ jobs:
               --quiet
       - name: get container image digest
         run: |
-          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
-              --descriptor \
-              | jq -r .digest)" >> ${{ github.env }}
+          echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --format='{{index .RepoDigests 0}}')" >> ${{ github.env }}
       - name: humctl score deploy
         run: |
           humctl score deploy \
