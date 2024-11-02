@@ -92,7 +92,7 @@ jobs:
       - name: get container image digest
         run: |
           docker pull ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --format='{{index .RepoDigests 0}}')" >> ${{ github.env }}
+          echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --format='{{index .Digest}}')" >> ${{ github.env }}
       - name: notify humanitec
         run: |-
           humctl create artefact-version \

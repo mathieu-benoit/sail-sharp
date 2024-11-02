@@ -147,7 +147,8 @@ jobs:
               --quiet
       - name: get container image digest
         run: |
-          echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --format='{{index .RepoDigests 0}}')" >> ${{ github.env }}
+          docker pull ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --format='{{index .Digest}}')" >> ${{ github.env }}
       - name: humctl score deploy
         run: |
           humctl score deploy \
