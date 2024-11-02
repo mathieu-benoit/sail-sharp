@@ -89,10 +89,12 @@ jobs:
           gcloud auth configure-docker \
               ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
               --quiet
+      - uses: oras-project/setup-oras@v1
       - name: get container image digest
         run: |
-          docker pull ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          echo "IMAGE_DIGEST=$(docker inspect ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --format='{{.Digest}}')" >> ${{ github.env }}
+          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
+              --descriptor \
+              | jq -r .digest)" >> ${{ github.env }}
       - name: notify humanitec
         run: |-
           humctl create artefact-version \
