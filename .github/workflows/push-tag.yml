@@ -92,7 +92,7 @@ jobs:
       - uses: oras-project/setup-oras@v1
       - name: get container image digest
         run: |
-          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
+          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
               --descriptor \
               | jq -r .digest)" >> ${{ github.env }}
       - name: notify humanitec
