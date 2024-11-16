@@ -2,7 +2,7 @@
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
 # https://mcr.microsoft.com/product/dotnet/nightly/sdk
 # https://mcr.microsoft.com/v2/dotnet/nightly/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/nightly/sdk:9.0.100-rc.2-noble-aot AS builder
+FROM mcr.microsoft.com/dotnet/nightly/sdk:9.0.100-noble-aot AS builder
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
@@ -21,7 +21,7 @@ RUN dotnet publish my-sample-app.csproj \
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
 # https://mcr.microsoft.com/product/dotnet/nightly/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/nightly/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:9.0.0-rc.2-noble-chiseled-aot
+FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:9.0.0-noble-chiseled-aot
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
