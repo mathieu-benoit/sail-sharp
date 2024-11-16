@@ -12,7 +12,7 @@ env:
   HUMCTL_VERSION: '*'
 jobs:
   ob-pr-closed:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: install humctl
         uses: humanitec/setup-cli-action@v1

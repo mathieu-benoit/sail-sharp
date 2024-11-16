@@ -17,7 +17,7 @@ env:
   HUMCTL_VERSION: '*'
 jobs:
   build-run-test-push:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -101,7 +101,7 @@ jobs:
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
     needs: build-run-test-push
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       BASE_ENVIRONMENT: 'development'
       ENVIRONMENT_TYPE: 'development'
@@ -115,14 +115,22 @@ jobs:
           version: ${{ env.HUMCTL_VERSION }}
       - name: create humanitec preview env
         run: |
-          humctl create environment ${{ env.ENVIRONMENT_ID }} \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --name ${{ env.ENVIRONMENT_NAME }} \
-              -t ${{ env.ENVIRONMENT_TYPE }} \
-              --from ${{ env.BASE_ENVIRONMENT }} \
-              || true
+          EXISTING_ENV_ID=$(humctl get environment ${{ env.ENVIRONMENT_ID }} \
+                              --token ${{ secrets.HUMANITEC_TOKEN }} \
+                              --org ${{ secrets.HUMANITEC_ORG }} \
+                              --app ${{ vars.APP_NAME }} \
+                              -o json \
+                              | jq .metadata.id \
+                              || true)
+          if [ -z "$EXISTING_ENV_ID" ]; then
+              humctl create environment ${{ env.ENVIRONMENT_ID }} \
+                --token ${{ secrets.HUMANITEC_TOKEN }} \
+                --org ${{ secrets.HUMANITEC_ORG }} \
+                --app ${{ vars.APP_NAME }} \
+                --name ${{ env.ENVIRONMENT_NAME }} \
+                -t ${{ env.ENVIRONMENT_TYPE }} \
+                --from ${{ env.BASE_ENVIRONMENT }}
+          fi
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v2
         with:
@@ -137,6 +145,7 @@ jobs:
           gcloud auth configure-docker \
               ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
               --quiet
+      - uses: oras-project/setup-oras@v1
       - name: get container image digest
         run: |
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
