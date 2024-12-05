@@ -249,29 +249,6 @@ jobs:
           echo "" >> pr_message.txt
           echo "</details>" >> pr_message.txt
 
-          echo "<details><summary>Active Resources diff</summary>" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "### Active Resources diff:" >> pr_message.txt
-          echo '```json' >> pr_message.txt
-          echo "" >> pr_message.txt
-          humctl get active-resource \
-                --env ${{ env.ENVIRONMENT_ID }} \
-                --token ${{ secrets.HUMANITEC_TOKEN }} \
-                --org ${{ secrets.HUMANITEC_ORG }} \
-                --app ${{ vars.APP_NAME }} \
-                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id]' > res-usage-${{ env.ENVIRONMENT_ID }}.txt
-          humctl get active-resource \
-                --env ${{ env.BASE_ENVIRONMENT }} \
-                --token ${{ secrets.HUMANITEC_TOKEN }} \
-                --org ${{ secrets.HUMANITEC_ORG }} \
-                --app ${{ vars.APP_NAME }} \
-                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id]' > res-usage-${{ env.BASE_ENVIRONMENT }}.txt
-          diff res-usage-${{ env.BASE_ENVIRONMENT }}.txt res-usage-${{ env.ENVIRONMENT_ID }}.txt >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo '```' >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "</details>" >> pr_message.txt
-
           if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
             echo "<details><summary>Active Resources Usage</summary>" >> pr_message.txt
             echo "" >> pr_message.txt
@@ -288,6 +265,29 @@ jobs:
             echo "" >> pr_message.txt
             echo "</details>" >> pr_message.txt
           fi
+
+          echo "<details><summary>Active Resources diff</summary>" >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "### Active Resources diff:" >> pr_message.txt
+          echo '```json' >> pr_message.txt
+          echo "" >> pr_message.txt
+          humctl get active-resource \
+                --env ${{ env.ENVIRONMENT_ID }} \
+                --token ${{ secrets.HUMANITEC_TOKEN }} \
+                --org ${{ secrets.HUMANITEC_ORG }} \
+                --app ${{ vars.APP_NAME }} \
+                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.resource]' > res-usage-${{ env.ENVIRONMENT_ID }}.txt
+          humctl get active-resource \
+                --env ${{ env.BASE_ENVIRONMENT }} \
+                --token ${{ secrets.HUMANITEC_TOKEN }} \
+                --org ${{ secrets.HUMANITEC_ORG }} \
+                --app ${{ vars.APP_NAME }} \
+                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.resource]' > res-usage-${{ env.BASE_ENVIRONMENT }}.txt
+          diff res-usage-${{ env.BASE_ENVIRONMENT }}.txt res-usage-${{ env.ENVIRONMENT_ID }}.txt >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo '```' >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "</details>" >> pr_message.txt
 
           if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
             echo "<details><summary>Resources Graph</summary>" >> pr_message.txt
