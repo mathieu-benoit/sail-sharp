@@ -283,7 +283,7 @@ jobs:
                 --org ${{ secrets.HUMANITEC_ORG }} \
                 --app ${{ vars.APP_NAME }} \
                 -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.resource]' > res-usage-${{ env.BASE_ENVIRONMENT }}.txt
-          diff res-usage-${{ env.BASE_ENVIRONMENT }}.txt res-usage-${{ env.ENVIRONMENT_ID }}.txt || true >> pr_message.txt
+          diff res-usage-${{ env.BASE_ENVIRONMENT }}.txt res-usage-${{ env.ENVIRONMENT_ID }}.txt >> pr_message.txt || true
           echo "" >> pr_message.txt
           echo '```' >> pr_message.txt
           echo "" >> pr_message.txt
