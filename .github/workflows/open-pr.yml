@@ -17,12 +17,18 @@ env:
   HUMCTL_VERSION: '*'
 jobs:
   run-container-on-arm64:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: checkout code
         uses: actions/checkout@v4
       - name: install docker
-        uses: docker/setup-docker-action@v4
+        run: |
+          brew install docker
+          brew install docker docker-compose
+          # Link the Docker Compose v2 plugin so it's understood by the docker CLI
+          mkdir -p ~/.docker/cli-plugins
+          ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
+          colima start
       - name: install score-compose
         uses: score-spec/setup-score@v3
         with:
