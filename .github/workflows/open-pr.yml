@@ -14,10 +14,10 @@ env:
   SCORE_K8S_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-workload
   CONTAINER_NAME: my-sample-container
-  HUMCTL_VERSION: '0.25.0'
+  HUMCTL_VERSION: '*'
 jobs:
   build-run-test-push:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -101,7 +101,7 @@ jobs:
               ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
   deploy-preview-env:
     needs: build-run-test-push
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       BASE_ENVIRONMENT: 'development'
       ENVIRONMENT_TYPE: 'development'
@@ -115,14 +115,22 @@ jobs:
           version: ${{ env.HUMCTL_VERSION }}
       - name: create humanitec preview env
         run: |
-          humctl create environment ${{ env.ENVIRONMENT_ID }} \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --name ${{ env.ENVIRONMENT_NAME }} \
-              -t ${{ env.ENVIRONMENT_TYPE }} \
-              --from ${{ env.BASE_ENVIRONMENT }} \
-              || true
+          EXISTING_ENV_ID=$(humctl get environment ${{ env.ENVIRONMENT_ID }} \
+                              --token ${{ secrets.HUMANITEC_TOKEN }} \
+                              --org ${{ secrets.HUMANITEC_ORG }} \
+                              --app ${{ vars.APP_NAME }} \
+                              -o json \
+                              | jq .metadata.id \
+                              || true)
+          if [ -z "$EXISTING_ENV_ID" ]; then
+              humctl create environment ${{ env.ENVIRONMENT_ID }} \
+                --token ${{ secrets.HUMANITEC_TOKEN }} \
+                --org ${{ secrets.HUMANITEC_ORG }} \
+                --app ${{ vars.APP_NAME }} \
+                --name ${{ env.ENVIRONMENT_NAME }} \
+                -t ${{ env.ENVIRONMENT_TYPE }} \
+                --from ${{ env.BASE_ENVIRONMENT }}
+          fi
       - name: authenticate to google cloud
         uses: google-github-actions/auth@v2
         with:
@@ -137,6 +145,7 @@ jobs:
           gcloud auth configure-docker \
               ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
               --quiet
+      - uses: oras-project/setup-oras@v1
       - name: get container image digest
         run: |
           echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
@@ -176,38 +185,52 @@ jobs:
               --org ${{ secrets.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} -o json)
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
+          RUNTIME_ERRORS=$(humctl api get /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }}/runtime \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              | grep '"status": "Failure"' -B 10 -A 1) \
+              || true
+          if [[ "$DEPLOYMENT_ERRORS" = "[]" && -z "$RUNTIME_ERRORS" ]]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
             echo "" >> pr_message.txt
           else
             echo "## Deployment failed for ${{ env.ENVIRONMENT_NAME }}! :x:" >> pr_message.txt
             echo "" >> pr_message.txt
-            echo "### Errors:" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```json' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" | jq .[0].status.message -r >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "<details><summary>Errors details</summary>" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "### Errors details:" >> pr_message.txt
-            echo '```json' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "</details>" >> pr_message.txt
-            echo "" >> pr_message.txt
+            
+            if [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
+              echo "### Deployment errors:" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```json' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$DEPLOYMENT_ERRORS" | jq .[0].status.message -r >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "<details><summary>Deployment errors details</summary>" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "### Deployment errors details:" >> pr_message.txt
+              echo '```json' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo '```' >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "</details>" >> pr_message.txt
+              echo "" >> pr_message.txt
+            fi
+
+            if [ -n "$RUNTIME_ERRORS" ]; then
+              echo "### Runtime errors:" >> pr_message.txt
+              echo "" >> pr_message.txt
+              echo "$RUNTIME_ERRORS" >> pr_message.txt
+              echo "" >> pr_message.txt
+            fi
           fi
           
           echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
           echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
 
           echo "" >> pr_message.txt
-          echo "### Domains:" >> pr_message.txt
+          echo "### URLs:" >> pr_message.txt
           echo "" >> pr_message.txt
           echo "$DOMAINS" >> pr_message.txt
           echo "" >> pr_message.txt
@@ -247,6 +270,7 @@ jobs:
             echo "<details><summary>Resources Graph</summary>" >> pr_message.txt
             echo "" >> pr_message.txt
             echo "### Resources Graph:" >> pr_message.txt
+            echo "Use a [Graphviz](https://graphviz.org) viewer for a visual representation." >> pr_message.txt
             echo '```none' >> pr_message.txt
             echo "" >> pr_message.txt
             humctl resources graph \
@@ -259,8 +283,6 @@ jobs:
             echo "" >> pr_message.txt
             echo "</details>" >> pr_message.txt
           fi
-
-          cat pr_message.txt
       - name: comment pr
         if: ${{ always() }}
         run: |

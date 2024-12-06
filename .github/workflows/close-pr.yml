@@ -8,13 +8,12 @@ on:
       - closed
 env:
   ENVIRONMENT_ID: pr-${{ github.event.number }}
-  HUMCTL_VERSION: '0.25.0'
+  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-workload
+  HUMCTL_VERSION: '*'
 jobs:
   ob-pr-closed:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
-      - name: checkout humctl bin
-        uses: actions/checkout@v4
       - name: install humctl
         uses: humanitec/setup-cli-action@v1
         with:
@@ -33,9 +32,6 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           version: latest
-      - name: prepare environment variables
-        run: |
-          echo "IMAGE_NAME=${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/${{ vars.APP_NAME }}" >> $GITHUB_ENV
       - name: sign-in to gar
         run: |
           gcloud auth configure-docker \
@@ -44,7 +40,7 @@ jobs:
       - name: delete container image in gar
         run: |
           gcloud artifacts docker images delete \
-              ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID }} \
+              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
               --delete-tags \
               --quiet
 

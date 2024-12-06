@@ -1,6 +1,6 @@
 {
 	"name": "Score & Humanitec Dev Container",
-	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"image": "mcr.microsoft.com/devcontainers/base:noble",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"moby": true,
@@ -21,7 +21,7 @@
 			],
 			"settings": {
 				"yaml.schemas": {
-					"https://raw.githubusercontent.com/score-spec/schema/main/score-v1b1.json": "score.yaml"
+					"https://raw.githubusercontent.com/score-spec/spec/main/score-v1b1.json": "score.yaml"
 				}
 			}
 		}
