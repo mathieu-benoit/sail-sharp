@@ -16,6 +16,18 @@ env:
   CONTAINER_NAME: my-sample-container
   HUMCTL_VERSION: '*'
 jobs:
+  run-container-on-arm64:
+    runs-on: macos-13
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: install docker
+        uses: douglascamata/setup-docker-macos-action@v1-alpha.14
+      - run: |
+          docker build -t my-sample-workload:test --platform linux/arm64 ./app
+      - run: |
+          docker images
+          docker inspect my-sample-workload:test
   build-run-test-push:
     runs-on: ubuntu-24.04
     steps:
