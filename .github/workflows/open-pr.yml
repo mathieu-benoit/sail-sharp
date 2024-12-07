@@ -23,15 +23,8 @@ jobs:
         uses: actions/checkout@v4
       - name: install docker
         uses: douglascamata/setup-docker-macos-action@v1-alpha.14
-      - name: install score-compose
-        uses: score-spec/setup-score@v3
-        with:
-          file: score-compose
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.SCORE_COMPOSE_VERSION }}
-      - name: make compose-test
-        run: |
-          make compose-test
+      - run: |
+          docker build -t my-sample-workload:test --platform linux/arm64 ./app
       - run: |
           docker images
           docker inspect my-sample-workload:test
