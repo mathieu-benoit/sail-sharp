@@ -14,8 +14,6 @@ containers:
     variables:
       MESSAGE: "Hello, Test!"
 resources:
-  my-redis:
-    type: redis
   dns:
     type: dns
   route:
