@@ -179,7 +179,7 @@ jobs:
                       --org ${{ secrets.HUMANITEC_ORG }} \
                       --app ${{ vars.APP_NAME }} \
                       --env ${{ env.ENVIRONMENT_ID }} -o json \
-                      | jq -r '. | map(. | select(.metadata.type == "dns")) | map((.metadata.res_id | split(".") | .[1]) + ": [" + .status.resource.host + "](https://" + .status.resource.host + ")") | join("\n")')
+                      | jq -r '. | map(. | select(.metadata.type == "dns")) | map(":link: " + (.metadata.res_id | split(".") | .[1]) + ": [" + .status.resource.host + "](https://" + .status.resource.host + ")") | join("\n")')
           
           DEPLOYMENT_ERRORS=$(humctl get deployment-error \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
@@ -227,12 +227,9 @@ jobs:
             fi
           fi
 
-          echo "### [Open Resource Graph]($GRAPH_URL)" >> pr_message.txt
-          echo "### [View Deployment in Humanitec]($ENV_URL)" >> pr_message.txt
-          echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
+          echo "### :arrow_right: [Open Resource Graph]($GRAPH_URL)" >> pr_message.txt
+          echo "### :mag: [View Deployment in Humanitec]($ENV_URL)" >> pr_message.txt
 
-          echo "" >> pr_message.txt
-          echo "### URLs:" >> pr_message.txt
           echo "" >> pr_message.txt
           echo "$DOMAINS" >> pr_message.txt
           echo "" >> pr_message.txt
