@@ -276,13 +276,13 @@ jobs:
                 --token ${{ secrets.HUMANITEC_TOKEN }} \
                 --org ${{ secrets.HUMANITEC_ORG }} \
                 --app ${{ vars.APP_NAME }} \
-                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.resource]' > res-usage-${{ env.ENVIRONMENT_ID }}.txt
+                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.def_version_id, .status.resource]' > res-usage-${{ env.ENVIRONMENT_ID }}.txt
           humctl get active-resource \
                 --env ${{ env.BASE_ENVIRONMENT }} \
                 --token ${{ secrets.HUMANITEC_TOKEN }} \
                 --org ${{ secrets.HUMANITEC_ORG }} \
                 --app ${{ vars.APP_NAME }} \
-                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.resource]' > res-usage-${{ env.BASE_ENVIRONMENT }}.txt
+                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.def_version_id, .status.resource]' > res-usage-${{ env.BASE_ENVIRONMENT }}.txt
           diff res-usage-${{ env.BASE_ENVIRONMENT }}.txt res-usage-${{ env.ENVIRONMENT_ID }}.txt >> pr_message.txt || true
           echo "" >> pr_message.txt
           echo '```' >> pr_message.txt
