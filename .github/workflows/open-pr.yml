@@ -173,6 +173,7 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               | jq -r .metadata.id)
           ENV_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/deploys/"${DEPLOYMENT_ID}
+          GRAPH_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/resource-graph/"${DEPLOYMENT_ID}
           DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
                       --org ${{ secrets.HUMANITEC_ORG }} \
@@ -225,8 +226,9 @@ jobs:
               echo "" >> pr_message.txt
             fi
           fi
-          
-          echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
+
+          echo "### [Open Resource Graph]($GRAPH_URL)" >> pr_message.txt
+          echo "### [View Deployment in Humanitec]($ENV_URL)" >> pr_message.txt
           echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
 
           echo "" >> pr_message.txt
@@ -289,23 +291,6 @@ jobs:
           echo "" >> pr_message.txt
           echo "</details>" >> pr_message.txt
 
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
-            echo "<details><summary>Resources Graph</summary>" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "### Resources Graph:" >> pr_message.txt
-            echo "Use a [Graphviz](https://graphviz.org) viewer for a visual representation." >> pr_message.txt
-            echo '```none' >> pr_message.txt
-            echo "" >> pr_message.txt
-            humctl resources graph \
-                --env ${{ env.ENVIRONMENT_ID }} \
-                --token ${{ secrets.HUMANITEC_TOKEN }} \
-                --org ${{ secrets.HUMANITEC_ORG }} \
-                --app ${{ vars.APP_NAME }} >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "</details>" >> pr_message.txt
-          fi
       - name: comment pr
         if: ${{ always() }}
         run: |
