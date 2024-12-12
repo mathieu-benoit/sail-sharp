@@ -24,6 +24,7 @@ jobs:
       - name: install humctl
         uses: humanitec/setup-cli-action@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.HUMCTL_VERSION }}
       - name: humctl score validate
         run: |
@@ -112,6 +113,7 @@ jobs:
       - name: install humctl
         uses: humanitec/setup-cli-action@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.HUMCTL_VERSION }}
       - name: create humanitec preview env
         run: |
