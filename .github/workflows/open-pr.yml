@@ -24,6 +24,7 @@ jobs:
       - name: install humctl
         uses: humanitec/setup-cli-action@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.HUMCTL_VERSION }}
       - name: humctl score validate
         run: |
@@ -112,6 +113,7 @@ jobs:
       - name: install humctl
         uses: humanitec/setup-cli-action@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.HUMCTL_VERSION }}
       - name: create humanitec preview env
         run: |
@@ -173,12 +175,13 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               | jq -r .metadata.id)
           ENV_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/deploys/"${DEPLOYMENT_ID}
+          GRAPH_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/resource-graph/"${DEPLOYMENT_ID}
           DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
                       --org ${{ secrets.HUMANITEC_ORG }} \
                       --app ${{ vars.APP_NAME }} \
                       --env ${{ env.ENVIRONMENT_ID }} -o json \
-                      | jq -r '. | map(. | select(.metadata.type == "dns")) | map((.metadata.res_id | split(".") | .[1]) + ": [" + .status.resource.host + "](https://" + .status.resource.host + ")") | join("\n")')
+                      | jq -r '. | map(. | select(.metadata.type == "dns")) | map(":link: " + (.metadata.res_id | split(".") | .[1]) + ": [" + .status.resource.host + "](https://" + .status.resource.host + ")") | join("\n")')
           
           DEPLOYMENT_ERRORS=$(humctl get deployment-error \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
@@ -225,12 +228,10 @@ jobs:
               echo "" >> pr_message.txt
             fi
           fi
-          
-          echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
-          echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
 
-          echo "" >> pr_message.txt
-          echo "### URLs:" >> pr_message.txt
+          echo "### :arrow_right: [Open Resource Graph]($GRAPH_URL)" >> pr_message.txt
+          echo "### :mag: [View Deployment in Humanitec]($ENV_URL)" >> pr_message.txt
+
           echo "" >> pr_message.txt
           echo "$DOMAINS" >> pr_message.txt
           echo "" >> pr_message.txt
@@ -276,36 +277,19 @@ jobs:
                 --token ${{ secrets.HUMANITEC_TOKEN }} \
                 --org ${{ secrets.HUMANITEC_ORG }} \
                 --app ${{ vars.APP_NAME }} \
-                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.resource]' > res-usage-${{ env.ENVIRONMENT_ID }}.txt
+                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.def_version_id, .status.resource]' > res-usage-${{ env.ENVIRONMENT_ID }}.txt
           humctl get active-resource \
                 --env ${{ env.BASE_ENVIRONMENT }} \
                 --token ${{ secrets.HUMANITEC_TOKEN }} \
                 --org ${{ secrets.HUMANITEC_ORG }} \
                 --app ${{ vars.APP_NAME }} \
-                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.resource]' > res-usage-${{ env.BASE_ENVIRONMENT }}.txt
+                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.def_version_id, .status.resource]' > res-usage-${{ env.BASE_ENVIRONMENT }}.txt
           diff res-usage-${{ env.BASE_ENVIRONMENT }}.txt res-usage-${{ env.ENVIRONMENT_ID }}.txt >> pr_message.txt || true
           echo "" >> pr_message.txt
           echo '```' >> pr_message.txt
           echo "" >> pr_message.txt
           echo "</details>" >> pr_message.txt
 
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
-            echo "<details><summary>Resources Graph</summary>" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "### Resources Graph:" >> pr_message.txt
-            echo "Use a [Graphviz](https://graphviz.org) viewer for a visual representation." >> pr_message.txt
-            echo '```none' >> pr_message.txt
-            echo "" >> pr_message.txt
-            humctl resources graph \
-                --env ${{ env.ENVIRONMENT_ID }} \
-                --token ${{ secrets.HUMANITEC_TOKEN }} \
-                --org ${{ secrets.HUMANITEC_ORG }} \
-                --app ${{ vars.APP_NAME }} >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "</details>" >> pr_message.txt
-          fi
       - name: comment pr
         if: ${{ always() }}
         run: |

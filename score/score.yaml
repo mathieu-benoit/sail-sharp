@@ -14,8 +14,6 @@ containers:
     variables:
       MESSAGE: "Hello, World!"
 resources:
-  my-redis:
-    type: redis
   dns:
     type: dns
   route:
