@@ -1,0 +1,33 @@
+name: test
+permissions:
+  contents: read
+  id-token: write
+on:
+  workflow_dispatch:
+env:
+  WORKLOAD_NAME: my-sample-workload
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: build container
+        run: |
+          docker build \
+              --tag ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test \
+              --platform linux/amd64,linux/arm64 \
+              app/
+      - name: login to ghcr
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login \
+              ghcr.io \
+              -u $ \
+              --password-stdin
+      - name: push container in ghcr
+        run: |
+          docker push \
+              ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test
+      - run: |
+          docker images
+          docker inspect ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test
