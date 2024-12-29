@@ -31,5 +31,5 @@ jobs:
           push: true
           tags: "ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test"
       - run: |
-          docker images
-          docker inspect ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test
+          docker run -d -p 8080:8080 ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test
+          curl localhost:8080
