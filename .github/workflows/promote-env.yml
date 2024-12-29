@@ -1,38 +1,33 @@
-name: promote-env
+name: test
+permissions:
+  contents: read
+  id-token: write
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        required: true
-        type: choice
-        description: Environment to deploy to
-        options: 
-        - staging
-        - production
 env:
-  HUMCTL_VERSION: '*'
+  WORKLOAD_NAME: my-sample-workload
 jobs:
-  job:
+  test:
     runs-on: ubuntu-24.04
     steps:
-      - name: install humctl
-        uses: humanitec/setup-cli-action@v1
-        with:
-          version: ${{ env.HUMCTL_VERSION }}
-      - name: promote humanitec env
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: build container
         run: |
-          if [ "${{ github.event.inputs.environment }}" == "staging" ]; then
-              humctl deploy env development staging \
-                  --token ${{ secrets.HUMANITEC_TOKEN }} \
-                  --org ${{ secrets.HUMANITEC_ORG }} \
-                  --app ${{ vars.APP_NAME }} \
-                  -m "Development to Staging" \
-                  --wait
-          else
-              humctl deploy env staging production \
-                  --token ${{ secrets.HUMANITEC_TOKEN }} \
-                  --org ${{ secrets.HUMANITEC_ORG }} \
-                  --app ${{ vars.APP_NAME }} \
-                  -m "Staging to Production" \
-                  --wait
-          fi
+          docker build \
+              --tag ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test \
+              --platform linux/amd64,linux/arm64 \
+              app/
+      - name: login to ghcr
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login \
+              ghcr.io \
+              -u $ \
+              --password-stdin
+      - name: push container in ghcr
+        run: |
+          docker push \
+              ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test
+      - run: |
+          docker images
+          docker inspect ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:test
