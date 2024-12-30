@@ -12,6 +12,7 @@ COPY . .
 RUN dotnet publish my-sample-app.csproj \
     -a $TARGETARCH \
     -c release \
+    --no-restore \
     -o /my-sample-app \
     --self-contained true \
     -p:PublishTrimmed=true \
