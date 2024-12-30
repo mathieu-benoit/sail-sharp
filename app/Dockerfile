@@ -2,17 +2,17 @@
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
 # https://mcr.microsoft.com/product/dotnet/nightly/sdk
 # https://mcr.microsoft.com/v2/dotnet/nightly/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/nightly/sdk:9.0.101-noble-aot AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/nightly/sdk:9.0.101-noble-aot AS builder
+ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
 RUN dotnet restore my-sample-app.csproj \
-    -r linux-x64
+    -a $TARGETARCH
 COPY . .
 RUN dotnet publish my-sample-app.csproj \
-    -r linux-x64 \
+    -a $TARGETARCH \
     -c release \
     -o /my-sample-app \
-    --no-restore \
     --self-contained true \
     -p:PublishTrimmed=true \
     -p:TrimMode=full
@@ -27,4 +27,4 @@ COPY --from=builder /my-sample-app .
 EXPOSE 8080
 ENV ASPNETCORE_HTTP_PORTS=8080
 USER 65532
-ENTRYPOINT ["/app/my-sample-app"]
+ENTRYPOINT ["./my-sample-app"]
