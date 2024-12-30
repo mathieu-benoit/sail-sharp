@@ -27,4 +27,4 @@ COPY --from=builder /my-sample-app .
 EXPOSE 8080
 ENV ASPNETCORE_HTTP_PORTS=8080
 USER 65532
-ENTRYPOINT ["/app/my-sample-app"]
+ENTRYPOINT ["./my-sample-app"]
