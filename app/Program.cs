@@ -10,7 +10,7 @@ var message = builder.Configuration["MESSAGE"] ?? "Hello, World! (from code)";
 var podName = builder.Configuration["POD_NAME"];
 var namespaceName = builder.Configuration["NAMESPACE_NAME"];
 message = string.IsNullOrEmpty(podName) || string.IsNullOrEmpty(namespaceName) ? message : $"{message} - from {podName} / {namespaceName}";
-var platform = Environment.OSVersion.Platform;
+var platform = System.Environment.OSVersion.Platform;
 
 app.MapGet("/", () => $"{message} on {platform}.");
 app.Run();
