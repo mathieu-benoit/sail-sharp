@@ -13,7 +13,10 @@ containers:
         cpu: "25m"
     variables:
       MESSAGE: "Hello, Test!"
+      REDIS_ADDR: "${resources.my-redis.host}:${resources.my-redis.port},user=${resources.my-redis.username},password=${resources.my-redis.password}"
 resources:
+  my-redis:
+    type: redis
   dns:
     type: dns
   route:
