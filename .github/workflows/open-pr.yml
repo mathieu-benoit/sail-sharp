@@ -41,14 +41,6 @@ jobs:
       - name: make compose.yaml
         run: |
           make compose.yaml
-          cat <<EOF > compose.override.yaml
-          services:
-            ${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }}:
-              read_only: true
-              cap_drop:
-                - ALL
-              user: "1000"
-          EOF
       - name: make compose-test
         run: |
           make compose-test

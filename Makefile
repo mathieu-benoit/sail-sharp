@@ -23,6 +23,7 @@ compose.yaml: score/score.yaml .score-compose/state.yaml Makefile
 	score-compose generate score/score.yaml \
 		--build '${CONTAINER_NAME}={"context":"app/","tags":["${CONTAINER_IMAGE}"]}' \
 		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Compose!"
+	echo '{"services":{"${WORKLOAD_NAME}-${CONTAINER_NAME}":{"read_only":"true","user":"65532","cap_drop":["ALL"]}}}' | yq e -P > compose.override.yaml
 
 ## Generate a compose.yaml file from the score spec and launch it.
 .PHONY: compose-up
