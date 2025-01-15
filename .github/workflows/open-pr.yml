@@ -41,14 +41,6 @@ jobs:
       - name: make compose.yaml
         run: |
           make compose.yaml
-          cat <<EOF > compose.override.yaml
-          services:
-            ${{ env.WORKLOAD_NAME }}-${{ env.CONTAINER_NAME }}:
-              read_only: true
-              cap_drop:
-                - ALL
-              user: "1000"
-          EOF
       - name: make compose-test
         run: |
           make compose-test
@@ -192,11 +184,21 @@ jobs:
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               | grep '"status": "Failure"' -B 10 -A 1) \
               || true
+          
+          echo "#### :white_check_mark: Successfully deployed with score-compose" >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "#### :white_check_mark: Successfully deployed with score-k8s" >> pr_message.txt
+          echo "" >> pr_message.txt
+          
           if [[ "$DEPLOYMENT_ERRORS" = "[]" && -z "$RUNTIME_ERRORS" ]]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
             echo "" >> pr_message.txt
+            echo "#### :white_check_mark: Successfully deployed with humctl" >> pr_message.txt
+            echo "" >> pr_message.txt
           else
             echo "## Deployment failed for ${{ env.ENVIRONMENT_NAME }}! :x:" >> pr_message.txt
+            echo "" >> pr_message.txt
+            echo "#### :x: Deployment failed with `humctl`" >> pr_message.txt
             echo "" >> pr_message.txt
             
             if [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
