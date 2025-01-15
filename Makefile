@@ -49,6 +49,7 @@ manifests.yaml: score/score.yaml .score-k8s/state.yaml Makefile
 	score-k8s generate score/score.yaml \
 		--image ${CONTAINER_IMAGE} \
 		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Kubernetes!" \
+		--patch-manifests 'Deployment/*/spec.template.spec.automountServiceAccountToken=false \
 		--patch-manifests 'Deployment/*/spec.template.spec.securityContext={"fsGroup":65532,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}}'
 	echo '{"spec":{"template":{"spec":{"containers":[{"name":"${CONTAINER_NAME}","securityContext":{"allowPrivilegeEscalation":false,"privileged": false,"readOnlyRootFilesystem": true,"capabilities":{"drop":["ALL"]}}}]}}}}' > deployment-patch.yaml
 
