@@ -2,7 +2,7 @@
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
 # https://mcr.microsoft.com/product/dotnet/nightly/sdk
 # https://mcr.microsoft.com/v2/dotnet/nightly/sdk/tags/list
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/nightly/sdk:9.0.101-noble-aot AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/nightly/sdk:9.0.102-noble-aot AS builder
 ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
