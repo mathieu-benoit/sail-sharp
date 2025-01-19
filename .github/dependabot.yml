@@ -4,11 +4,23 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      ci:
+        patterns:
+          - "*"
   - package-ecosystem: "docker"
     directory: "/app/"
     schedule:
       interval: "daily"
+    groups:
+      ci:
+        patterns:
+          - "*"
   - package-ecosystem: "nuget"
     directory: "/app/"
     schedule:
       interval: "daily"
+    groups:
+      ci:
+        patterns:
+          - "*"
