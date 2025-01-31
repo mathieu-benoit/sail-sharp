@@ -10,7 +10,8 @@ COPY . .
 RUN dotnet publish my-sample-app.csproj \
     -a $TARGETARCH \
     -c release \
-    -o /my-sample-app
+    -o /my-sample-app \
+    --no-restore
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
