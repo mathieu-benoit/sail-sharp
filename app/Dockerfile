@@ -1,8 +1,6 @@
 # https://mcr.microsoft.com/product/dotnet/sdk
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-# https://mcr.microsoft.com/product/dotnet/nightly/sdk
-# https://mcr.microsoft.com/v2/dotnet/nightly/sdk/tags/list
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/nightly/sdk:9.0.102-noble-aot AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0.102-noble AS builder
 ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
@@ -12,16 +10,11 @@ COPY . .
 RUN dotnet publish my-sample-app.csproj \
     -a $TARGETARCH \
     -c release \
-    -o /my-sample-app \
-    --self-contained true \
-    -p:PublishTrimmed=true \
-    -p:TrimMode=full
+    -o /my-sample-app
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-# https://mcr.microsoft.com/product/dotnet/nightly/runtime-deps
-# https://mcr.microsoft.com/v2/dotnet/nightly/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:9.0.1-noble-chiseled-aot
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.1-noble-chiseled
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
