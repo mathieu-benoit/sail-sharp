@@ -15,10 +15,10 @@ RUN dotnet publish my-sample-app.csproj \
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.1-azurelinux3.0-distroless
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.1-noble-chiseled
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
 ENV ASPNETCORE_HTTP_PORTS=8080
 USER 65532
-ENTRYPOINT ["/app/my-sample-app"]
+ENTRYPOINT ["./my-sample-app"]

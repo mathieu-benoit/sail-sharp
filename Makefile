@@ -23,6 +23,7 @@ compose.yaml: score/score.yaml .score-compose/state.yaml Makefile
 	score-compose generate score/score.yaml \
 		--build '${CONTAINER_NAME}={"context":"app/","tags":["${CONTAINER_IMAGE}"]}' \
 		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Compose!"
+	echo '{"services":{"${WORKLOAD_NAME}-${CONTAINER_NAME}":{"read_only":"true","user":"65532","cap_drop":["ALL"]}}}' | yq e -P > compose.override.yaml
 
 ## Generate a compose.yaml file from the score spec and launch it.
 .PHONY: compose-up
@@ -47,7 +48,10 @@ compose-down:
 manifests.yaml: score/score.yaml .score-k8s/state.yaml Makefile
 	score-k8s generate score/score.yaml \
 		--image ${CONTAINER_IMAGE} \
-		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Kubernetes!"
+		--override-property containers.${CONTAINER_NAME}.variables.MESSAGE="Hello, Kubernetes!" \
+		--patch-manifests 'Deployment/*/spec.template.spec.automountServiceAccountToken=false' \
+		--patch-manifests 'Deployment/*/spec.template.spec.securityContext={"fsGroup":65532,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532,"seccompProfile":{"type":"RuntimeDefault"}}'
+	echo '{"spec":{"template":{"spec":{"containers":[{"name":"${CONTAINER_NAME}","securityContext":{"allowPrivilegeEscalation":false,"privileged": false,"readOnlyRootFilesystem": true,"capabilities":{"drop":["ALL"]}}}]}}}}' > deployment-patch.yaml
 
 ## Create a local Kind cluster.
 .PHONY: kind-create-cluster
@@ -65,6 +69,10 @@ NAMESPACE ?= default
 k8s-up: manifests.yaml
 	kubectl apply \
 		-f manifests.yaml \
+		-n ${NAMESPACE}
+	kubectl patch \
+		deployment ${WORKLOAD_NAME} \
+		--patch-file deployment-patch.yaml \
 		-n ${NAMESPACE}
 	kubectl wait deployments/${WORKLOAD_NAME} \
 		-n ${NAMESPACE} \
