@@ -5,6 +5,7 @@ containers:
   my-sample-container:
     image: .
     variables:
+      MESSAGE: "Hello, Test!"
       REDIS_ADDR: "${resources.redis-cart.host}:${resources.redis-cart.port},user=${resources.redis-cart.username},password=${resources.redis-cart.password}"
     resources:
       limits:
@@ -13,8 +14,6 @@ containers:
       requests:
         memory: "64Mi"
         cpu: "25m"
-    variables:
-      MESSAGE: "Hello, Test!"
 resources:
   my-redis:
     type: redis
