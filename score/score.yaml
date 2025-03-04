@@ -6,7 +6,7 @@ containers:
     image: .
     variables:
       MESSAGE: "Hello, Test!"
-      REDIS_ADDR: "${resources.redis-cart.host}:${resources.redis-cart.port},user=${resources.redis-cart.username},password=${resources.redis-cart.password}"
+      REDIS_ADDR: "${resources.my-redis.host}:${resources.my-redis.port},user=${resources.my-redis.username},password=${resources.my-redis.password}"
     resources:
       limits:
         memory: "256Mi"
