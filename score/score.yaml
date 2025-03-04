@@ -4,6 +4,8 @@ metadata:
 containers:
   my-sample-container:
     image: .
+    variables:
+      REDIS_ADDR: "${resources.redis-cart.host}:${resources.redis-cart.port},user=${resources.redis-cart.username},password=${resources.redis-cart.password}"
     resources:
       limits:
         memory: "256Mi"
@@ -12,8 +14,10 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "Hello, Test!"
 resources:
+  my-redis:
+    type: redis
   dns:
     type: dns
   route:
