@@ -12,10 +12,8 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, Test!"
+      MESSAGE: "Hello, World!"
 resources:
-  my-redis:
-    type: redis
   dns:
     type: dns
   route:
