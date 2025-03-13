@@ -70,10 +70,6 @@ k8s-up: manifests.yaml
 	kubectl apply \
 		-f manifests.yaml \
 		-n ${NAMESPACE}
-	kubectl patch \
-		deployment ${WORKLOAD_NAME} \
-		--patch-file deployment-patch.yaml \
-		-n ${NAMESPACE}
 	kubectl wait deployments/${WORKLOAD_NAME} \
 		-n ${NAMESPACE} \
 		--for condition=Available \
