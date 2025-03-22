@@ -1,6 +1,6 @@
 # https://mcr.microsoft.com/product/dotnet/sdk
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0.201-noble AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0.202-noble AS builder
 ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
