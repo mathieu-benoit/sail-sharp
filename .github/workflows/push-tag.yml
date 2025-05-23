@@ -112,6 +112,27 @@ jobs:
               --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} \
               --wait
+      - name: schedule for deletion inactive resources
+        run: |
+          DEPLOYMENT_ID=$(humctl get deployment . -o json \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env ${{ env.ENVIRONMENT_ID }} \
+              | jq -r .metadata.id)
+          INACTIVE_RESOURCES=$(humctl get active-resources \
+              --app $APP_ID \
+              --env $ENV_ID \
+              -o json \
+              | jq -r --arg DEPLOYMENT_ID "$DEPLOYMENT_ID" '.[] | select(.status.deploy_id != $DEPLOYMENT_ID) | [.metadata.type+"."+.status.class+"/"+.metadata.res_id] | @tsv')
+            if [ "$INACTIVE_RESOURCES" != "" ]; then
+              for RESOURCE in $INACTIVE_RESOURCES;
+              do
+                RESOURCE=$(echo $RESOURCE | sed "s,${{ secrets.HUMANITEC_ORG }}/,${{ secrets.HUMANITEC_ORG }}%2F,g")
+                echo $RESOURCE
+                humctl api delete /orgs/${{ secrets.HUMANITEC_ORG }}/apps/$APP_ID/envs/$ENV_ID/resources/$RESOURCE
+              done
+            fi
       - name: get deployment information
         if: ${{ always() }}
         run: |
