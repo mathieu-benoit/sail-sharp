@@ -21,6 +21,12 @@ tar -xvf cli_${HUMCTL_VERSION:1}_linux_amd64.tar.gz
 chmod +x humctl
 sudo mv humctl /usr/local/bin/humctl
 
+CANYON_VERSION=$(curl -sL https://api.github.com/repos/humanitec/canyon-cli/releases/latest | jq -r .tag_name)
+wget https://github.com/humanitec/canyon-cli/releases/download/${CANYON_VERSION}/canyon-cli_${CANYON_VERSION:1}_linux_amd64.tar.gz
+tar -xvf canyon-cli_${CANYON_VERSION:1}_linux_amd64.tar.gz
+chmod +x canyon
+sudo mv canyon /usr/local/bin
+
 KIND_VERSION=$(curl -sL https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | jq -r .tag_name)
 curl -Lo ./kind https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64
 chmod +x ./kind
