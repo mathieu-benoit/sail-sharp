@@ -17,7 +17,8 @@
 		"vscode": {
 			"extensions": [
 				"redhat.vscode-yaml",
-				"humanitec.humanitec"
+				"humanitec.humanitec",
+				"saoudrizwan.claude-dev"
 			],
 			"settings": {
 				"yaml.schemas": {
