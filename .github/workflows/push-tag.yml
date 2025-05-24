@@ -121,6 +121,8 @@ jobs:
               --env ${{ env.ENVIRONMENT_ID }} \
               | jq -r .metadata.id)
           INACTIVE_RESOURCES=$(humctl get active-resources \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ secrets.HUMANITEC_ORG }} \
               --app $APP_ID \
               --env $ENV_ID \
               -o json \
@@ -130,7 +132,8 @@ jobs:
               do
                 RESOURCE=$(echo $RESOURCE | sed "s,${{ secrets.HUMANITEC_ORG }}/,${{ secrets.HUMANITEC_ORG }}%2F,g")
                 echo $RESOURCE
-                humctl api delete /orgs/${{ secrets.HUMANITEC_ORG }}/apps/$APP_ID/envs/$ENV_ID/resources/$RESOURCE
+                humctl api delete /orgs/${{ secrets.HUMANITEC_ORG }}/apps/$APP_ID/envs/$ENV_ID/resources/$RESOURCE \
+                    --token ${{ secrets.HUMANITEC_TOKEN }}
               done
             fi
       - name: get deployment information
