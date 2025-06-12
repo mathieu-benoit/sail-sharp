@@ -12,8 +12,14 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "Hello, Demo!"
+      REDIS_HOST: ${resources.my-redis.host}
+      REDIS_PORT: ${resources.my-redis.port}
+      REDIS_USERNAME: ${resources.my-redis.username}
+      REDIS_PASSWORD: ${resources.my-redis.password}
 resources:
+  my-redis:
+    type: redis
   dns:
     type: dns
   route:
