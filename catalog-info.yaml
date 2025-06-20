@@ -33,6 +33,7 @@ spec:
   system: sail-sharp
   dependsOn:
   - 'resource:my-redis'
+  - 'resource:my-dns'
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
