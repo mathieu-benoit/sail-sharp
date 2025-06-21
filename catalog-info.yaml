@@ -1,0 +1,56 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: sail-sharp
+  description: Sail Sharp Project
+  annotations:
+    github.com/project-slug: mathieu-benoit/sail-sharp
+  links:
+    - url: https://github.com/mathieu-benoit/sail-sharp
+      title: Repository
+      icon: github
+spec:
+  owner: user:guest
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: my-sample-workload
+  description: My Sample Workload
+  annotations:
+    github.com/project-slug: mathieu-benoit/sail-sharp
+  tags:
+    - dotnet
+    - http
+  links:
+    - url: https://github.com/mathieu-benoit/sail-sharp
+      title: Source code
+      icon: github
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest
+  system: sail-sharp
+  dependsOn:
+  - 'resource:my-redis'
+  - 'resource:my-dns'
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: my-redis
+  description: My Redis database
+spec:
+  type: database
+  owner: user:guest
+  system: sail-sharp
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: my-dns
+  description: My DNS
+spec:
+  type: dns
+  owner: user:guest
+  system: sail-sharp
