@@ -32,18 +32,7 @@ spec:
   owner: user:guest
   system: sail-sharp
   dependsOn:
-  - 'resource:my-redis'
   - 'resource:my-dns'
----
-apiVersion: backstage.io/v1alpha1
-kind: Resource
-metadata:
-  name: my-redis
-  description: My Redis database
-spec:
-  type: database
-  owner: user:guest
-  system: sail-sharp
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
