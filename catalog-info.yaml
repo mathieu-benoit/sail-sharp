@@ -2,13 +2,13 @@ apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
     annotations:
-        github.com/project-slug: mathieu-benoit/sail-sharp
-    description: sail-sharp
+        github.com/project-slug: mathieu-benoit/test
+    description: test
     links:
         - icon: github
           title: Repository
-          url: https://github.com/mathieu-benoit/sail-sharp
-    name: sail-sharp
+          url: https://github.com/mathieu-benoit/test
+    name: test
 spec:
     owner: user:guest
 ---
@@ -16,24 +16,24 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
     annotations:
-        github.com/project-slug: mathieu-benoit/sail-sharp
+        github.com/project-slug: mathieu-benoit/test
     description: my-sample-workload
     links:
         - icon: github
           title: Repository
-          url: https://github.com/mathieu-benoit/sail-sharp
+          url: https://github.com/mathieu-benoit/test
         - icon: catalog
           title: 'Container image: my-sample-container'
           url: ghcr.io/mathieu-benoit/my-sample-workload:latest
-    name: sail-sharp-my-sample-workload
+    name: test-my-sample-workload
     tags:
         - dotnet
         - http
 spec:
     dependsOn:
-        - resource:sail-sharp-my-sample-workload-my-dns
-        - resource:sail-sharp-my-sample-workload-my-redis
+        - resource:test-my-sample-workload-my-dns
+        - resource:test-my-sample-workload-my-redis
     lifecycle: experimental
     owner: user:guest
-    system: sail-sharp
+    system: test
     type: service
