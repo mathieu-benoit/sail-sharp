@@ -29,7 +29,6 @@ metadata:
 spec:
   dependsOn:
   - 'resource:test-my-sample-workload-my-dns'
-  - 'resource:test-my-sample-workload-my-redis'
   lifecycle: experimental
   owner: user:guest
   system: test
@@ -44,13 +43,3 @@ spec:
   owner: user:guest
   system: test
   type: dns
----
-apiVersion: backstage.io/v1alpha1
-kind: Resource
-metadata:
-  description: my-redis (type redis) of my-sample-workload
-  name: test-my-sample-workload-my-redis
-spec:
-  owner: user:guest
-  system: test
-  type: database
