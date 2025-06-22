@@ -28,8 +28,8 @@ metadata:
     - http
 spec:
   dependsOn:
-  - resource:test-my-sample-workload-my-dns
-  - resource:test-my-sample-workload-my-redis
+  - "resource:test-my-sample-workload-my-dns"
+  - "resource:test-my-sample-workload-my-redis"
   lifecycle: experimental
   owner: user:guest
   system: test
@@ -38,7 +38,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-  description: 'my-dns (type: dns) of my-sample-workload'
+  description: 'my-dns (dns) of my-sample-workload'
   name: test-my-sample-workload-my-dns
 spec:
   owner: user:guest
