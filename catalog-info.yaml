@@ -23,9 +23,6 @@ metadata:
         - icon: github
           title: Repository
           url: https://github.com/mathieu-benoit/sail-sharp
-        - icon: docs
-          title: 'Container image: my-sample-container'
-          url: https://github.com/mathieu-benoit/sail-sharp
     name: test-my-sample-workload
     tags:
         - dotnet
