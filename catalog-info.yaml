@@ -1,3 +1,4 @@
+---
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
@@ -22,6 +23,9 @@ metadata:
         - icon: github
           title: Repository
           url: https://github.com/mathieu-benoit/sail-sharp
+        - icon: docs
+          title: 'Container image: my-sample-container'
+          url: ghcr.io/mathieu-benoit/my-sample-workload:latest
     name: test-my-sample-workload
     tags:
         - dotnet
@@ -34,3 +38,23 @@ spec:
     owner: user:guest
     system: test
     type: service
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+    description: 'my-dns (type: dns) of my-sample-workload'
+    name: test-my-sample-workload-my-dns
+spec:
+    owner: user:guest
+    system: test
+    type: dns
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+    description: 'my-redis (type: redis) of my-sample-workload'
+    name: test-my-sample-workload-my-redis
+spec:
+    owner: user:guest
+    system: test
+    type: redis
