@@ -23,7 +23,7 @@ metadata:
     - icon: github
       title: Repository
       url: https://github.com/mathieu-benoit/sail-sharp
-  name: test-my-sample-workload1
+  name: test-my-sample-workload-2
   tags:
     - dotnet
     - http
@@ -38,9 +38,9 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-  description: 'my-dns (type dns) of my-sample-workload'
-  name: test-my-sample-workload-my-dns
+    description: 'my-dns (type: dns) of my-sample-workload'
+    name: test-my-sample-workload-my-dns
 spec:
-  owner: user:guest
-  system: test
-  type: dns
+    owner: user:guest
+    system: test
+    type: dns
