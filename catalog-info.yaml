@@ -25,7 +25,7 @@ metadata:
       url: https://github.com/mathieu-benoit/sail-sharp
     - icon: github
       title: Container my-sample-container
-      url: ghcr.io/mathieu-benoit/my-sample-workload:latest
+      url: https://ghcr.io/mathieu-benoit/my-sample-workload:latest
   name: test-my-sample-workload-4
   tags:
     - dotnet
