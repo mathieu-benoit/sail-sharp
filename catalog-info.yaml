@@ -33,13 +33,3 @@ spec:
   owner: user:guest
   system: test
   type: service
----
-apiVersion: backstage.io/v1alpha1
-kind: Resource
-metadata:
-  description: test-my-sample-workload-my-dns
-  name: test-my-sample-workload-my-dns
-spec:
-  owner: user:guest
-  system: test
-  type: dns
