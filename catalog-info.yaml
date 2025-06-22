@@ -38,9 +38,9 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-    description: 'my-dns (type dns) of my-sample-workload'
-    name: test-my-sample-workload-my-dns
+  description: 'my-dns (type: dns) of my-sample-workload'
+  name: test-my-sample-workload-my-dns
 spec:
-    owner: user:guest
-    system: test
-    type: dns
+  owner: user:guest
+  system: test
+  type: dns
