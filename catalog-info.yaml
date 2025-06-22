@@ -28,8 +28,8 @@ metadata:
     - http
 spec:
   dependsOn:
-  - "resource:test-my-sample-workload-my-dns"
-  - "resource:test-my-sample-workload-my-redis"
+  - 'resource:test-my-sample-workload-my-dns'
+  - 'resource:test-my-sample-workload-my-redis'
   lifecycle: experimental
   owner: user:guest
   system: test
