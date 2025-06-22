@@ -53,4 +53,4 @@ metadata:
 spec:
   owner: user:guest
   system: test
-  type: redis
+  type: database
