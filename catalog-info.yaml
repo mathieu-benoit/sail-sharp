@@ -28,12 +28,12 @@ metadata:
           url: ghcr.io/mathieu-benoit/my-sample-workload:latest
     name: test-my-sample-workload
     tags:
-        - dotnet
-        - http
+    - dotnet
+    - http
 spec:
     dependsOn:
-        - resource:test-my-sample-workload-my-dns
-        - resource:test-my-sample-workload-my-redis
+    - resource:test-my-sample-workload-my-dns
+    - resource:test-my-sample-workload-my-redis
     lifecycle: experimental
     owner: user:guest
     system: test
