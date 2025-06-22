@@ -2,12 +2,12 @@ apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
     annotations:
-        github.com/project-slug: mathieu-benoit/test
+        github.com/project-slug: mathieu-benoit/sail-sharp
     description: test
     links:
         - icon: github
           title: Repository
-          url: https://github.com/mathieu-benoit/test
+          url: https://github.com/mathieu-benoit/sail-sharp
     name: test
 spec:
     owner: user:guest
@@ -16,12 +16,12 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
     annotations:
-        github.com/project-slug: mathieu-benoit/test
+        github.com/project-slug: mathieu-benoit/sail-sharp
     description: my-sample-workload
     links:
         - icon: github
           title: Repository
-          url: https://github.com/mathieu-benoit/test
+          url: https://github.com/mathieu-benoit/sail-sharp
     name: test-my-sample-workload
     tags:
         - dotnet
