@@ -6,9 +6,9 @@ metadata:
         github.com/project-slug: mathieu-benoit/sail-sharp
     description: test
     links:
-    - icon: github
-      title: Repository
-      url: https://github.com/mathieu-benoit/sail-sharp
+        - icon: github
+          title: Repository
+          url: https://github.com/mathieu-benoit/sail-sharp
     name: test
 spec:
     owner: user:guest
@@ -20,13 +20,16 @@ metadata:
         github.com/project-slug: mathieu-benoit/sail-sharp
     description: my-sample-workload
     links:
-    - icon: github
-      title: Repository
-      url: https://github.com/mathieu-benoit/sail-sharp
+        - icon: github
+          title: Repository
+          url: https://github.com/mathieu-benoit/sail-sharp
+        - icon: docs
+          title: 'Container image: my-sample-container'
+          url: ghcr.io/mathieu-benoit/my-sample-workload:latest
     name: test-my-sample-workload
     tags:
-    - dotnet
-    - http
+        - dotnet
+        - http
 spec:
     dependsOn:
     - resource:test-my-sample-workload-my-dns
