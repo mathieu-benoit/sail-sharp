@@ -6,8 +6,8 @@ metadata:
   description: test
   links:
     - icon: github
-    title: Repository
-    url: https://github.com/mathieu-benoit/sail-sharp
+      title: Repository
+      url: https://github.com/mathieu-benoit/sail-sharp
   name: test
 spec:
   owner: user:guest
@@ -20,8 +20,8 @@ metadata:
   description: my-sample-workload
   links:
     - icon: github
-    title: Repository
-    url: https://github.com/mathieu-benoit/sail-sharp
+      title: Repository
+      url: https://github.com/mathieu-benoit/sail-sharp
   name: test-my-sample-workload
   tags:
     - dotnet
