@@ -27,6 +27,7 @@ metadata:
     tags:
         - dotnet
         - http
+    title: my-sample-workload
 spec:
     dependsOn:
         - resource:sail-sharp-my-sample-workload-my-dns
@@ -41,6 +42,7 @@ kind: Resource
 metadata:
     description: 'my-dns (type: dns) of my-sample-workload'
     name: sail-sharp-my-sample-workload-my-dns
+    title: my-dns
 spec:
     owner: user:guest
     system: sail-sharp
@@ -51,6 +53,7 @@ kind: Resource
 metadata:
     description: 'my-redis (type: redis) of my-sample-workload'
     name: sail-sharp-my-sample-workload-my-redis
+    title: my-redis
 spec:
     owner: user:guest
     system: sail-sharp
