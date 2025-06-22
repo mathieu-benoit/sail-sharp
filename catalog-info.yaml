@@ -1,56 +1,56 @@
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
-    annotations:
-        github.com/project-slug: mathieu-benoit/sail-sharp
-    description: test
-    links:
-      - icon: github
-        title: Repository
-        url: https://github.com/mathieu-benoit/sail-sharp
-    name: test
+  annotations:
+    github.com/project-slug: mathieu-benoit/sail-sharp
+  description: test
+  links:
+    - icon: github
+    title: Repository
+    url: https://github.com/mathieu-benoit/sail-sharp
+  name: test
 spec:
-    owner: user:guest
+  owner: user:guest
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-    annotations:
-        github.com/project-slug: mathieu-benoit/sail-sharp
-    description: my-sample-workload
-    links:
-      - icon: github
-        title: Repository
-        url: https://github.com/mathieu-benoit/sail-sharp
-    name: test-my-sample-workload
-    tags:
-      - dotnet
-      - http
+  annotations:
+    github.com/project-slug: mathieu-benoit/sail-sharp
+  description: my-sample-workload
+  links:
+    - icon: github
+    title: Repository
+    url: https://github.com/mathieu-benoit/sail-sharp
+  name: test-my-sample-workload
+  tags:
+    - dotnet
+    - http
 spec:
-    dependsOn:
-    - resource:test-my-sample-workload-my-dns
-    - resource:test-my-sample-workload-my-redis
-    lifecycle: experimental
-    owner: user:guest
-    system: test
-    type: service
+  dependsOn:
+  - resource:test-my-sample-workload-my-dns
+  - resource:test-my-sample-workload-my-redis
+  lifecycle: experimental
+  owner: user:guest
+  system: test
+  type: service
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-    description: 'my-dns (type: dns) of my-sample-workload'
-    name: test-my-sample-workload-my-dns
+  description: 'my-dns (type: dns) of my-sample-workload'
+  name: test-my-sample-workload-my-dns
 spec:
-    owner: user:guest
-    system: test
-    type: dns
+  owner: user:guest
+  system: test
+  type: dns
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-    description: 'my-redis (type: redis) of my-sample-workload'
-    name: test-my-sample-workload-my-redis
+  description: 'my-redis (type: redis) of my-sample-workload'
+  name: test-my-sample-workload-my-redis
 spec:
-    owner: user:guest
-    system: test
-    type: redis
+  owner: user:guest
+  system: test
+  type: redis
