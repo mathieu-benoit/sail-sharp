@@ -1,45 +1,60 @@
+---
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
-  name: sail-sharp
-  description: Sail Sharp Project
-  annotations:
-    github.com/project-slug: mathieu-benoit/sail-sharp
-  links:
-    - url: https://github.com/mathieu-benoit/sail-sharp
-      title: Repository
-      icon: github
+    annotations:
+        github.com/project-slug: $GITHUB_REPO
+    description: sail-sharp
+    links:
+        - icon: github
+          title: Repository
+          url: https://github.com/$GITHUB_REPO
+    name: sail-sharp
 spec:
-  owner: user:guest
+    owner: user:guest
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: my-sample-workload
-  description: My Sample Workload
-  annotations:
-    github.com/project-slug: mathieu-benoit/sail-sharp
-  tags:
-    - dotnet
-    - http
-  links:
-    - url: https://github.com/mathieu-benoit/sail-sharp
-      title: Source code
-      icon: github
+    annotations:
+        github.com/project-slug: $GITHUB_REPO
+    description: my-sample-workload
+    links:
+        - icon: github
+          title: Repository
+          url: https://github.com/$GITHUB_REPO
+        - icon: docs
+          title: 'Container image: my-sample-container'
+          url: ghcr.io/mathieu-benoit/my-sample-workload:latest
+    name: sail-sharp-my-sample-workload
+    tags:
+        - dotnet
+        - http
 spec:
-  type: service
-  lifecycle: experimental
-  owner: user:guest
-  system: sail-sharp
-  dependsOn:
-  - 'resource:my-dns'
+    dependsOn:
+        - resource:sail-sharp-my-sample-workload-my-dns
+        - resource:sail-sharp-my-sample-workload-my-redis
+    lifecycle: experimental
+    owner: user:guest
+    system: sail-sharp
+    type: service
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-  name: my-dns
-  description: My DNS
+    description: 'my-dns (type: dns) of my-sample-workload'
+    name: sail-sharp-my-sample-workload-my-dns
 spec:
-  type: dns
-  owner: user:guest
-  system: sail-sharp
+    owner: user:guest
+    system: sail-sharp
+    type: dns
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+    description: 'my-redis (type: redis) of my-sample-workload'
+    name: sail-sharp-my-sample-workload-my-redis
+spec:
+    owner: user:guest
+    system: sail-sharp
+    type: redis
