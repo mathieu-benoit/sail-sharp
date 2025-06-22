@@ -26,7 +26,7 @@ metadata:
     - icon: docs
       title: 'Container image: my-sample-container'
       url: ghcr.io/mathieu-benoit/my-sample-workload:latest
-  name: test-my-sample-workload-2
+  name: test-my-sample-workload-3
   tags:
     - dotnet
     - http
