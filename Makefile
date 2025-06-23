@@ -91,3 +91,16 @@ k8s-down:
 	kubectl delete \
 		-f manifests.yaml \
 		-n ${NAMESPACE}
+
+## Generate catalog-info.yaml for Backstage.
+.PHONY: generate-catalog-info
+generate-catalog-info:
+	score-k8s init \
+		--no-sample \
+		--patch-templates https://raw.githubusercontent.com/score-spec/community-patchers/refs/heads/main/score-k8s/backstage-catalog-entities.tpl
+	score-k8s generate \
+		--namespace sail-sharp \
+		--generate-namespace \
+		score/score.yaml \
+		--output catalog-info.yaml
+	sed 's,$$GITHUB_REPO,mathieu-benoit/sail-sharp,g' -i catalog-info.yaml
