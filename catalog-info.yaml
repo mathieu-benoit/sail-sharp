@@ -40,7 +40,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-    description: 'my-dns (type: dns) of my-sample-workload'
+    description: sail-sharp-my-sample-workload-my-dns
     name: sail-sharp-my-sample-workload-my-dns
     title: my-dns
 spec:
@@ -51,7 +51,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
-    description: 'my-redis (type: redis) of my-sample-workload'
+    description: sail-sharp-my-sample-workload-my-redis
     name: sail-sharp-my-sample-workload-my-redis
     title: my-redis
 spec:
