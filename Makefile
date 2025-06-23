@@ -101,6 +101,7 @@ generate-catalog-info:
 	score-k8s generate \
 		--namespace sail-sharp \
 		--generate-namespace \
+		--image ghcr.io/mathieu-benoit/my-sample-workload:latest \
 		score/score.yaml \
 		--output catalog-info.yaml
 	sed 's,$$GITHUB_REPO,mathieu-benoit/sail-sharp,g' -i catalog-info.yaml
