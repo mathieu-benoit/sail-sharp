@@ -14,8 +14,10 @@ containers:
         memory: "64Mi"
         cpu: "25m"
     variables:
-      MESSAGE: "Hello, World!"
+      MESSAGE: "Hello, Demo!"
 resources:
+  my-redis:
+    type: redis
   dns:
     type: dns
   route:
@@ -29,3 +31,4 @@ service:
     tcp:
       port: 8080
       targetPort: 8080
+
