@@ -1,6 +1,6 @@
 # https://mcr.microsoft.com/product/dotnet/sdk
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0.305-noble AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0.306-noble AS builder
 ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
@@ -15,7 +15,7 @@ RUN dotnet publish my-sample-app.csproj \
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.9-noble-chiseled
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.10-noble-chiseled
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
