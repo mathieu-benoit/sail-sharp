@@ -33,7 +33,7 @@ kubectl apply \
     -f service.yaml
 ```
 
-## Build and deploy the container with Score with `docker compose`, `kubectl` and `humctl`
+## Build and deploy the container with Score with `docker compose` and `kubectl`
 
 Build and run the container with Docker Compose:
 ```bash
@@ -51,16 +51,4 @@ make kind-load-image
 make k8s-up
 
 make k8s-test
-```
-
-Deploy the pre-built container with Score/Humanitec:
-```bash
-humctl score deploy \
-    --token ${HUMANITEC_TOKEN} \
-    --org ${HUMANITEC_ORG} \
-    --app ${APP_ID} \
-    --env ${ENVIRONMENT_ID} \
-    -f score/score.yaml \
-    -i ghcr.io/mathieu-benoit/my-sample-workload:latest \
-    --wait
 ```

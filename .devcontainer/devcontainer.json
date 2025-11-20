@@ -1,5 +1,5 @@
 {
-	"name": "Score & Humanitec Dev Container",
+	"name": "Score & Docker Dev Container",
 	"image": "mcr.microsoft.com/devcontainers/base:noble",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
@@ -16,9 +16,7 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"redhat.vscode-yaml",
-				"humanitec.humanitec",
-				"saoudrizwan.claude-dev"
+				"redhat.vscode-yaml"
 			],
 			"settings": {
 				"yaml.schemas": {
