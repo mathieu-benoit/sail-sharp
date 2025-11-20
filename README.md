@@ -1,9 +1,7 @@
 # Sail Sharp - Security best practices with .NET Core & Kubernetes
 
 [![push-tag](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/push-tag.yml/badge.svg)](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/push-tag.yml)
-[![promote-env](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/promote-env.yml/badge.svg)](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/promote-env.yml)
 [![open-pr](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/open-pr.yml/badge.svg)](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/open-pr.yml)
-[![close-pr](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/close-pr.yml/badge.svg)](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/close-pr.yml)
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/mathieu-benoit/sail-sharp)
 
