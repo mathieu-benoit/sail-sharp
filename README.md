@@ -1,9 +1,7 @@
 # Sail Sharp - Security best practices with .NET Core & Kubernetes
 
 [![push-tag](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/push-tag.yml/badge.svg)](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/push-tag.yml)
-[![promote-env](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/promote-env.yml/badge.svg)](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/promote-env.yml)
 [![open-pr](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/open-pr.yml/badge.svg)](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/open-pr.yml)
-[![close-pr](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/close-pr.yml/badge.svg)](https://github.com/mathieu-benoit/sail-sharp/actions/workflows/close-pr.yml)
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/mathieu-benoit/sail-sharp)
 
@@ -33,7 +31,7 @@ kubectl apply \
     -f service.yaml
 ```
 
-## Build and deploy the container with Score with `docker compose`, `kubectl` and `humctl`
+## Build and deploy the container with Score with `docker compose` and `kubectl`
 
 Build and run the container with Docker Compose:
 ```bash
@@ -51,16 +49,4 @@ make kind-load-image
 make k8s-up
 
 make k8s-test
-```
-
-Deploy the pre-built container with Score/Humanitec:
-```bash
-humctl score deploy \
-    --token ${HUMANITEC_TOKEN} \
-    --org ${HUMANITEC_ORG} \
-    --app ${APP_ID} \
-    --env ${ENVIRONMENT_ID} \
-    -f score/score.yaml \
-    -i ghcr.io/mathieu-benoit/my-sample-workload:latest \
-    --wait
 ```
