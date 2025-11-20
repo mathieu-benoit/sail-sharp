@@ -32,6 +32,9 @@ jobs:
         uses: actions/checkout@v5
       - name: make kind-create-cluster
         run: |
+          docker build -t ${{ env.WORKLOAD_NAME }}:test .
+      - name: make kind-create-cluster
+        run: |
           make kind-create-cluster
       - name: make kind-load-image
         run: |
