@@ -15,6 +15,11 @@ WORKLOAD_NAME = my-sample-workload
 CONTAINER_NAME = my-sample-container
 CONTAINER_IMAGE = ${WORKLOAD_NAME}:test
 
+## Manually build the container image.
+.PHONY: build-container
+build-container:
+	docker build -t ${{ env.CONTAINER_IMAGE }} --sbom=true --provenance=true app/
+
 .score-compose/state.yaml:
 	score-compose init \
 		--no-sample \
