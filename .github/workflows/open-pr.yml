@@ -31,7 +31,7 @@ jobs:
       - name: docker scout quickview
         run: |
           docker images
-          docker scout quickview ${{ env.WORKLOAD_NAME }}:test
+          docker scout quickview local://${{ env.WORKLOAD_NAME }}:test
       - name: Docker Scout
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
