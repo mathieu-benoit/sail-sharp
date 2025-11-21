@@ -20,6 +20,11 @@ CONTAINER_IMAGE = ${WORKLOAD_NAME}:test
 build-container:
 	docker build -t ${CONTAINER_IMAGE} --sbom=true --provenance=true app/
 
+## Manually buildx the container image.
+.PHONY: buildx-container
+buildx-container:
+	docker buildx build -t ${CONTAINER_IMAGE} --sbom=true --provenance=true app/
+
 .score-compose/state.yaml:
 	score-compose init \
 		--no-sample \
