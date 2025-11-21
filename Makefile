@@ -18,7 +18,7 @@ CONTAINER_IMAGE = ${WORKLOAD_NAME}:test
 ## Manually build the container image.
 .PHONY: build-container
 build-container:
-	docker build -t ${{ env.CONTAINER_IMAGE }} --sbom=true --provenance=true app/
+	docker build -t ${CONTAINER_IMAGE} --sbom=true --provenance=true app/
 
 .score-compose/state.yaml:
 	score-compose init \
