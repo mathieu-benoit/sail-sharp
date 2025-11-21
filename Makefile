@@ -23,7 +23,7 @@ build-container:
 ## Manually buildx the container image.
 .PHONY: buildx-container
 buildx-container:
-	docker buildx build -t ${CONTAINER_IMAGE} --sbom=true --provenance=true app/
+	docker buildx build -t ${CONTAINER_IMAGE} --attest type=provenance,mode=max app/
 
 .score-compose/state.yaml:
 	score-compose init \
