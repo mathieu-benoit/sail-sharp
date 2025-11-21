@@ -21,16 +21,24 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
-      - name: Docker Scout
-        id: docker-scout
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: docker/scout-action@v1
-        with:
-          command: quickview
-          image: docker.io/library/${{ env.WORKLOAD_NAME }}:test
-          to: ghcr.io/mathieu-benoit/my-sample-workload:latest
-          write-comment: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: install docker scout
+        run: |
+          sudo curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
+          sh install-scout.sh
+      - name: docker scout quickview
+        run: |
+          docker images
+          docker scout quickview ${{ env.WORKLOAD_NAME }}:test
+      #- name: Docker Scout
+      #  id: docker-scout
+      #  if: ${{ github.event_name == 'pull_request' }}
+      #  uses: docker/scout-action@v1
+      #  with:
+      #    command: quickview
+      #    image: docker.io/library/${{ env.WORKLOAD_NAME }}:test
+      #    to: ghcr.io/mathieu-benoit/my-sample-workload:latest
+      #    write-comment: true
+      #    github-token: ${{ secrets.GITHUB_TOKEN }}
   multi-arch-build:
     runs-on: ubuntu-latest
     steps:
