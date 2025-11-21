@@ -26,6 +26,7 @@ jobs:
           context: app/
           platforms: linux/amd64
           push: false
+          load: true
           provenance: mode=max
           sbom: true
           tags: ${{ env.WORKLOAD_NAME }}:test
