@@ -38,7 +38,7 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: quickview
-          image: ${{ env.WORKLOAD_NAME }}:test
+          image: local://${{ env.WORKLOAD_NAME }}:test
           to: ghcr.io/mathieu-benoit/my-sample-workload:latest
           write-comment: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
