@@ -8,6 +8,24 @@ env:
   SCORE_K8S_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-workload
 jobs:
+  scan-and-compare:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v5
+      - name: docker build
+        run: |
+          docker build -t ${{ env.WORKLOAD_NAME }}:test app/
+      - name: Docker Scout
+        id: docker-scout
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: docker/scout-action@v1
+        with:
+          command: quickview,compare
+          image: ${{ env.WORKLOAD_NAME }}:test
+          to: ghcr.io/mathieu-benoit/my-sample-workload:latest
+          write-comment: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
   multi-arch-build:
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +65,7 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v5
-      - name: make kind-create-cluster
+      - name: docker build
         run: |
           docker build -t ${{ env.WORKLOAD_NAME }}:test app/
       - name: make kind-create-cluster
