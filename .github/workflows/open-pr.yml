@@ -29,6 +29,9 @@ jobs:
           provenance: mode=max
           sbom: true
           tags: ${{ env.WORKLOAD_NAME }}:test
+      - name: docker images
+        run: |
+          docker images
       - name: Docker Scout
         id: docker-scout
         if: ${{ github.event_name == 'pull_request' }}
