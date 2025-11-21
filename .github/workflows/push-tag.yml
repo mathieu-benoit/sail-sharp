@@ -32,4 +32,6 @@ jobs:
           context: app/
           platforms: linux/amd64,linux/arm64
           push: true
+          provenance: mode=max
+          sbom: true
           tags: "ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:${{ env.IMAGE_TAG }},ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:latest"
