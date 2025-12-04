@@ -70,9 +70,6 @@ jobs:
           to: local://${{ env.WORKLOAD_NAME }}:main
           write-comment: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: docker scout version
-        run: |
-          docker scout version
   multi-arch-build:
     runs-on: ubuntu-latest
     steps:
