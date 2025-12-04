@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout code in PR branch
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Set up Docker
         uses: docker/setup-docker-action@v4
         with:
@@ -44,7 +44,7 @@ jobs:
           sbom: true
           tags: ${{ env.WORKLOAD_NAME }}:pr-${{ github.event.number }}
       - name: checkout code in main branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           ref: main
       - name: Build container image from main branch
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: install score-compose
         uses: score-spec/setup-score@v3
         with:
@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: docker build
         run: |
           docker build -t ${{ env.WORKLOAD_NAME }}:test app/
