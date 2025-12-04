@@ -23,5 +23,8 @@ sudo mv ./kind /usr/local/bin/kind
 sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
 sudo chmod +x /usr/bin/yq
 
+sudo curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
+sh install-scout.sh
+
 cd ..
 rm -rf install-more-tools
