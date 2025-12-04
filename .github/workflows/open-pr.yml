@@ -9,9 +9,10 @@ env:
   WORKLOAD_NAME: my-sample-workload
 jobs:
   scan-and-compare:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-24.04
     steps:
-      - name: checkout code
+      - name: checkout code in PR branch
         uses: actions/checkout@v5
       - name: Set up Docker
         uses: docker/setup-docker-action@v4
@@ -30,7 +31,7 @@ jobs:
           password: ${{ secrets.DOCKER_PAT }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build container image
+      - name: Build container image on PR branch
         uses: docker/build-push-action@v6
         with:
           context: app/
@@ -40,18 +41,32 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: mode=max
           sbom: true
-          tags: ${{ env.WORKLOAD_NAME }}:test
+          tags: ${{ env.WORKLOAD_NAME }}:pr-${{ github.event.number }}
+      - name: checkout code in main branch
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: main
+      - name: Build container image from main branch
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: app/
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: mode=max
+          sbom: true
+          tags: ${{ env.WORKLOAD_NAME }}:main
       - name: docker images
         run: |
           docker images
       - name: Docker Scout
         id: docker-scout
-        if: ${{ github.event_name == 'pull_request' }}
         uses: docker/scout-action@v1
         with:
-          command: quickview
-          image: local://${{ env.WORKLOAD_NAME }}:test
-          to: ghcr.io/mathieu-benoit/my-sample-workload:latest
+          command: compare
+          image: local://${{ env.WORKLOAD_NAME }}:pr-${{ github.event.number }}
+          to: local://${{ env.WORKLOAD_NAME }}:main
           write-comment: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: docker scout version
