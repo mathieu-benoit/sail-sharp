@@ -1,5 +1,3 @@
-# You need to set up Workload Identity Federation in your Google Cloud project in order to use this GitHub Actions definition: https://medium.com/p/3932dce678b8.
-# And the secrets.GSA_ID needs to have the roles/artifactregistry.writer role in order push container images.
 name: push-tag
 permissions:
   contents: read
@@ -11,34 +9,17 @@ on:
       - 'v*'
 env:
   IMAGE_TAG: ${{ github.ref_name }}
-  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-workload
-  ENVIRONMENT_ID: development
   WORKLOAD_NAME: my-sample-workload
-  HUMCTL_VERSION: '*'
 jobs:
   build-push:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: authenticate to google cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
-          service_account: '${{ secrets.GSA_ID }}'
-      - name: install gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          version: latest
-      - name: sign-in to gar
-        run: |
-          gcloud auth configure-docker \
-              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
-              --quiet
       - name: login to ghcr
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login \
@@ -51,129 +32,6 @@ jobs:
           context: app/
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: "${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }},ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:latest"
-  deploy-humanitec:
-    needs: build-push
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: install humctl
-        uses: humanitec/setup-cli-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.HUMCTL_VERSION }}
-      - name: create humanitec app
-        run: |
-          humctl create app ${{ vars.APP_NAME }} \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --name ${{ vars.APP_NAME }} \
-              || true
-      - name: authenticate to google cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
-          service_account: '${{ secrets.GSA_ID }}'
-      - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          version: latest
-      - name: sign-in to gar
-        run: |
-          gcloud auth configure-docker \
-              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
-              --quiet
-      - uses: oras-project/setup-oras@v1
-      - name: get container image digest
-        run: |
-          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
-              --descriptor \
-              | jq -r .digest)" >> ${{ github.env }}
-      - name: notify humanitec
-        run: |-
-          humctl create artefact-version \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              -t container \
-              -n ${{ env.IMAGE_NAME }} \
-              --version ${{ env.IMAGE_TAG }} \
-              --ref ${{ github.ref }} \
-              --commit $(echo ${{ github.sha }} | cut -c1-7) \
-              --digest ${IMAGE_DIGEST}
-      - name: humctl score deploy
-        run: |
-          humctl score deploy \
-              --deploy-config score/score.deploy.yaml \
-              --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
-              --message ${{ github.ref_name }} \
-              --workload-source-url-prefix "https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/score" \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} \
-              --wait
-      - name: get deployment information
-        if: ${{ always() }}
-        run: |
-          DEPLOYMENT_ID=$(humctl get deployment . -o json \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} \
-              | jq -r .metadata.id)
-          ENV_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/deploys/"${DEPLOYMENT_ID}
-          DOMAINS=$(humctl get active-resources \
-                      --token ${{ secrets.HUMANITEC_TOKEN }} \
-                      --org ${{ secrets.HUMANITEC_ORG }} \
-                      --app ${{ vars.APP_NAME }} \
-                      --env ${{ env.ENVIRONMENT_ID }} -o json \
-                      | jq -r '. | map(. | select(.metadata.type == "dns")) | map((.metadata.res_id | split(".") | .[1]) + ": [" + .status.resource.host + "](https://" + .status.resource.host + ")") | join("\n")')
-          
-          DEPLOYMENT_ERRORS=$(humctl get deployment-error \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} -o json)
-          RUNTIME_ERRORS=$(humctl api get /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }}/runtime \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              | grep '"status": "Failure"' -B 10 -A 1) \
-              || true
-          if [[ "$DEPLOYMENT_ERRORS" = "[]" && -z "$RUNTIME_ERRORS" ]]; then
-            echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_ID }}! :tada:"
-            echo ""
-          else
-            echo "## Deployment failed for ${{ env.ENVIRONMENT_ID }}! :x:"
-            echo ""
-            
-            if [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
-              echo "### Deployment errors:"
-              echo ""
-              echo "$DEPLOYMENT_ERRORS"
-              echo ""
-            fi
-
-            if [ -n "$RUNTIME_ERRORS" ]; then
-              echo "### Runtime errors:"
-              echo ""
-              echo "$RUNTIME_ERRORS"
-              echo ""
-            fi
-          fi
-          
-          echo "### View in Humanitec: $ENV_URL"
-          echo ""
-          echo "### Deployment ID: $DEPLOYMENT_ID"
-          echo ""
-          echo "### URLs:"
-          echo ""
-          echo "$DOMAINS"
-          echo ""
-          
-          echo "### Deployment diff:"
-          echo ""
-          humctl diff sets deploy/+1 deploy/. \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} -o json
-          echo ""
+          provenance: mode=max
+          sbom: true
+          tags: "ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:${{ env.IMAGE_TAG }},ghcr.io/${{ github.repository_owner }}/${{ env.WORKLOAD_NAME }}:latest"

@@ -1,37 +1,99 @@
-# You need to set up Workload Identity Federation in your Google Cloud project in order to use this GitHub Actions definition: https://medium.com/p/3932dce678b8.
-# And the secrets.GSA_ID needs to have the roles/artifactregistry.repoAdmin role in order push and delete container images.
 name: open-pr
 permissions:
   contents: read
-  id-token: write
   pull-requests: write
 on:
   pull_request:
 env:
-  ENVIRONMENT_ID: pr-${{ github.event.number }}
-  IMAGE_NAME: ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REGISTRY_NAME }}/my-sample-workload
   SCORE_COMPOSE_VERSION: 'latest'
   SCORE_K8S_VERSION: 'latest'
   WORKLOAD_NAME: my-sample-workload
-  CONTAINER_NAME: my-sample-container
-  HUMCTL_VERSION: '*'
 jobs:
-  build-run-test-push:
+  scan-and-compare:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout code in PR branch
+        uses: actions/checkout@v6
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "debug": true,
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PAT }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build container image on PR branch
+        uses: docker/build-push-action@v6
+        with:
+          context: app/
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: mode=max
+          sbom: true
+          tags: ${{ env.WORKLOAD_NAME }}:pr-${{ github.event.number }}
+      - name: checkout code in main branch
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          ref: main
+      - name: Build container image from main branch
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: app/
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: mode=max
+          sbom: true
+          tags: ${{ env.WORKLOAD_NAME }}:main
+      - name: docker images
+        run: |
+          docker images
+      - name: Docker Scout
+        id: docker-scout
+        uses: docker/scout-action@v1
+        with:
+          command: compare
+          image: local://${{ env.WORKLOAD_NAME }}:pr-${{ github.event.number }}
+          to: local://${{ env.WORKLOAD_NAME }}:main
+          write-comment: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+  multi-arch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v6
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: build container image in multi-arch
+        uses: docker/build-push-action@v6
+        with:
+          context: app/
+          platforms: linux/amd64,linux/arm64
+          file: app/Dockerfile
+          push: false
+          provenance: mode=max
+          sbom: true
+          tags: "${{ env.WORKLOAD_NAME }}:test"
+  make-compose-test:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout code
-        uses: actions/checkout@v4
-      - name: install humctl
-        uses: humanitec/setup-cli-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.HUMCTL_VERSION }}
-      - name: humctl score validate
-        run: |
-          humctl score validate score/score.yaml \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --strict
+        uses: actions/checkout@v6
       - name: install score-compose
         uses: score-spec/setup-score@v3
         with:
@@ -44,6 +106,14 @@ jobs:
       - name: make compose-test
         run: |
           make compose-test
+  make-k8s-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v6
+      - name: docker build
+        run: |
+          docker build -t ${{ env.WORKLOAD_NAME }}:test app/
       - name: make kind-create-cluster
         run: |
           make kind-create-cluster
@@ -66,235 +136,3 @@ jobs:
           kubectl get events
           kubectl logs \
               -l app.kubernetes.io/name=${{ env.WORKLOAD_NAME }}
-      - name: authenticate to google cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
-          service_account: '${{ secrets.GSA_ID }}'
-      - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          version: latest
-      - name: sign-in to gar
-        run: |
-          gcloud auth configure-docker \
-              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
-              --quiet
-      - name: delete previous container image in gar
-        run: |
-          gcloud artifacts docker images delete \
-              ${IMAGE_NAME}:${{ env.ENVIRONMENT_ID }} \
-              --delete-tags \
-              --quiet \
-              || true
-      - name: push the container to gar
-        run: |
-          docker tag ${{ env.WORKLOAD_NAME }}:test ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-          docker push \
-              ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }}
-  deploy-preview-env:
-    needs: build-run-test-push
-    runs-on: ubuntu-24.04
-    env:
-      BASE_ENVIRONMENT: 'development'
-      ENVIRONMENT_TYPE: 'development'
-      ENVIRONMENT_NAME: PR-${{ github.event.number }}
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v4
-      - name: install humctl
-        uses: humanitec/setup-cli-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.HUMCTL_VERSION }}
-      - name: create humanitec preview env
-        run: |
-          EXISTING_ENV_ID=$(humctl get environment ${{ env.ENVIRONMENT_ID }} \
-                              --token ${{ secrets.HUMANITEC_TOKEN }} \
-                              --org ${{ secrets.HUMANITEC_ORG }} \
-                              --app ${{ vars.APP_NAME }} \
-                              -o json \
-                              | jq .metadata.id \
-                              || true)
-          if [ -z "$EXISTING_ENV_ID" ]; then
-              humctl create environment ${{ env.ENVIRONMENT_ID }} \
-                --token ${{ secrets.HUMANITEC_TOKEN }} \
-                --org ${{ secrets.HUMANITEC_ORG }} \
-                --app ${{ vars.APP_NAME }} \
-                --name ${{ env.ENVIRONMENT_NAME }} \
-                -t ${{ env.ENVIRONMENT_TYPE }} \
-                --from ${{ env.BASE_ENVIRONMENT }}
-          fi
-      - name: authenticate to google cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: '${{ secrets.WI_PROVIDER_ID }}'
-          service_account: '${{ secrets.GSA_ID }}'
-      - name: setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          version: latest
-      - name: sign-in to gar
-        run: |
-          gcloud auth configure-docker \
-              ${{ secrets.REGISTRY_LOCATION }}-docker.pkg.dev \
-              --quiet
-      - uses: oras-project/setup-oras@v1
-      - name: get container image digest
-        run: |
-          echo "IMAGE_DIGEST=$(oras manifest fetch ${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT_ID }} \
-              --descriptor \
-              | jq -r .digest)" >> ${{ github.env }}
-      - name: humctl score deploy
-        run: |
-          humctl score deploy \
-              --deploy-config score/score.deploy.yaml \
-              --image ${{ env.IMAGE_NAME }}@${IMAGE_DIGEST} \
-              --message "$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.commits_url }}?per_page=10" | jq -r .[-1].commit.message)" \
-              --workload-source-url-prefix "https://github.com/${{ github.repository }}/blob/${{ github.head_ref }}/score" \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} \
-              --wait
-      - name: build comment message
-        if: ${{ always() }}
-        run: |
-          DEPLOYMENT_ID=$(humctl get deployment . -o json \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} \
-              | jq -r .metadata.id)
-          ENV_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/deploys/"${DEPLOYMENT_ID}
-          GRAPH_URL="https://app.humanitec.io/orgs/"${{ secrets.HUMANITEC_ORG }}"/apps/"${{ vars.APP_NAME }}"/envs/"${{ env.ENVIRONMENT_ID }}"/resource-graph/"${DEPLOYMENT_ID}
-          DOMAINS=$(humctl get active-resources \
-                      --token ${{ secrets.HUMANITEC_TOKEN }} \
-                      --org ${{ secrets.HUMANITEC_ORG }} \
-                      --app ${{ vars.APP_NAME }} \
-                      --env ${{ env.ENVIRONMENT_ID }} -o json \
-                      | jq -r '. | map(. | select(.metadata.type == "dns")) | map(":link: " + (.metadata.res_id | split(".") | .[1]) + ": [" + .status.resource.host + "](https://" + .status.resource.host + ")") | join("\n")')
-          
-          DEPLOYMENT_ERRORS=$(humctl get deployment-error \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} \
-              --env ${{ env.ENVIRONMENT_ID }} -o json)
-          RUNTIME_ERRORS=$(humctl api get /orgs/${{ secrets.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.ENVIRONMENT_ID }}/runtime \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              | grep '"status": "Failure"' -B 10 -A 1) \
-              || true
-          
-          echo "#### :white_check_mark: Successfully deployed with score-compose" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "#### :white_check_mark: Successfully deployed with score-k8s" >> pr_message.txt
-          echo "" >> pr_message.txt
-          
-          if [[ "$DEPLOYMENT_ERRORS" = "[]" && -z "$RUNTIME_ERRORS" ]]; then
-            echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "#### :white_check_mark: Successfully deployed with humctl" >> pr_message.txt
-            echo "" >> pr_message.txt
-          else
-            echo "## Deployment failed for ${{ env.ENVIRONMENT_NAME }}! :x:" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "#### :x: Deployment failed with `humctl`" >> pr_message.txt
-            echo "" >> pr_message.txt
-            
-            if [ "$DEPLOYMENT_ERRORS" != "[]" ]; then
-              echo "### Deployment errors:" >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo '```json' >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo "$DEPLOYMENT_ERRORS" | jq .[0].status.message -r >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo '```' >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo "<details><summary>Deployment errors details</summary>" >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo "### Deployment errors details:" >> pr_message.txt
-              echo '```json' >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo "$DEPLOYMENT_ERRORS" >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo '```' >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo "</details>" >> pr_message.txt
-              echo "" >> pr_message.txt
-            fi
-
-            if [ -n "$RUNTIME_ERRORS" ]; then
-              echo "### Runtime errors:" >> pr_message.txt
-              echo "" >> pr_message.txt
-              echo "$RUNTIME_ERRORS" >> pr_message.txt
-              echo "" >> pr_message.txt
-            fi
-          fi
-
-          echo "### :arrow_right: [Open Resource Graph]($GRAPH_URL)" >> pr_message.txt
-          echo "### :mag: [View Deployment in Humanitec]($ENV_URL)" >> pr_message.txt
-
-          echo "" >> pr_message.txt
-          echo "$DOMAINS" >> pr_message.txt
-          echo "" >> pr_message.txt
-          
-          echo "<details><summary>Deployment diff</summary>" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "### Deployment diff:" >> pr_message.txt
-          echo '```json' >> pr_message.txt
-          echo "" >> pr_message.txt
-          humctl diff sets env/${{ env.ENVIRONMENT_ID }} env/${{ env.BASE_ENVIRONMENT }} \
-              --token ${{ secrets.HUMANITEC_TOKEN }} \
-              --org ${{ secrets.HUMANITEC_ORG }} \
-              --app ${{ vars.APP_NAME }} -o json >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo '```' >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "</details>" >> pr_message.txt
-
-          if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
-            echo "<details><summary>Active Resources Usage</summary>" >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "### Active Resources Usage:" >> pr_message.txt
-            echo '```none' >> pr_message.txt
-            echo "" >> pr_message.txt
-            humctl resources active-resource-usage \
-                --env ${{ env.ENVIRONMENT_ID }} \
-                --token ${{ secrets.HUMANITEC_TOKEN }} \
-                --org ${{ secrets.HUMANITEC_ORG }} \
-                --app ${{ vars.APP_NAME }} >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo '```' >> pr_message.txt
-            echo "" >> pr_message.txt
-            echo "</details>" >> pr_message.txt
-          fi
-
-          echo "<details><summary>Active Resources diff</summary>" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "### Active Resources diff:" >> pr_message.txt
-          echo '```json' >> pr_message.txt
-          echo "" >> pr_message.txt
-          humctl get active-resource \
-                --env ${{ env.ENVIRONMENT_ID }} \
-                --token ${{ secrets.HUMANITEC_TOKEN }} \
-                --org ${{ secrets.HUMANITEC_ORG }} \
-                --app ${{ vars.APP_NAME }} \
-                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.def_version_id, .status.resource]' > res-usage-${{ env.ENVIRONMENT_ID }}.txt
-          humctl get active-resource \
-                --env ${{ env.BASE_ENVIRONMENT }} \
-                --token ${{ secrets.HUMANITEC_TOKEN }} \
-                --org ${{ secrets.HUMANITEC_ORG }} \
-                --app ${{ vars.APP_NAME }} \
-                -o json | jq '.[] | [.metadata.type, .metadata.res_id, .status.class, .status.driver_type, .status.def_id, .status.def_version_id, .status.resource]' > res-usage-${{ env.BASE_ENVIRONMENT }}.txt
-          diff res-usage-${{ env.BASE_ENVIRONMENT }}.txt res-usage-${{ env.ENVIRONMENT_ID }}.txt >> pr_message.txt || true
-          echo "" >> pr_message.txt
-          echo '```' >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo "</details>" >> pr_message.txt
-
-      - name: comment pr
-        if: ${{ always() }}
-        run: |
-          gh pr comment ${{ github.event.number }} --repo ${{ github.repository }} --body-file pr_message.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

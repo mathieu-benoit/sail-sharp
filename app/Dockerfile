@@ -1,6 +1,6 @@
 # https://mcr.microsoft.com/product/dotnet/sdk
 # https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0.102-azurelinux3.0 AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0.100-azurelinux3.0 AS builder
 ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
@@ -15,7 +15,7 @@ RUN dotnet publish my-sample-app.csproj \
 
 # https://mcr.microsoft.com/product/dotnet/runtime-deps
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.1-azurelinux3.0-distroless
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0.0-azurelinux3.0-distroless
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080

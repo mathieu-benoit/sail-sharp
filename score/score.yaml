@@ -1,6 +1,8 @@
 apiVersion: score.dev/v1b1
 metadata:
   name: my-sample-workload
+  annotations:
+    tags: "dotnet,http"
 containers:
   my-sample-container:
     image: .
