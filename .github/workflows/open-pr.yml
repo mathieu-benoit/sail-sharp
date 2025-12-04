@@ -1,6 +1,7 @@
 name: open-pr
 permissions:
   contents: read
+  pull-requests: write
 on:
   pull_request:
 env:
