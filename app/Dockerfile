@@ -13,9 +13,9 @@ RUN dotnet publish my-sample-app.csproj \
     -o /my-sample-app \
     --no-restore
 
-# https://mcr.microsoft.com/product/dotnet/runtime-deps
-# https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/runtime-deps:10.0.1-noble-chiseled-extra
+# https://mcr.microsoft.com/product/dotnet/runtime
+# https://mcr.microsoft.com/v2/dotnet/runtime/tags/list
+FROM mcr.microsoft.com/dotnet/runtime:10.0.1-noble-chiseled-extra
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
