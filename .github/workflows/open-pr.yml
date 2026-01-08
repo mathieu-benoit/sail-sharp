@@ -125,6 +125,7 @@ jobs:
       - name: make compose-test
         run: |
           make compose-test
+          curl $(score-compose resources get-outputs dns.default#my-sample-workload.dns --format '{{ .host }}:8080')
   make-k8s-test:
     runs-on: ubuntu-24.04
     steps:
