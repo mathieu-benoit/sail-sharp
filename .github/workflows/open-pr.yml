@@ -119,9 +119,10 @@ jobs:
           registry: dhi.io
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
-      - name: make compose.yaml
+      - name: make compose-up
         run: |
-          make compose.yaml
+          make compose-up
+          sleep 5
       - name: make compose-test
         run: |
           make compose-test
@@ -155,6 +156,10 @@ jobs:
         id: k8s-up
         run: |
           make k8s-up
+          sleep 5
+      - name: make k8s-test
+        run: |
+          make k8s-test
       - name: catch k8s-up errors
         if: ${{ failure() && steps.k8s-up.outcome == 'failure' }}
         run: |

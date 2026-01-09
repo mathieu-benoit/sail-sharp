@@ -39,11 +39,14 @@ compose.yaml: score/score.yaml .score-compose/state.yaml Makefile
 .PHONY: compose-up
 compose-up: compose.yaml
 	docker compose up --build -d --remove-orphans --wait
+	sleep 5
 
 ## Generate a compose.yaml file from the score spec, launch it and test (curl) the exposed container.
 .PHONY: compose-test
 compose-test: compose-up
+	docker ps
 	curl $$(score-compose resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}:8080')
+	curl $$(score-compose resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}:8080') | grep "Hello, Compose! on amd64."
 
 ## Delete the containers running via compose down.
 .PHONY: compose-down
@@ -76,6 +79,7 @@ NAMESPACE ?= default
 ## Generate a manifests.yaml file from the score spec, deploy it to Kubernetes and wait for the Pods to be Ready.
 .PHONY: k8s-up
 k8s-up: manifests.yaml
+	kubectl get pods -n ${NAMESPACE}
 	kubectl apply \
 		-f manifests.yaml \
 		-n ${NAMESPACE}
@@ -93,6 +97,7 @@ k8s-up: manifests.yaml
 .PHONY: k8s-test
 k8s-test: k8s-up
 	curl $$(score-k8s resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}')
+	curl $$(score-k8s resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}') | grep "Hello, Kubernetes! on amd64."
 
 ## Delete the deployment of the local container in Kubernetes.
 .PHONY: k8s-down
