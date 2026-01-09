@@ -15,6 +15,14 @@ containers:
         cpu: "25m"
     variables:
       MESSAGE: "Hello, World!"
+    livenessProbe:
+      httpGet:
+        path: "/healthz"
+        port: 8080
+    readinessProbe:
+      httpGet:
+        path: "/healthz"
+        port: 8080
 resources:
   dns:
     type: dns
@@ -29,3 +37,4 @@ service:
     tcp:
       port: 8080
       targetPort: 8080
+
