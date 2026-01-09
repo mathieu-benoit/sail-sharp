@@ -122,6 +122,7 @@ jobs:
       - name: make compose.yaml
         run: |
           make compose.yaml
+          sleep 5
       - name: make compose-test
         run: |
           make compose-test
@@ -155,6 +156,7 @@ jobs:
         id: k8s-up
         run: |
           make k8s-up
+          sleep 5
       - name: make k8s-test
         run: |
           make k8s-test
