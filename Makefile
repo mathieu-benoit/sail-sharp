@@ -43,6 +43,7 @@ compose-up: compose.yaml
 ## Generate a compose.yaml file from the score spec, launch it and test (curl) the exposed container.
 .PHONY: compose-test
 compose-test: compose-up
+	docker ps
 	curl $$(score-compose resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}:8080')
 	curl $$(score-compose resources get-outputs dns.default#${WORKLOAD_NAME}.dns --format '{{ .host }}:8080') | grep "Hello, Compose! on amd64."
 
@@ -77,6 +78,7 @@ NAMESPACE ?= default
 ## Generate a manifests.yaml file from the score spec, deploy it to Kubernetes and wait for the Pods to be Ready.
 .PHONY: k8s-up
 k8s-up: manifests.yaml
+	kubectl get pods -n ${NAMESPACE}
 	kubectl apply \
 		-f manifests.yaml \
 		-n ${NAMESPACE}
