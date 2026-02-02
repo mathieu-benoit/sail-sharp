@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout code in PR branch
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
       - name: Set up Docker
         uses: docker/setup-docker-action@v4
         with:
@@ -46,7 +46,7 @@ jobs:
           sbom: true
           tags: ${{ env.WORKLOAD_NAME }}:pr-${{ github.event.number }}
       - name: checkout code in main branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.1
         with:
           ref: main
       - name: Build container image from main branch
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -101,7 +101,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout code
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
       - name: install score-compose
         uses: score-spec/setup-score@v3
         with:
@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout code
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
       - name: docker login dhi.io
         uses: docker/login-action@v3
         with:
