@@ -1,7 +1,4 @@
 name: open-pr
-permissions:
-  contents: read
-  pull-requests: write
 on:
   pull_request:
 env:
@@ -12,6 +9,9 @@ jobs:
   scan-and-compare:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: checkout code in PR branch
         uses: actions/checkout@v6
@@ -76,7 +76,6 @@ jobs:
     uses: docker/github-builder/.github/workflows/build.yml@v1
     permissions:
       contents: read # to fetch the repository content
-      id-token: write # for signing attestation(s) with GitHub OIDC Token
     with:
       output: image
       push: false
@@ -96,6 +95,8 @@ jobs:
           password: ${{ secrets.DOCKER_PAT }}
   make-compose-test:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: checkout code
         uses: actions/checkout@v6
@@ -120,6 +121,8 @@ jobs:
           make compose-test
   make-k8s-test:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: checkout code
         uses: actions/checkout@v6
