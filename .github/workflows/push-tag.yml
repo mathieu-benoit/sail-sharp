@@ -14,7 +14,6 @@ jobs:
       output: image
       push: true
       platforms: linux/amd64,linux/arm64
-      setup-qemu: true
       sbom: true
       context: app/
       meta-images: |
@@ -30,5 +29,6 @@ jobs:
         - registry: dhi.io
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
+
 
 
