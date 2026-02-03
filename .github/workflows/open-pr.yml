@@ -83,6 +83,8 @@ jobs:
       platforms: linux/amd64,linux/arm64
       sbom: true
       context: app/
+      set-meta-labels: true
+      set-meta-annotations: true
       meta-images: |
         my-sample-workload
       meta-tags: |
