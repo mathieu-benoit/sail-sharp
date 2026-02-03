@@ -86,7 +86,7 @@ jobs:
       sbom: true
       context: app/
       meta-images: my-sample-workload
-      meta-tas: test
+      meta-tags: test
     secrets:
       registry-auths: |
         - registry: dhi.io
