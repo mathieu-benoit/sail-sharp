@@ -87,7 +87,7 @@ jobs:
       meta-images: |
         my-sample-workload
       meta-tags: |
-        test
+        type=ref,event=pr
     secrets:
       registry-auths: |
         - registry: dhi.io
