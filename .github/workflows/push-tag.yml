@@ -17,8 +17,11 @@ jobs:
       setup-qemu: true
       sbom: true
       context: app/
-      meta-images: ghcr.io/${{ github.repository_owner }}/my-sample-workload
-      meta-tags: ${{ github.ref_name }},latest
+      meta-images: |
+        ghcr.io/${{ github.repository_owner }}/my-sample-workload
+      meta-tags: |
+        type=ref,event=tag
+        latest
     secrets:
       registry-auths: |
         - registry: ghcr.io
@@ -27,4 +30,5 @@ jobs:
         - registry: dhi.io
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
+
 
