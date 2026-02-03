@@ -84,8 +84,10 @@ jobs:
       setup-qemu: true
       sbom: true
       context: app/
-      meta-images: my-sample-workload
-      meta-tags: test
+      meta-images: |
+        my-sample-workload
+      meta-tags: |
+        type=ref,event=pr
     secrets:
       registry-auths: |
         - registry: dhi.io
