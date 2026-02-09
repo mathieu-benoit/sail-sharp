@@ -81,6 +81,7 @@ jobs:
       push: false
       platforms: linux/amd64,linux/arm64
       sbom: true
+      cache: true
       context: app/
       set-meta-labels: true
       set-meta-annotations: true
