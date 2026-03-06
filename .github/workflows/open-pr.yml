@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
       - name: Build container image on PR branch
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           context: app/
           push: false
@@ -57,7 +57,7 @@ jobs:
         with:
           ref: main
       - name: Build container image from main branch
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           context: app/
           push: false
@@ -72,7 +72,7 @@ jobs:
           docker images
       - name: Docker Scout
         id: docker-scout
-        uses: docker/scout-action@f8c776824083494ab0d56b8105ba2ca85c86e4de # v1.18.2
+        uses: docker/scout-action@75ec1d410792f411fb41df7ab69a62d14d9b6884 # v1.20.1
         with:
           command: compare
           image: local://${{ env.WORKLOAD_NAME }}:pr-${{ github.event.number }}
