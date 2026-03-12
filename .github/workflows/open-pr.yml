@@ -80,7 +80,7 @@ jobs:
           write-comment: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
   multi-arch-build:
-    uses: docker/github-builder/.github/workflows/build.yml@abff7868c866c54704b6afa9ad5871948ca97334 # v1.1.0
+    uses: docker/github-builder/.github/workflows/build.yml@1fbf7b561327a08e044298fe9684dac8d248c7d9 # v1.2.0
     with:
       output: image
       push: false
