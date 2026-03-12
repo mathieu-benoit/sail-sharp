@@ -105,7 +105,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: install score-compose
-        uses: score-spec/setup-score@9ce358a6641972930fbf1c91d93185fec520f7e4 # v3.1.8
+        uses: score-spec/setup-score@78de9126e3f298fe8b799b6afb7b0b67bfe0d1e3 # v3.2.0
         with:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -144,7 +144,7 @@ jobs:
         run: |
           make kind-load-image
       - name: install score-k8s
-        uses: score-spec/setup-score@9ce358a6641972930fbf1c91d93185fec520f7e4 # v3.1.8
+        uses: score-spec/setup-score@78de9126e3f298fe8b799b6afb7b0b67bfe0d1e3 # v3.2.0
         with:
           file: score-k8s
           token: ${{ secrets.GITHUB_TOKEN }}
