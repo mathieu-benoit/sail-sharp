@@ -80,7 +80,7 @@ jobs:
           write-comment: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
   multi-arch-build:
-    uses: docker/github-builder/.github/workflows/build.yml@61b16ec4d881c8bdebcb8ed369c81c20187975ba # v1.3.0
+    uses: docker/github-builder/.github/workflows/build.yml@70313223e2665c3211b454b3fea6534624e78d64 # v1.4.0
     with:
       output: image
       push: false
@@ -105,7 +105,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: install score-compose
-        uses: score-spec/setup-score@78de9126e3f298fe8b799b6afb7b0b67bfe0d1e3 # v3.2.0
+        uses: score-spec/setup-score@200eb5eef7076b4d72da20bef38e80a49af6b7b6 # v3.2.1
         with:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -144,7 +144,7 @@ jobs:
         run: |
           make kind-load-image
       - name: install score-k8s
-        uses: score-spec/setup-score@78de9126e3f298fe8b799b6afb7b0b67bfe0d1e3 # v3.2.0
+        uses: score-spec/setup-score@200eb5eef7076b4d72da20bef38e80a49af6b7b6 # v3.2.1
         with:
           file: score-k8s
           token: ${{ secrets.GITHUB_TOKEN }}
