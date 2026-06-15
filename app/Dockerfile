@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM dhi.io/dotnet:10.0.204-sdk-alpine3.24 AS builder
+FROM --platform=$BUILDPLATFORM dhi.io/dotnet:10.0.301-sdk-alpine3.24 AS builder
 ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
