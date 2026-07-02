@@ -41,26 +41,26 @@ jobs:
       - build-push
     steps:
       - name: docker login docker.io
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        uses: docker/login-action@c99871dec2022cc055c062a10cc1a1310835ceb4 # v4.3.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
       - name: Login to dhi.io
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        uses: docker/login-action@c99871dec2022cc055c062a10cc1a1310835ceb4 # v4.3.0
         with:
           registry: dhi.io
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
       - name: Docker Scout
         id: docker-scout
-        uses: docker/scout-action@7520205ff60037fdc436b40b6a1d1e55a839ec2d # v1.22.0
+        uses: docker/scout-action@ce97ec1bb85613e8eb35d086fad0c77a6cedf983 # v1.23.0
         with:
           command: cves
           sarif-file: sarif.output.json
           summary: true
           image: registry://ghcr.io/${{ github.repository_owner }}/my-sample-workload:${{ github.ref_name }}
       - name: Upload SARIF report
-        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        uses: github/codeql-action/upload-sarif@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4.36.3
         with:
           sarif_file: sarif.output.json
 
