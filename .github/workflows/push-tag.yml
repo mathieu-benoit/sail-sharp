@@ -53,7 +53,7 @@ jobs:
           password: ${{ secrets.DOCKER_PAT }}
       - name: Docker Scout
         id: docker-scout
-        uses: docker/scout-action@ce97ec1bb85613e8eb35d086fad0c77a6cedf983 # v1.23.0
+        uses: docker/scout-action@2688993af7bafd6ba8c6a74ec652442be91dd82b # v1.23.1
         with:
           command: cves
           sarif-file: sarif.output.json
