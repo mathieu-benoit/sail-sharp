@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM dhi.io/dotnet:10.0.301-sdk-alpine3.24 AS builder
+FROM --platform=$BUILDPLATFORM dhi.io/dotnet:10.0.302-sdk-alpine3.24 AS builder
 ARG TARGETARCH
 WORKDIR /app
 COPY my-sample-app.csproj .
@@ -11,7 +11,7 @@ RUN dotnet publish my-sample-app.csproj \
     -o /my-sample-app \
     --no-restore
 
-FROM dhi.io/dotnet:10.0.9-alpine3.24
+FROM dhi.io/dotnet:10.0.10-alpine3.24
 WORKDIR /app
 COPY --from=builder /my-sample-app .
 EXPOSE 8080
