@@ -17,7 +17,7 @@ jobs:
       - name: checkout code in PR branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up Docker
-        uses: docker/setup-docker-action@6d7cfa65f60a9dda7b46e5513fa982536f3c9877 # v5.3.0
+        uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1 # v5.4.0
         with:
           daemon-config: |
             {
@@ -31,12 +31,12 @@ jobs:
         with:
           version: latest
       - name: docker login docker.io
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7 # v4.5.1
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
       - name: docker login dhi.io
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7 # v4.5.1
         with:
           registry: dhi.io
           username: ${{ secrets.DOCKER_USER }}
@@ -80,7 +80,7 @@ jobs:
           write-comment: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
   multi-arch-build:
-    uses: docker/github-builder/.github/workflows/build.yml@3415a188caae9a0da7fba83bc06985776e0b1790 # v1.14.0
+    uses: docker/github-builder/.github/workflows/build.yml@27ade872c1e2296e62ef15ab3b10d37665e57cf7 # v1.15.0
     with:
       output: image
       push: false
@@ -111,7 +111,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ env.SCORE_COMPOSE_VERSION }}
       - name: docker login dhi.io
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7 # v4.5.1
         with:
           registry: dhi.io
           username: ${{ secrets.DOCKER_USER }}
@@ -129,7 +129,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: docker login dhi.io
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7 # v4.5.1
         with:
           registry: dhi.io
           username: ${{ secrets.DOCKER_USER }}
