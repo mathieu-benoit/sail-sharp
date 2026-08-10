@@ -7,7 +7,7 @@ permissions:
   contents: read # to fetch the repository content
 jobs:
   build-push:
-    uses: docker/github-builder/.github/workflows/build.yml@27ade872c1e2296e62ef15ab3b10d37665e57cf7 # v1.15.0
+    uses: docker/github-builder/.github/workflows/build.yml@a492c6d04fd3315f67230809b44d60cc0acd50b3 # v1.16.0
     permissions:
       id-token: write # to sign attestation(s) with GitHub OIDC Token
       packages: write # to push container image to ghcr
@@ -60,7 +60,7 @@ jobs:
           summary: true
           image: registry://ghcr.io/${{ github.repository_owner }}/my-sample-workload:${{ github.ref_name }}
       - name: Upload SARIF report
-        uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: sarif.output.json
 
