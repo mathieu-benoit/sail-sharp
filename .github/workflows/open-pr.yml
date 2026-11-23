@@ -72,7 +72,7 @@ jobs:
           docker images
       - name: Docker Scout
         id: docker-scout
-        uses: docker/scout-action@e7e2a72bf1485d10a58f30696b6c513b261ce4fa # v1.29.0
+        uses: docker/scout-action@b265cd48f8a1451d2680815b3e8dc4ed65ee16e7 # v1.30.0
         with:
           command: compare
           image: local://${{ env.WORKLOAD_NAME }}:pr-${{ github.event.number }}
@@ -105,7 +105,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: install score-compose
-        uses: score-spec/setup-score@f6b76398989a8783858e790e8597947a3a8a615d # v3.2.6
+        uses: score-spec/setup-score@637ec8ae7099066ec4e69b91df618a7a23997451 # v3.2.7
         with:
           file: score-compose
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -144,7 +144,7 @@ jobs:
         run: |
           make kind-load-image
       - name: install score-k8s
-        uses: score-spec/setup-score@f6b76398989a8783858e790e8597947a3a8a615d # v3.2.6
+        uses: score-spec/setup-score@637ec8ae7099066ec4e69b91df618a7a23997451 # v3.2.7
         with:
           file: score-k8s
           token: ${{ secrets.GITHUB_TOKEN }}
